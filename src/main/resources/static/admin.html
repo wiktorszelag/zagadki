@@ -90,6 +90,12 @@
 
         async function stopTime(id) { await fetch('/api/players/' + id + '/time/stop', {method: 'PUT'}); fetchPlayers(); }
         async function resumeTime(id) { await fetch('/api/players/' + id + '/time/resume', {method: 'PUT'}); fetchPlayers(); }
+        async function finishGame(id) {
+            if (confirm('Czy na pewno chcesz ręcznie zakończyć grę tego użytkownika?')) {
+                await fetch('/api/players/' + id + '/finish', {method: 'PUT'});
+                fetchPlayers();
+            }
+        }
         
         async function promptSetTime(id) {
             let mins = prompt("Podaj całkowity czas gry (w minutach):");
@@ -181,6 +187,7 @@
                             actionButtons += `<button onclick="stopTime('${p.id}')" style="background:orange;color:#fff;border:none;padding:5px;cursor:pointer;margin-right:5px;font-size:0.8rem;">ZATRZYMAJ</button>`;
                         }
                         actionButtons += `<br><button onclick="promptSetTime('${p.id}')" style="background:blue;color:#fff;border:none;padding:5px;margin-top:5px;cursor:pointer;margin-right:5px;font-size:0.8rem;">USTAW CZAS</button>`;
+                        actionButtons += `<button onclick="finishGame('${p.id}')" style="background:#b500ff;color:#fff;border:none;padding:5px;margin-top:5px;cursor:pointer;margin-right:5px;font-size:0.8rem;">ZAKOŃCZ</button>`;
                     }
                     actionButtons += `<br><button onclick="deletePlayer('${p.id}')" style="background:darkred;color:#fff;border:none;padding:5px 10px;margin-top:5px;cursor:pointer;font-size:0.8rem;">USUŃ</button>`;
                     
