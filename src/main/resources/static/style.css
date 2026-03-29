@@ -23,19 +23,16 @@ body {
     color: var(--text-primary);
     font-family: var(--font-body);
     height: 100vh;
-    height: 100dvh; /* Dynamiczne dopasowanie np. do paska adresu iOS/Android */
+    height: 100dvh;
     width: 100vw;
     overflow: hidden;
-    overscroll-behavior-y: none; /* Blokowanie odświeżania na przeciągnięcie */
+    overscroll-behavior-y: none;
     display: flex;
     justify-content: center;
     align-items: center;
-    user-select: none;
-    -webkit-user-select: none;
+    /* USUNIĘTO user-select: none, który blokował dotyk na mobilkach */
     background: radial-gradient(circle at 50% 50%, #111122 0%, #05050a 100%);
 }
-
-/* Usunięto skip btn */
 
 #particles-bg {
     position: absolute;
@@ -46,7 +43,7 @@ body {
     z-index: 0;
     pointer-events: none;
     opacity: 0.4;
-    background-image: 
+    background-image:
         radial-gradient(var(--neon-blue) 1px, transparent 1px),
         radial-gradient(var(--neon-purple) 1px, transparent 1px);
     background-size: 50px 50px;
@@ -64,7 +61,7 @@ body {
     z-index: 10;
     width: 100%;
     height: 100%;
-    max-width: 500px; /* Tylko na PC */
+    max-width: 500px;
     background: var(--glass-bg);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -76,7 +73,6 @@ body {
     overflow: hidden;
 }
 
-/* Zachowujemy design okienkowy pod szerokie ekrany PC/Tablety */
 @media (min-width: 500px) {
     #app {
         width: 90%;
@@ -92,7 +88,7 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 20px 15px; /* Minimalny pad na wąskie ekrany */
+    padding: 20px 15px;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.4s ease-in-out, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -104,7 +100,7 @@ body {
 
 .screen.active {
     opacity: 1;
-    pointer-events: auto; /* Zmiana z 'all' - specyficzne dla SVG, tu musi być auto dla poprawnego działania dotyku! */
+    pointer-events: auto;
     transform: scale(1);
     position: relative;
 }
@@ -115,9 +111,9 @@ body {
 
 .scrollable {
     overflow-y: auto;
-    overscroll-behavior-y: contain; /* Scroll chaining fix na mobile */
+    overscroll-behavior-y: contain;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 25px; /* Dodatkowy margines dolny dla wygody kciuka */
+    padding-bottom: 25px;
 }
 .scrollable::-webkit-scrollbar {
     width: 5px;
@@ -130,21 +126,21 @@ body {
     border-radius: 5px;
 }
 
-/* Fix dla Inputów i Guzików (iOS/Android touch issues) */
 input, textarea {
     user-select: auto;
     -webkit-user-select: auto;
     pointer-events: auto;
+    /* POPRAWKA: font 16px zapobiega auto-zoomowi na iPhone */
+    font-size: 16px !important;
 }
 
 button, .action-btn, .neon-button, .sys-btn, .cable-btn, .gate-btn, .color-node, .reaction-btn, .fingerprint-btn {
-    touch-action: manipulation; /* Blokada przybliżania przy double-tap na iOS, co przyspiesza klik */
+    touch-action: manipulation;
 }
 
-/* Typography & Titles */
 h1 {
     font-family: var(--font-heading);
-    font-size: clamp(2.3rem, 12vw, 3rem); /* Automatyczne skalowanie szerokości tekstu */
+    font-size: clamp(2.3rem, 12vw, 3rem);
     text-align: center;
     color: var(--neon-cyan);
     text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-blue);
@@ -169,7 +165,6 @@ h2.subtitle {
     color: rgba(255, 255, 255, 0.8);
 }
 
-/* Glitch Effect */
 .glitch {
     position: relative;
 }
@@ -181,6 +176,8 @@ h2.subtitle {
     width: 100%;
     height: 100%;
     background: transparent;
+    /* POPRAWKA: pointer-events none zapobiega zasłanianiu przycisków pod spodem */
+    pointer-events: none;
 }
 .glitch::before {
     left: 2px;
@@ -212,7 +209,6 @@ h2.subtitle {
     100% { clip: rect(90px, 9999px, 40px, 0); }
 }
 
-/* Buttons */
 .neon-button {
     font-family: var(--font-heading);
     font-size: 1.2rem;
@@ -254,7 +250,6 @@ h2.subtitle {
     box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
 }
 
-/* Level Headers */
 .level-header {
     margin-bottom: 20px;
     text-align: center;
@@ -299,7 +294,6 @@ h2.subtitle {
 .status-msg.error { color: var(--neon-red); text-shadow: 0 0 5px var(--neon-red); }
 .status-msg.success { color: var(--neon-green); text-shadow: 0 0 5px var(--neon-green); }
 
-/* --- Game UI Common --- */
 .riddle-container {
     background: rgba(0, 0, 0, 0.4);
     padding: 15px;
@@ -309,13 +303,12 @@ h2.subtitle {
 }
 
 .text-list {
-    margin-left: 15px; 
-    color: #ccc; 
-    line-height: 1.5; 
+    margin-left: 15px;
+    color: #ccc;
+    line-height: 1.5;
     font-size: 0.9rem;
 }
 
-/* L1: Lights Out */
 #lights-out-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -341,7 +334,6 @@ h2.subtitle {
     box-shadow: 0 0 15px var(--neon-cyan), inset 0 0 15px var(--neon-cyan);
 }
 
-/* L2, L5: Code Lock */
 .hints-container {
     background: rgba(0, 0, 0, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -394,7 +386,6 @@ h2.subtitle {
     margin: 0;
 }
 
-/* L3: Sliders */
 .slider-group {
     display: flex;
     flex-direction: column;
@@ -430,7 +421,6 @@ h2.subtitle {
     box-shadow: 0 0 10px var(--neon-cyan);
 }
 
-/* L4: Colors */
 .color-grid {
     display: flex;
     justify-content: space-around;
@@ -473,7 +463,6 @@ h2.subtitle {
     box-shadow: 0 0 15px yellow;
 }
 
-/* L6: Cable Defusal */
 .cable-grid {
     display: flex;
     flex-direction: column;
@@ -499,7 +488,6 @@ h2.subtitle {
     text-decoration: line-through;
 }
 
-/* L7: Radars */
 .coord-inputs {
     display: flex;
     justify-content: center;
@@ -530,7 +518,6 @@ h2.subtitle {
     outline: none;
 }
 
-/* L8: Fingerprint Hold */
 .fingerprint-btn {
     width: 100px;
     height: 100px;
@@ -553,7 +540,6 @@ h2.subtitle {
     font-size: 3rem;
 }
 
-/* L9: Logic Gates */
 .gates-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -575,18 +561,17 @@ h2.subtitle {
     font-weight: bold;
     transition: all 0.3s;
 }
-.gate-btn[data-state="0"] { /* PION */
+.gate-btn[data-state="0"] {
     color: var(--neon-blue);
     border-color: var(--neon-blue);
     box-shadow: inset 0 0 10px var(--neon-blue);
 }
-.gate-btn[data-state="1"] { /* POZIOM */
+.gate-btn[data-state="1"] {
     color: var(--neon-green);
     border-color: var(--neon-green);
     box-shadow: inset 0 0 10px var(--neon-green);
 }
 
-/* L10: Final Answer */
 .final-input-container {
     display: flex;
     justify-content: center;
@@ -613,7 +598,6 @@ h2.subtitle {
     box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
 }
 
-/* L11: Reaction Button */
 .reaction-btn {
     width: 120px;
     height: 120px;
@@ -640,7 +624,6 @@ h2.subtitle {
     filter: grayscale(1);
 }
 
-/* --- Victory Screen & Leaderboard --- */
 .success-glow {
     color: var(--neon-green);
     text-shadow: 0 0 15px var(--neon-green), 0 0 30px var(--neon-green);
