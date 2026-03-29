@@ -24,6 +24,13 @@ public class PlayerController {
     public Player updateLevel(@PathVariable String id, @PathVariable int level) {
         Player p = repository.findById(id).orElse(null);
         if (p != null && !p.isCompleted()) {
+            long now = System.currentTimeMillis();
+            long timeTaken = now - p.getLastLevelStartTime();
+            int previousLevel = p.getCurrentLevel();
+            if (previousLevel > 0) {
+                p.getLevelTimes().put(previousLevel, timeTaken);
+            }
+            p.setLastLevelStartTime(now);
             p.setCurrentLevel(level);
             return repository.save(p);
         }
@@ -34,10 +41,17 @@ public class PlayerController {
     public Player finish(@PathVariable String id) {
         Player p = repository.findById(id).orElse(null);
         if (p != null && !p.isCompleted()) {
+            long now = System.currentTimeMillis();
+            long timeTaken = now - p.getLastLevelStartTime();
+            int previousLevel = p.getCurrentLevel();
+            if (previousLevel > 0) {
+                p.getLevelTimes().put(previousLevel, timeTaken);
+            }
+            
             p.setCompleted(true);
-            p.setEndTime(System.currentTimeMillis());
-            p.setTotalTimeMs(p.getEndTime() - p.getStartTime());
-            p.setCurrentLevel(12); // Above 11
+            p.setEndTime(now);
+            p.setTotalTimeMs(now - p.getStartTime());
+            p.setCurrentLevel(12); // Powyżej 11 oznacza wygrana
             return repository.save(p);
         }
         return p;
@@ -51,5 +65,12 @@ public class PlayerController {
     @GetMapping("/leaderboard")
     public List<Player> getLeaderboard() {
         return repository.findByCompletedTrueOrderByTotalTimeMsAsc();
+    }
+
+    @DeleteMapping("/{id}")
+    public void deletePlayer(@PathVariable String id) {
+        if(repository.existsById(id)) {
+            repository.deleteById(id);
+        }
     }
 }

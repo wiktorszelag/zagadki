@@ -40,8 +40,23 @@
 </head>
 <body>
     <h1>System Monitorowania Protokółów Zdalnych</h1>
-    <div class="stat-box">Aktywni / Ukończeni Użytkownicy: <span id="player-count">0</span></div>
-    
+    <div class="stat-box">Ostatnie odświeżenie: <span id="sync-time"></span> | Aktywni/Wszyscy: <span id="player-count">0</span></div>
+
+    <h2 style="color:var(--neon-green);text-align:center;">PODSUMOWANIE MIEJSC (UKOŃCZENI)</h2>
+    <table style="width:70%; margin:0 auto 40px;">
+        <thead>
+            <tr>
+                <th>Pozycja</th>
+                <th>Nick (ID)</th>
+                <th>Całkowity Czas Gry</th>
+            </tr>
+        </thead>
+        <tbody id="leaderboard-tbody">
+            <tr><td colspan="3">Brak sfinalizowanych graczy</td></tr>
+        </tbody>
+    </table>
+
+    <h2 style="color:var(--neon-cyan);text-align:center;">MONITOROWANIE NA ŻYWO (WSZYSCY INŻYNIEROWIE)</h2>
     <table>
         <thead>
             <tr>
@@ -49,10 +64,12 @@
                 <th>Aktualny Poziom</th>
                 <th>Status gry</th>
                 <th>Czas Całkowity</th>
+                <th>Logi Poziomów (w sek)</th>
+                <th>Akcja</th>
             </tr>
         </thead>
         <tbody id="admin-tbody">
-            <tr><td colspan="4">Oczekiwanie na graczy...</td></tr>
+            <tr><td colspan="6">Oczekiwanie na graczy...</td></tr>
         </tbody>
     </table>
 
@@ -63,13 +80,45 @@
             s = s % 60;
             return m + "m " + (s < 10 ? "0" : "") + s + "s";
         }
+        
+        async function deletePlayer(id) {
+            if (confirm('Czy na pewno chcesz skasować tego użytkownika? \n\nDane bezpowrotnie przepadną.')) {
+                await fetch('/api/players/' + id, {method: 'DELETE'});
+                fetchPlayers();
+            }
+        }
 
         async function fetchPlayers() {
             try {
-                const res = await fetch('/api/players');
-                const players = await res.json();
+                // Konkurencyjne pobieranie list
+                const [resPlayers, resLb] = await Promise.all([
+                    fetch('/api/players'),
+                    fetch('/api/players/leaderboard')
+                ]);
+                const players = await resPlayers.json();
+                const leaderboards = await resLb.json();
+                
+                document.getElementById('sync-time').innerText = new Date().toLocaleTimeString();
                 document.getElementById('player-count').innerText = players.length;
                 
+                // Tabela 1: Leaderboards
+                const tbLb = document.getElementById('leaderboard-tbody');
+                if (leaderboards.length === 0) {
+                    tbLb.innerHTML = '<tr><td colspan="3">Brak sfinalizowanych graczy</td></tr>';
+                } else {
+                    tbLb.innerHTML = '';
+                    leaderboards.forEach((p, i) => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td style="color:#0f0;font-weight:bold;">#${i + 1}</td>
+                            <td>${p.nickname} <span style="font-size:10px;color:#555;">(${p.id.split('-')[0]})</span></td>
+                            <td style="color:#0ff;font-weight:bold;">${formatTime(p.totalTimeMs)}</td>
+                        `;
+                        tbLb.appendChild(tr);
+                    });
+                }
+                
+                // Tabela 2: Live
                 const tbody = document.getElementById('admin-tbody');
                 tbody.innerHTML = '';
                 
@@ -77,11 +126,22 @@
                     const tr = document.createElement('tr');
                     const timeMs = p.completed ? p.totalTimeMs : (Date.now() - p.startTime);
                     
+                    let timeLogs = '';
+                    if (p.levelTimes) {
+                        const levels = Object.keys(p.levelTimes).sort((a,b) => a-b);
+                        timeLogs = levels.map(lvl => {
+                            let s = Math.floor(p.levelTimes[lvl] / 1000);
+                            return `<span style="display:inline-block; background:#000; padding:2px 5px; margin:2px; border-radius:3px; border:1px solid #444;">L${lvl}: <span style="color:#0ff;">${s}s</span></span>`;
+                        }).join(' ');
+                    }
+                    
                     tr.innerHTML = `
                         <td><strong>${p.nickname}</strong> <span style="font-size:10px;color:#555;">(${p.id.split('-')[0]})</span></td>
                         <td style="font-weight:bold;">${p.completed ? 'FINAŁ' : 'POZIOM ' + p.currentLevel}</td>
                         <td class="${p.completed ? 'completed' : 'playing'}">${p.completed ? 'Zakończono' : 'Hakowanie...'}</td>
                         <td style="color:#0ff;">${formatTime(timeMs)}</td>
+                        <td style="font-size:0.8rem;text-align:left;max-width:300px;">${timeLogs || '- Brak danych -'}</td>
+                        <td><button onclick="deletePlayer('${p.id}')" style="background:darkred;color:#fff;border:none;padding:5px 10px;cursor:pointer;">USUŃ</button></td>
                     `;
                     tbody.appendChild(tr);
                 });

@@ -15,11 +15,15 @@
 
 <div id="app" class="glass-panel">
     <div id="start-screen" class="screen active scrollable">
-        <h1 class="glitch" data-text="ENIGMA">ENIGMA</h1>
-        <h2 class="subtitle">PROTOCOL</h2>
-        <p class="description">Test logiki i dedykacji.<br>Czas ucieka od pierwszego kliknięcia.</p>
-        <input type="text" id="player-nick" class="player-nick-input" placeholder="WPISZ SWÓJ NICK" autocomplete="off">
-        <button id="start-btn" class="neon-button">ROZPOCZNIJ HAKOWANIE</button>
+        <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
+            <h1 class="glitch" data-text="ENIGMA" style="margin-top:0;">ENIGMA</h1>
+            <h2 class="subtitle">PROTOCOL</h2>
+            <p class="description">Test logiki i dedykacji.<br>Czas ucieka od pierwszego kliknięcia.</p>
+            <div style="text-align: center;">
+                <input type="text" id="player-nick" class="player-nick-input" placeholder="WPISZ SWÓJ NICK" autocomplete="off" style="margin-bottom: 20px;">
+            </div>
+        </div>
+        <button id="start-btn" class="neon-button" style="margin-top: auto;">ROZPOCZNIJ HAKOWANIE</button>
     </div>
 
     <div id="level-1" class="screen hidden scrollable">
