@@ -28,6 +28,9 @@ public class Player {
     private Boolean completed = false;
     private Long totalTimeMs = 0L;
     
+    private Boolean timeStopped = false;
+    private Long timeStoppedAt = 0L;
+    
     private Long lastLevelStartTime = 0L;
     
     @ElementCollection(fetch = FetchType.EAGER)
@@ -68,4 +71,8 @@ public class Player {
     public void setLastLevelStartTime(Long lastLevelStartTime) { this.lastLevelStartTime = lastLevelStartTime; }
     public Map<Integer, Long> getLevelTimes() { return levelTimes; }
     public void setLevelTimes(Map<Integer, Long> levelTimes) { this.levelTimes = levelTimes; }
+    public Boolean getTimeStopped() { return timeStopped != null ? timeStopped : false; }
+    public void setTimeStopped(Boolean timeStopped) { this.timeStopped = timeStopped; }
+    public long getTimeStoppedAt() { return timeStoppedAt != null ? timeStoppedAt : 0L; }
+    public void setTimeStoppedAt(Long timeStoppedAt) { this.timeStoppedAt = timeStoppedAt; }
 }

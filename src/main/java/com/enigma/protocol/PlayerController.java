@@ -25,12 +25,13 @@ public class PlayerController {
         Player p = repository.findById(id).orElse(null);
         if (p != null && !p.getCompleted()) {
             long now = System.currentTimeMillis();
-            long timeTaken = now - p.getLastLevelStartTime();
+            long actualNow = p.getTimeStopped() ? p.getTimeStoppedAt() : now;
+            long timeTaken = actualNow - p.getLastLevelStartTime();
             int previousLevel = p.getCurrentLevel();
             if (previousLevel > 0) {
                 p.getLevelTimes().put(previousLevel, timeTaken);
             }
-            p.setLastLevelStartTime(now);
+            p.setLastLevelStartTime(actualNow);
             p.setCurrentLevel(level);
             return repository.save(p);
         }
@@ -42,7 +43,8 @@ public class PlayerController {
         Player p = repository.findById(id).orElse(null);
         if (p != null && !p.getCompleted()) {
             long now = System.currentTimeMillis();
-            long timeTaken = now - p.getLastLevelStartTime();
+            long actualNow = p.getTimeStopped() ? p.getTimeStoppedAt() : now;
+            long timeTaken = actualNow - p.getLastLevelStartTime();
             int previousLevel = p.getCurrentLevel();
             if (previousLevel > 0) {
                 p.getLevelTimes().put(previousLevel, timeTaken);
@@ -50,9 +52,84 @@ public class PlayerController {
             
             p.setCompleted(true);
             p.setEndTime(now);
-            p.setTotalTimeMs(now - p.getStartTime());
+            p.setTotalTimeMs(actualNow - p.getStartTime());
             p.setCurrentLevel(12); // Powyżej 11 oznacza wygrana
             return repository.save(p);
+        }
+        return p;
+    }
+
+    @PutMapping("/{id}/time/stop")
+    public Player stopTime(@PathVariable String id) {
+        Player p = repository.findById(id).orElse(null);
+        if (p != null && !p.getCompleted() && !p.getTimeStopped()) {
+            p.setTimeStopped(true);
+            p.setTimeStoppedAt(System.currentTimeMillis());
+            return repository.save(p);
+        }
+        return p;
+    }
+
+    @PutMapping("/{id}/time/resume")
+    public Player resumeTime(@PathVariable String id) {
+        Player p = repository.findById(id).orElse(null);
+        if (p != null && !p.getCompleted() && p.getTimeStopped()) {
+            long now = System.currentTimeMillis();
+            long pausedDuration = now - p.getTimeStoppedAt();
+            p.setStartTime(p.getStartTime() + pausedDuration);
+            p.setLastLevelStartTime(p.getLastLevelStartTime() + pausedDuration);
+            p.setTimeStopped(false);
+            p.setTimeStoppedAt(0L);
+            return repository.save(p);
+        }
+        return p;
+    }
+
+    @PutMapping("/{id}/time/set")
+    public Player setTime(@PathVariable String id, @RequestBody Map<String, Long> body) {
+        Player p = repository.findById(id).orElse(null);
+        if (p != null && !p.getCompleted()) {
+            Long newTimeMs = body.get("timeMs");
+            if (newTimeMs != null) {
+                long now = System.currentTimeMillis();
+                if (p.getTimeStopped()) {
+                     p.setStartTime(p.getTimeStoppedAt() - newTimeMs);
+                } else {
+                     long diff = (now - p.getStartTime()) - newTimeMs;
+                     p.setStartTime(p.getStartTime() + diff);
+                     p.setLastLevelStartTime(p.getLastLevelStartTime() + diff);
+                }
+                return repository.save(p);
+            }
+        }
+        return p;
+    }
+
+    @PutMapping("/{id}/level-time/{level}")
+    public Player setLevelTime(@PathVariable String id, @PathVariable int level, @RequestBody Map<String, Long> body) {
+        Player p = repository.findById(id).orElse(null);
+        if (p != null) {
+            Long newTimeMs = body.get("timeMs");
+            if (newTimeMs != null) {
+                if (p.getLevelTimes().containsKey(level)) {
+                    Long oldTimeMs = p.getLevelTimes().get(level);
+                    long diff = newTimeMs - oldTimeMs;
+                    p.getLevelTimes().put(level, newTimeMs);
+                    p.setStartTime(p.getStartTime() - diff);
+                    if (p.getCompleted()) {
+                        p.setTotalTimeMs(p.getTotalTimeMs() + diff);
+                    }
+                    return repository.save(p);
+                } else if (!p.getCompleted() && p.getCurrentLevel() == level) {
+                    long now = System.currentTimeMillis();
+                    long actualNow = p.getTimeStopped() ? p.getTimeStoppedAt() : now;
+                    long oldTimeMs = actualNow - p.getLastLevelStartTime();
+                    long diff = newTimeMs - oldTimeMs;
+                    p.setLastLevelStartTime(p.getLastLevelStartTime() - diff);
+                    p.setStartTime(p.getStartTime() - diff);
+                    return repository.save(p);
+                }
+            }
         }
         return p;
     }
