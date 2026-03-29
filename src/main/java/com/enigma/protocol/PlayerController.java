@@ -23,7 +23,7 @@ public class PlayerController {
     @PutMapping("/{id}/level/{level}")
     public Player updateLevel(@PathVariable String id, @PathVariable int level) {
         Player p = repository.findById(id).orElse(null);
-        if (p != null && !p.isCompleted()) {
+        if (p != null && !p.getCompleted()) {
             long now = System.currentTimeMillis();
             long timeTaken = now - p.getLastLevelStartTime();
             int previousLevel = p.getCurrentLevel();
@@ -40,7 +40,7 @@ public class PlayerController {
     @PutMapping("/{id}/finish")
     public Player finish(@PathVariable String id) {
         Player p = repository.findById(id).orElse(null);
-        if (p != null && !p.isCompleted()) {
+        if (p != null && !p.getCompleted()) {
             long now = System.currentTimeMillis();
             long timeTaken = now - p.getLastLevelStartTime();
             int previousLevel = p.getCurrentLevel();

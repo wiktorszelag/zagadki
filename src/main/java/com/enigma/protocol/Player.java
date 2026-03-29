@@ -60,7 +60,7 @@ public class Player {
     public void setStartTime(Long startTime) { this.startTime = startTime; }
     public long getEndTime() { return endTime != null ? endTime : 0L; }
     public void setEndTime(Long endTime) { this.endTime = endTime; }
-    public boolean isCompleted() { return completed != null ? completed : false; }
+    public Boolean getCompleted() { return completed != null ? completed : false; }
     public void setCompleted(Boolean completed) { this.completed = completed; }
     public long getTotalTimeMs() { return totalTimeMs != null ? totalTimeMs : 0L; }
     public void setTotalTimeMs(Long totalTimeMs) { this.totalTimeMs = totalTimeMs; }
