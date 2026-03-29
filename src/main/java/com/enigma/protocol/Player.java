@@ -45,7 +45,7 @@ public class Player {
         this.startTime = System.currentTimeMillis();
         this.lastLevelStartTime = this.startTime;
         this.completed = false;
-        this.totalTimeMs = 0;
+        this.totalTimeMs = 0L;
     }
 
     // Getters and Setters
