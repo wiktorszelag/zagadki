@@ -23,12 +23,12 @@ public class Player {
     
     private String nickname;
     private int currentLevel;
-    private Long startTime;
-    private Long endTime;
-    private Boolean completed;
-    private Long totalTimeMs;
+    private Long startTime = 0L;
+    private Long endTime = 0L;
+    private Boolean completed = false;
+    private Long totalTimeMs = 0L;
     
-    private Long lastLevelStartTime;
+    private Long lastLevelStartTime = 0L;
     
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "player_level_times", joinColumns = @JoinColumn(name = "player_id"))
@@ -46,6 +46,7 @@ public class Player {
         this.lastLevelStartTime = this.startTime;
         this.completed = false;
         this.totalTimeMs = 0L;
+        this.endTime = 0L;
     }
 
     // Getters and Setters
