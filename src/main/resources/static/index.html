@@ -111,6 +111,28 @@
         </div>
     </div>
 
+    <div id="level-8" class="screen hidden scrollable">
+        <div class="level-header">
+            <h2 class="neon-text">POZIOM 8: KALIBRACJA PIERŚCIENI</h2>
+            <p class="description">Ustaw wszystkie niebieskie diody wskazujące nadrzędną pozycję bazową (GÓRA). Przekręcanie tarcz manipuluje sąsiednimi pierścieniami za pomocą zębatki.</p>
+        </div>
+        
+        <div class="rings-container">
+            <div class="ring outer-ring" id="ring-o"><div class="ring-node"></div></div>
+            <div class="ring middle-ring" id="ring-m"><div class="ring-node"></div></div>
+            <div class="ring inner-ring" id="ring-i"><div class="ring-node"></div></div>
+        </div>
+
+        <div style="display:flex; justify-content:space-around; margin: 20px 0 30px;">
+            <button class="sys-btn" id="btn-ring-o" style="padding: 10px 15px; font-size: 0.9rem;">ZEWNĘTRZNY</button>
+            <button class="sys-btn" id="btn-ring-m" style="padding: 10px 15px; font-size: 0.9rem;">ŚRODKOWY</button>
+            <button class="sys-btn" id="btn-ring-i" style="padding: 10px 15px; font-size: 0.9rem;">WEWNĘTRZNY</button>
+        </div>
+        
+        <p id="l8-status" class="status-msg">System niezsynchronizowany</p>
+        <button id="verify-l8-btn" class="action-btn">ZATWIERDŹ OBWÓD</button>
+    </div>
+
     <div id="level-5" class="screen hidden scrollable">
         <div class="level-header">
             <span class="level-badge">POZIOM 5</span>

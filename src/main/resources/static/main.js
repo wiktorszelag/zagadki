@@ -291,50 +291,49 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- Level 8: Fingerprint Hold (3.0s, +/- 0.5s tolerance) ---
-    let l8Timer = null;
-    let l8StartTime = 0;
-    const l8Btn = document.getElementById('l8-fingerprint');
-    
+    // --- Level 8: Rings Calibration ---
+    let rotO = 90, rotM = 180, rotI = 270;
+
+    const updateRings = () => {
+        const ringO = document.getElementById('ring-o');
+        const ringM = document.getElementById('ring-m');
+        const ringI = document.getElementById('ring-i');
+        if(ringO) ringO.style.transform = `rotate(${rotO}deg)`;
+        if(ringM) ringM.style.transform = `rotate(${rotM}deg)`;
+        if(ringI) ringI.style.transform = `rotate(${rotI}deg)`;
+    };
+
     const initLevel8 = () => {
-        l8Btn.classList.remove('holding');
-        document.getElementById('l8-status').textContent = 'Skaner oczekuje...';
+        rotO = 90; rotM = 180; rotI = 270;
+        updateRings();
+        document.getElementById('l8-status').textContent = 'System niezsynchronizowany';
     };
 
-    const startHold = (e) => {
-        e.preventDefault(); // Prevent text selection/scrolling
-        l8Btn.classList.add('holding');
-        l8StartTime = Date.now();
-        document.getElementById('l8-status').textContent = 'Skanowanie... Nie puszczaj.';
-    };
+    document.getElementById('btn-ring-o').addEventListener('click', () => {
+        rotO = (rotO + 90) % 360;
+        rotM = (rotM - 90 + 360) % 360;
+        updateRings();
+    });
+    
+    document.getElementById('btn-ring-m').addEventListener('click', () => {
+        rotM = (rotM + 90) % 360;
+        rotI = (rotI + 90) % 360;
+        updateRings();
+    });
+    
+    document.getElementById('btn-ring-i').addEventListener('click', () => {
+        rotI = (rotI + 90) % 360;
+        rotO = (rotO + 180) % 360;
+        updateRings();
+    });
 
-    const endHold = (e) => {
-        e.preventDefault();
-        l8Btn.classList.remove('holding');
-        if (l8StartTime === 0) return;
-        
-        const diff = Date.now() - l8StartTime;
-        l8StartTime = 0;
-        
-        // 3 seconds target (3000ms), tolerance: 2500 - 3500ms
-        if (diff >= 2500 && diff <= 3500) {
+    document.getElementById('verify-l8-btn').addEventListener('click', () => {
+        if (rotO === 0 && rotM === 0 && rotI === 0) {
             triggerSuccess('l8-status');
         } else {
-            let msg = diff < 2500 ? 'Zbyt krótko. ' : 'Zbyt długo. ';
-            msg += `Zmierzono ${(diff/1000).toFixed(2)}s`;
-            triggerError('l8-status', 'Błąd: ' + msg);
-            setTimeout(() => {
-                if(document.getElementById('l8-status') && document.getElementById('l8-status').classList.contains('error')) {
-                    document.getElementById('l8-status').textContent = 'Skaner oczekuje...';
-                }
-            }, 2000);
+            triggerError('l8-status', 'Brak pełnej synchronizacji wektorów');
         }
-    };
-
-    l8Btn.addEventListener('mousedown', startHold);
-    window.addEventListener('mouseup', endHold);
-    l8Btn.addEventListener('touchstart', startHold, {passive: false});
-    window.addEventListener('touchend', endHold, {passive: false});
+    });
 
     // --- Level 9: Logic Gates (F1: |, F2: |, F3: -, F4: -) ---
     // states: "none", "0" (|), "1" (-)

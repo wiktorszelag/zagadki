@@ -231,6 +231,39 @@ h2.subtitle {
     box-shadow: 0 0 5px var(--neon-cyan);
 }
 
+.rings-container {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    margin: 30px auto 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.ring {
+    position: absolute;
+    border: 3px dashed var(--neon-cyan);
+    border-radius: 50%;
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 0 10px rgba(0,255,255,0.2) inset;
+    pointer-events: none;
+}
+.outer-ring { width: 220px; height: 220px; z-index: 1; }
+.middle-ring { width: 150px; height: 150px; z-index: 2; border-color: var(--neon-purple); box-shadow: 0 0 10px rgba(181,0,255,0.2) inset; border-style: dotted; }
+.inner-ring { width: 80px; height: 80px; z-index: 3; border-color: var(--neon-blue); border-style: solid; }
+
+.ring-node {
+    width: 16px;
+    height: 16px;
+    background: var(--neon-cyan);
+    border-radius: 50%;
+    position: absolute;
+    top: -9px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 15px var(--neon-cyan), 0 0 5px #fff;
+}
+
 .action-btn {
     font-family: var(--font-heading);
     background: transparent;

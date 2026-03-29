@@ -3,11 +3,13 @@ package com.enigma.protocol;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.Column;
+import jakarta.persistence.FetchType;
 import java.util.UUID;
 import java.util.Map;
 import java.util.HashMap;
@@ -28,7 +30,7 @@ public class Player {
     
     private long lastLevelStartTime;
     
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "player_level_times", joinColumns = @JoinColumn(name = "player_id"))
     @MapKeyColumn(name = "level")
     @Column(name = "time_ms")
