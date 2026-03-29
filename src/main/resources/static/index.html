@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a14">
+    <title>Enigma Protocol</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="particles-bg"></div>
+    
+    <div id="app" class="glass-panel">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <h1 class="glitch" data-text="ENIGMA">ENIGMA</h1>
+            <h2 class="subtitle">PROTOCOL</h2>
+            <p class="description">Test logiki i dedykacji.<br>Czas ucieka od pierwszego kliknięcia.</p>
+            <input type="text" id="player-nick" class="player-nick-input" placeholder="WPISZ SWÓJ NICK" autocomplete="off">
+            <button id="start-btn" class="neon-button">ROZPOCZNIJ HAKOWANIE</button>
+        </div>
+
+        <!-- Level 1: Lights Out -->
+        <div id="level-1" class="screen hidden scrollable">
+            <div class="level-header">
+                <span class="level-badge">POZIOM 1</span>
+                <h3>Przełamanie Firewalla</h3>
+                <p>Kliknięcie węzła przełącza jego stan oraz stan jego sąsiadów. Aktywuj wszystkie węzły.</p>
+            </div>
+            <div class="grid-container" id="lights-out-grid"></div>
+            <div class="level-footer">
+                <span class="status-msg error" id="l1-status">System Zablokowany</span>
+            </div>
+        </div>
+
+        <!-- Level 2: Deductive Code -->
+        <div id="level-2" class="screen hidden scrollable">
+            <div class="level-header">
+                <span class="level-badge">POZIOM 2</span>
+                <h3>Skrytka Pamięci</h3>
+                <p>Odszyfruj 3-cyfrowy kod, opierając się na wyciągniętych logach autoryzacji:</p>
+            </div>
+            <div class="hints-container">
+                <div class="hint"><strong>6 8 2</strong> - Jedna cyfra poprawna, ale na złym miejscu.</div>
+                <div class="hint"><strong>6 1 4</strong> - Żadna cyfra nie jest poprawna.</div>
+                <div class="hint"><strong>0 7 9</strong> - Żadna cyfra nie jest poprawna.</div>
+                <div class="hint"><strong>8 5 3</strong> - Trzy poprawne: jedna na dobrym, dwie na złym miejscu.</div>
+                <div class="hint"><strong>7 3 8</strong> - Dwie poprawne: jedna na dobrym, jedna na złym miejscu.</div>
+            </div>
+            <div class="code-inputs">
+                <input type="number" class="code-digit l2-digit" min="0" max="9" inputmode="numeric">
+                <input type="number" class="code-digit l2-digit" min="0" max="9" inputmode="numeric">
+                <input type="number" class="code-digit l2-digit" min="0" max="9" inputmode="numeric">
+            </div>
+            <button id="verify-l2-btn" class="action-btn">WERYFIKUJ KOD</button>
+            <div class="level-footer">
+                <span class="status-msg error" id="l2-status">Czekam na input...</span>
+            </div>
+        </div>
+
+        <!-- Level 3: Power Sliders -->
+        <div id="level-3" class="screen hidden scrollable">
+            <div class="level-header">
+                <span class="level-badge">POZIOM 3</span>
+                <h3>Kalibracja Napięcia</h3>
+                <p>Dostrój 3 generatory za pomocą suwaków (A, B, C) w skali od 0 do 100 zgodnie z regułami:</p>
+            </div>
+            <div class="riddle-container">
+                <ul class="text-list">
+                    <li>Suma energii wszystkich trzech generatorów musi wynosić równe 125.</li>
+                    <li>Generator <b>B</b> musi produkować dokładnie połowę tego, co generator <b>A</b>.</li>
+                    <li>Generator <b>C</b> wydziela o 25 jednostek energii więcej niż generator <b>B</b>.</li>
+                </ul>
+            </div>
+            <div class="slider-group">
+                <label>GEN A: <span id="val-a">0</span></label><input type="range" class="power-slider" id="slider-a" value="0">
+                <label>GEN B: <span id="val-b">0</span></label><input type="range" class="power-slider" id="slider-b" value="0">
+                <label>GEN C: <span id="val-c">0</span></label><input type="range" class="power-slider" id="slider-c" value="0">
+            </div>
+            <button id="verify-l3-btn" class="action-btn">KALIBRUJ</button>
+            <div class="level-footer">
+                <span class="status-msg error" id="l3-status">Asymetria energetyczna</span>
+            </div>
+        </div>
+
+        <!-- Level 4: Color Registers -->
+        <div id="level-4" class="screen hidden scrollable">
+            <div class="level-header">
+                <span class="level-badge">POZIOM 4</span>
+                <h3>Moduły Barwne</h3>
+                <p>Klikaj węzły, aby przypisać im odpowiedni unikalny kolor (Niebieski, Zielony, Czerwony, Żółty).</p>
+            </div>
+            <div class="riddle-container">
+                <ul class="text-list">
+                    <li>Rejestr 1 nie może być Czerwony ani Żółty.</li>
+                    <li>Rejestr 3, rozpatrując nazwy kolorów alfabetycznie, poprzedza Rejestr 4 (np. A jest przed B).</li>
+                    <li>Rejestr 2 ma barwę lasu i wiosennych liści.</li>
+                </ul>
+            </div>
+            <div class="color-grid">
+                <div class="color-node" data-color="grey">R1</div>
+                <div class="color-node" data-color="grey">R2</div>
+                <div class="color-node" data-color="grey">R3</div>
+                <div class="color-node" data-color="grey">R4</div>
+            </div>
+            <button id="verify-l4-btn" class="action-btn">POTWIERDŹ PALETĘ</button>
+            <div class="level-footer">
+                <span class="status-msg error" id="l4-status">Błąd widma światła</span>
+            </div>
+        </div>
+
+        <!-- Level 5: Mathematical Lock v2 -->
+        <div id="level-5" class="screen hidden scrollable">
+            <div class="level-header">
+                <span class="level-badge">POZIOM 5</span>
+                <h3>Dekompresja Hasła</h3>
+                <p>Odgadnij 3 odpowiednie cyfry (0-9):</p>
+            </div>
+            <div class="riddle-container">
+                <ul class="text-list">
+                    <li>Mnożąc drugą cyfrę (B) przez trzecią (C), uzyskasz wynik równy 9.</li>
+                    <li>Pierwsza cyfra (A) jest dokładnie o 3 większa od drugiej cyfry (B).</li>
+                    <li>Suma tych wszystkich trzech cyfr wynosi 14.</li>
+                </ul>
+            </div>
+            <div class="code-inputs">
+                <input type="number" class="code-digit l5-digit" min="0" max="9" inputmode="numeric" placeholder="A">
+                <input type="number" class="code-digit l5-digit" min="0" max="9" inputmode="numeric" placeholder="B">
+                <input type="number" class="code-digit l5-digit" min="0" max="9" inputmode="numeric" placeholder="C">
+            </div>
+            <button id="verify-l5-btn" class="action-btn">ZATWIERDŹ DEKOMPRESJĘ</button>
+            <div class="level-footer">
+                <span class="status-msg error" id="l5-status">Trwa nasłuch na portach...</span>
+            </div>
+        </div>
+
+        <!-- Level 6: Cable Cutting Sequence -->
+        <div id="level-6" class="screen hidden scrollable">
+            <div class="level-header">
+                <span class="level-badge">POZIOM 6</span>
+                <h3>Protokół Tnący</h3>
+                <p>Przetnij wszystkie 4 kable komunikacyjne klikając w nie w precyzyjnej kolejności.</p>
+            </div>
+            <div class="riddle-container">
+                <ul class="text-list">
+                    <li>KABEL C to absolutny priorytet, zawsze tnij go w pierwszej kolejności.</li>
+                    <li>KABEL A musi zostać przecięty zanim tkniesz KABEL B.</li>
+                    <li>Nie spiesz się z KABLEM D, nie może zostać przecięty ani jako pierwszy ani drugi, zostaw go na sam koniec.</li>
+                </ul>
+            </div>
+            <div class="cable-grid" id="cable-grid">
+                <div class="cable-btn" data-cable="A">KABEL A</div>
+                <div class="cable-btn" data-cable="B">KABEL B</div>
+                <div class="cable-btn" data-cable="C">KABEL C</div>
+                <div class="cable-btn" data-cable="D">KABEL D</div>
+            </div>
+            <div class="level-footer">
+                <span class="status-msg error" id="l6-status">Gotowość do przecięcia</span>
+            </div>
+        </div>
+
+        <!-- Level 7: Radar Coordinates -->
+        <div id="level-7" class="screen hidden scrollable">
+            <div class="level-header">
+                <span class="level-badge">POZIOM 7</span>
+                <h3>Skanowanie Radarowe X/Y</h3>
+                <p>Wyznacz punkt uderzenia lasera na matrycy współrzędnych.</p>
+            </div>
+            <div class="riddle-container">
+                <p style="font-size: 0.95rem; color:#bbb;">
+                    Zlokalizuj ukryty węzeł sygnału. Wiesz, że: <br><br>
+                    Jest on zlokalizowany na mapie dokładnie w połowie drogi, w równej linii prostej 
+                    pomiędzy Główną Bazą umiejscowioną na <b>X: 5, Y: 5</b>, a Anteną Przekaźnikową na <b>X: 9, Y: 1</b>.
+                </p>
+            </div>
+            <div class="coord-inputs">
+                <div class="coord-wrap">
+                    <label>X: </label><input type="number" id="coord-x" placeholder="0">
+                </div>
+                <div class="coord-wrap">
+                    <label>Y: </label><input type="number" id="coord-y" placeholder="0">
+                </div>
+            </div>
+            <button id="verify-l7-btn" class="action-btn">ZABLOKUJ CEL</button>
+            <div class="level-footer">
+                <span class="status-msg error" id="l7-status">Współrzędne weryfikowane...</span>
+            </div>
+        </div>
+
+        <!-- Level 8: Fingerprint Hold -->
+        <div id="level-8" class="screen hidden scrollable">
+            <div class="level-header">
+                <span class="level-badge">POZIOM 8</span>
+                <h3>Skaner Biometryczny</h3>
+                <p>Kontrola czułości obwodu odciskowego.</p>
+            </div>
+            <div class="riddle-container" style="text-align: center;">
+                <p style="font-size: 1rem; color:#bbb;">
+                    Zabezpieczenie wymaga idealnie stabilnego wciśnięcia.<br><br>
+                    Naciśnij i przytrzymaj poniższy skaner nieprzerwanie przez dokładnie <b>3 pełne sekundy</b>, po czym natychmiast puść. (Tolerancja to ułamek sekundy błędu).
+                </p>
+            </div>
+            <div class="fingerprint-btn" id="l8-fingerprint">
+                <span class="fingerprint-icon">🎯</span>
+            </div>
+            <div class="level-footer">
+                <span class="status-msg error" id="l8-status">Skaner oczekuje...</span>
+            </div>
+        </div>
+
+        <!-- Level 9: Logic Gates Polarity -->
+        <div id="level-9" class="screen hidden scrollable">
+            <div class="level-header">
+                <span class="level-badge">POZIOM 9</span>
+                <h3>Filtry Optyczne</h3>
+                <p>Obracaj bramki, decydując o orientacji filtrów: PION [ | ] lub POZIOM [ — ].</p>
+            </div>
+            <div class="riddle-container">
+                <ul class="text-list">
+                    <li>Filtr 1 absolutnie musi mieć odwrotne ułożenie względem Filtra 4.</li>
+                    <li>Z przyczyn termicznych, Filtr 2 ma domyślnie blokadę w PIONIE.</li>
+                    <li>Jeśli Filtr 2 jest nałożony w pionie, Filtr 3 automatycznie musi ułożyć się na POZIOMO.</li>
+                    <li>Filtr 4 z racji na kształt obudowy wejdzie tylko horyzontalnie (POZIOMO).</li>
+                </ul>
+            </div>
+            <div class="gates-grid">
+                <div class="gate-btn" data-state="none">F1</div>
+                <div class="gate-btn" data-state="none">F2</div>
+                <div class="gate-btn" data-state="none">F3</div>
+                <div class="gate-btn" data-state="none">F4</div>
+            </div>
+            <button id="verify-l9-btn" class="action-btn">PRZEŚLIJ PROMIEŃ</button>
+            <div class="level-footer">
+                <span class="status-msg error" id="l9-status">Trwa pomiar załamania</span>
+            </div>
+        </div>
+
+        <!-- Level 10: The Riddle -->
+        <div id="level-10" class="screen hidden scrollable">
+            <div class="level-header">
+                <span class="level-badge">POZIOM 10</span>
+                <h3>Ostateczny Klucz Textowy</h3>
+                <p>Rdzeń Mainframe odpowie jedynie na ludzkie słowo.</p>
+            </div>
+            <div class="riddle-container" style="text-align: center; font-size: 1.1rem; padding: 30px 15px;">
+                "Zawsze jest przed Tobą, lecz nikt nigdy nie zdołał go zobaczyć.<br>
+                Zawsze zbliża się szybkimi krokami, lecz przenigdy nie nadchodzi."
+                <br><br><span style="font-size:0.8rem; color:#888;">(Co to za 5-literowe słowo?)</span>
+            </div>
+            <div class="final-input-container">
+                <input type="text" id="l10-answer" placeholder="WPISZ KLUCZ..." autocomplete="off">
+            </div>
+            <button id="verify-l10-btn" class="action-btn">ODKODUJ ZAMEK</button>
+            <div class="level-footer">
+                <span class="status-msg error" id="l10-status">Blokada semantyczna wejścia</span>
+            </div>
+        </div>
+
+        <!-- Level 11: Simon Reactor -->
+        <div id="level-11" class="screen hidden scrollable">
+            <div class="level-header">
+                <span class="level-badge">POZIOM 11 - FINAŁ ZABAWO</span>
+                <h3>Reaktor Kognitywny</h3>
+                <p>Wykonuj polecenia maszyny bezbłędnie przez 7 krótkich rund. Uważaj na pułapki, reaguj w ułamku sekund!</p>
+            </div>
+            <div class="riddle-container" style="font-size: 0.85rem; padding: 10px;">
+                <ul style="margin-left: 15px; margin-top: 5px; color: #acc; line-height: 1.5;">
+                    <li><b>Licznik ukryty</b> – wszystkie wciśnięcia licz samodzielnie.</li>
+                    <li>Napis ZIELONY to komenda standardowa (wykonaj wprost).</li>
+                    <li>Napis <b style="color:yellow;">ŻÓŁTY</b> oznacza: <b>rób ODWROTNIE!</b> (Jeśli masz klikać -> zignoruj i nie klikaj. Jeśli zabraniają klikać -> kliknij dokładnie 1 raz).</li>
+                    <li>Napis <b>"MODYFIKUJ NASTĘPNĄ RUNDĘ"</b> sprawia, że do kolejnej z rund dodawana jest automatyczna odwrotność. Jeśli dwie odwrotności spotkają się w jednej rundzie, dają plus (działaj wprost).</li>
+                </ul>
+            </div>
+            <div style="text-align: center;">
+                <h2 id="l11-instruction" style="color: var(--neon-cyan); margin-bottom: 5px;">GOTOWY?</h2>
+                <div id="l11-sub" style="font-size: 0.8rem; color: #f0f; margin-bottom: 10px; min-height: 15px; font-weight: bold;"></div>
+                <div style="font-size: 0.9rem; color: #aaa;">RUNDA: <span id="l11-round">0/7</span></div>
+                <div class="progress-bar-container" style="width: 100%; height: 10px; background: #222; margin-top: 15px; margin-bottom: 5px; border-radius: 5px; overflow: hidden;">
+                    <div id="l11-timer-bar" style="width: 100%; height: 100%; background: var(--neon-cyan); transition: width 0.05s linear;"></div>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
+                <button id="l11-action-btn" class="reaction-btn disabled"></button>
+            </div>
+            <button id="start-l11-btn" class="action-btn">INICJUJ ZAPŁON</button>
+            <div class="level-footer">
+                <span class="status-msg error" id="l11-status">Reaktor uśpiony</span>
+            </div>
+        </div>
+
+        <!-- Victory Screen -->
+        <div id="victory-screen" class="screen hidden scrollable">
+            <h1 class="neon-text success-glow" style="font-size: 2.2rem;">ACCESS GRANTED</h1>
+            <p class="description" style="margin-bottom: 15px;">Systemy uległy roztrzaskaniu. Oto twój wynik:</p>
+            
+            <div id="my-result" class="stats">
+                <p>Twój Czas: <span id="my-time-display">--:--</span></p>
+                <p>Ostateczna Pozycja: <span id="my-rank-display" style="font-size:1.5rem;">#--</span></p>
+            </div>
+            
+            <h3 style="text-align:center; color: var(--neon-purple); margin-bottom:10px; font-family: var(--font-heading);">GLOBALNA TABELA WYNIKÓW</h3>
+            <div class="leaderboard-container">
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 15%;">Msc</th>
+                            <th style="width: 55%;">Nick</th>
+                            <th style="width: 30%; text-align: right;">Czas</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-tbody">
+                        <tr><td colspan="3" style="text-align:center;">Ładowanie danych z serwera...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>

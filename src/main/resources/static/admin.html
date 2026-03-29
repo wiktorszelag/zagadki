@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Enigma - Panel Admina</title>
+    <style>
+        body {
+            background-color: #0d0d14;
+            color: #ccc;
+            font-family: monospace;
+            padding: 20px;
+        }
+        h1 {
+            color: #0ff;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: #111;
+        }
+        th, td {
+            border: 1px solid #333;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #222;
+            color: #b500ff;
+        }
+        .completed { color: #0f0; font-weight: bold; }
+        .playing { color: #f90; }
+        .stat-box {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>System Monitorowania Protokółów Zdalnych</h1>
+    <div class="stat-box">Aktywni / Ukończeni Użytkownicy: <span id="player-count">0</span></div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Nick (ID)</th>
+                <th>Aktualny Poziom</th>
+                <th>Status gry</th>
+                <th>Czas Całkowity</th>
+            </tr>
+        </thead>
+        <tbody id="admin-tbody">
+            <tr><td colspan="4">Oczekiwanie na graczy...</td></tr>
+        </tbody>
+    </table>
+
+    <script>
+        function formatTime(ms) {
+            let s = Math.floor(ms / 1000);
+            let m = Math.floor(s / 60);
+            s = s % 60;
+            return m + "m " + (s < 10 ? "0" : "") + s + "s";
+        }
+
+        async function fetchPlayers() {
+            try {
+                const res = await fetch('/api/players');
+                const players = await res.json();
+                document.getElementById('player-count').innerText = players.length;
+                
+                const tbody = document.getElementById('admin-tbody');
+                tbody.innerHTML = '';
+                
+                players.forEach(p => {
+                    const tr = document.createElement('tr');
+                    const timeMs = p.completed ? p.totalTimeMs : (Date.now() - p.startTime);
+                    
+                    tr.innerHTML = `
+                        <td><strong>${p.nickname}</strong> <span style="font-size:10px;color:#555;">(${p.id.split('-')[0]})</span></td>
+                        <td style="font-weight:bold;">${p.completed ? 'FINAŁ' : 'POZIOM ' + p.currentLevel}</td>
+                        <td class="${p.completed ? 'completed' : 'playing'}">${p.completed ? 'Zakończono' : 'Hakowanie...'}</td>
+                        <td style="color:#0ff;">${formatTime(timeMs)}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (e) {
+                console.error("Błąd połączenia z serwerem API.", e);
+            }
+        }
+        
+        setInterval(fetchPlayers, 2000);
+        fetchPlayers();
+    </script>
+</body>
+</html>
