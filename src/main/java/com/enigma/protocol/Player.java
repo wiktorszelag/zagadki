@@ -23,12 +23,12 @@ public class Player {
     
     private String nickname;
     private int currentLevel;
-    private long startTime;
-    private long endTime;
-    private boolean completed;
-    private long totalTimeMs;
+    private Long startTime;
+    private Long endTime;
+    private Boolean completed;
+    private Long totalTimeMs;
     
-    private long lastLevelStartTime;
+    private Long lastLevelStartTime;
     
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "player_level_times", joinColumns = @JoinColumn(name = "player_id"))
@@ -55,16 +55,16 @@ public class Player {
     public void setNickname(String nickname) { this.nickname = nickname; }
     public int getCurrentLevel() { return currentLevel; }
     public void setCurrentLevel(int currentLevel) { this.currentLevel = currentLevel; }
-    public long getStartTime() { return startTime; }
-    public void setStartTime(long startTime) { this.startTime = startTime; }
-    public long getEndTime() { return endTime; }
-    public void setEndTime(long endTime) { this.endTime = endTime; }
-    public boolean isCompleted() { return completed; }
-    public void setCompleted(boolean completed) { this.completed = completed; }
-    public long getTotalTimeMs() { return totalTimeMs; }
-    public void setTotalTimeMs(long totalTimeMs) { this.totalTimeMs = totalTimeMs; }
-    public long getLastLevelStartTime() { return lastLevelStartTime; }
-    public void setLastLevelStartTime(long lastLevelStartTime) { this.lastLevelStartTime = lastLevelStartTime; }
+    public long getStartTime() { return startTime != null ? startTime : 0L; }
+    public void setStartTime(Long startTime) { this.startTime = startTime; }
+    public long getEndTime() { return endTime != null ? endTime : 0L; }
+    public void setEndTime(Long endTime) { this.endTime = endTime; }
+    public boolean isCompleted() { return completed != null ? completed : false; }
+    public void setCompleted(Boolean completed) { this.completed = completed; }
+    public long getTotalTimeMs() { return totalTimeMs != null ? totalTimeMs : 0L; }
+    public void setTotalTimeMs(Long totalTimeMs) { this.totalTimeMs = totalTimeMs; }
+    public long getLastLevelStartTime() { return lastLevelStartTime != null ? lastLevelStartTime : 0L; }
+    public void setLastLevelStartTime(Long lastLevelStartTime) { this.lastLevelStartTime = lastLevelStartTime; }
     public Map<Integer, Long> getLevelTimes() { return levelTimes; }
     public void setLevelTimes(Map<Integer, Long> levelTimes) { this.levelTimes = levelTimes; }
 }
