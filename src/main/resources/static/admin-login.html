@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enigma Protocol — Admin Access</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:    #020a14;
+            --cyan:  #00f5ff;
+            --red:   #ff2a2a;
+            --green: #39ff14;
+            --font:  'Share Tech Mono', monospace;
+        }
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            background: radial-gradient(circle at 30% 30%, #03101e 0%, #000 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font);
+            overflow: hidden;
+        }
+
+        /* Particle canvas */
+        #bg { position:fixed; inset:0; z-index:0; pointer-events:none; }
+
+        .login-box {
+            position: relative;
+            z-index: 1;
+            background: rgba(0,10,30,0.92);
+            border: 1px solid rgba(0,245,255,0.3);
+            border-radius: 14px;
+            padding: 40px 36px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 0 40px rgba(0,245,255,0.1), inset 0 0 20px rgba(0,0,50,0.5);
+            backdrop-filter: blur(16px);
+            animation: fadeUp 0.5s ease;
+        }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+        .shield-icon {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 0 12px var(--cyan));
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--cyan);
+            font-size: 1.4rem;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px var(--cyan);
+            margin-bottom: 6px;
+        }
+        .sub {
+            text-align: center;
+            color: #334466;
+            font-size: 0.72rem;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+        }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label {
+            display: block;
+            font-size: 0.75rem;
+            color: #446688;
+            letter-spacing: 1px;
+            margin-bottom: 7px;
+        }
+        .input-group input {
+            width: 100%;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid rgba(0,245,255,0.2);
+            border-radius: 7px;
+            color: #fff;
+            font-family: var(--font);
+            padding: 13px 14px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            letter-spacing: 2px;
+        }
+        .input-group input:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 12px rgba(0,245,255,0.2);
+        }
+
+        .btn {
+            width: 100%;
+            background: linear-gradient(90deg, rgba(0,245,255,0.1), rgba(0,100,255,0.15));
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            font-family: var(--font);
+            font-size: 1rem;
+            padding: 13px;
+            border-radius: 7px;
+            cursor: pointer;
+            letter-spacing: 2px;
+            transition: all 0.25s;
+            box-shadow: 0 0 12px rgba(0,245,255,0.15);
+        }
+        .btn:hover { background: var(--cyan); color: #000; box-shadow: 0 0 24px var(--cyan); }
+        .btn:active { transform: scale(0.98); }
+
+        .error-msg {
+            background: rgba(255,42,42,0.1);
+            border: 1px solid var(--red);
+            border-radius: 6px;
+            color: var(--red);
+            text-align: center;
+            font-size: 0.8rem;
+            padding: 10px;
+            margin-bottom: 18px;
+            letter-spacing: 1px;
+            display: none;
+        }
+        .error-msg.visible { display: block; }
+
+        .footer-hint {
+            text-align: center;
+            color: #222;
+            font-size: 0.65rem;
+            margin-top: 22px;
+            letter-spacing: 1px;
+        }
+
+        /* Shake animation on error */
+        @keyframes shake {
+            0%,100%{transform:translateX(0)}
+            20%{transform:translateX(-10px)}
+            40%{transform:translateX(10px)}
+            60%{transform:translateX(-6px)}
+            80%{transform:translateX(6px)}
+        }
+        .shake { animation: shake 0.4s ease; }
+    </style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+
+<div class="login-box" id="login-box">
+    <div class="shield-icon">🛡️</div>
+    <h1>ADMIN ACCESS</h1>
+    <p class="sub">AUTORYZACJA WYMAGANA · ENIGMA PROTOCOL</p>
+
+    <!-- Error message (shown when ?error=1) -->
+    <div class="error-msg" id="err-msg">
+        ⛔ ODMOWA DOSTĘPU — NIEPRAWIDŁOWE HASŁO
+    </div>
+
+    <form method="POST" action="/admin-login" id="admin-form">
+        <div class="input-group">
+            <label>HASŁO ADMINISTRACYJNE</label>
+            <input type="password" name="password" id="password-field"
+                   placeholder="••••••••••••••••"
+                   autocomplete="current-password"
+                   autofocus
+                   required>
+        </div>
+        <button type="submit" class="btn">⚡ AUTORYZUJ DOSTĘP</button>
+    </form>
+
+    <p class="footer-hint">ENIGMA PROTOCOL · PANEL ADMINISTRACYJNY · NIEAUTORYZOWANY DOSTĘP JEST REJESTROWANY</p>
+</div>
+
+<script>
+    // Show error if redirected with ?error=1
+    if (new URLSearchParams(location.search).get('error') === '1') {
+        const err = document.getElementById('err-msg');
+        const box = document.getElementById('login-box');
+        err.classList.add('visible');
+        box.classList.add('shake');
+        setTimeout(() => box.classList.remove('shake'), 400);
+        document.getElementById('password-field').value = '';
+        document.getElementById('password-field').focus();
+    }
+
+    // Simple particle background
+    (function() {
+        const c = document.getElementById('bg');
+        const ctx = c.getContext('2d');
+        let w, h, pts = [];
+        function resize() { w = c.width = innerWidth; h = c.height = innerHeight; }
+        window.addEventListener('resize', resize); resize();
+        for (let i = 0; i < 60; i++) pts.push({
+            x: Math.random()*1000, y: Math.random()*1000,
+            vx: (Math.random()-.5)*.4, vy: (Math.random()-.5)*.4
+        });
+        function draw() {
+            ctx.clearRect(0,0,w,h);
+            pts.forEach(p => {
+                p.x += p.vx; p.y += p.vy;
+                if(p.x<0||p.x>w) p.vx*=-1;
+                if(p.y<0||p.y>h) p.vy*=-1;
+                ctx.fillStyle='rgba(0,245,255,0.6)';
+                ctx.beginPath(); ctx.arc(p.x,p.y,1.2,0,Math.PI*2); ctx.fill();
+            });
+            for(let i=0;i<pts.length;i++) for(let j=i+1;j<pts.length;j++) {
+                const d=Math.hypot(pts[i].x-pts[j].x,pts[i].y-pts[j].y);
+                if(d<120){ctx.strokeStyle=`rgba(0,245,255,${(1-d/120)*.3})`;ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.stroke();}
+            }
+            requestAnimationFrame(draw);
+        }
+        draw();
+    })();
+</script>
+</body>
+</html>

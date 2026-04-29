@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#060612">
+    <title>Enigma Protocol V2</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --font-heading: 'Orbitron', sans-serif; }
+        /* ── LEVEL START SCREEN ── */
+        #level-start-screen {
+            background: var(--bg-panel);
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            text-align: center;
+            padding: 30px 24px;
+        }
+        #level-start-screen .ls-badge {
+            font-family: var(--font-heading);
+            font-size: 0.7rem;
+            letter-spacing: 0.25em;
+            color: var(--neon-purple);
+            background: rgba(180,79,255,0.12);
+            border: 1px solid rgba(180,79,255,0.35);
+            padding: 5px 16px;
+            border-radius: 20px;
+        }
+        #level-start-screen .ls-name {
+            font-family: var(--font-heading);
+            font-size: clamp(1.1rem, 5vw, 1.5rem);
+            color: var(--neon-cyan);
+            text-shadow: 0 0 16px rgba(0,245,255,0.5);
+            margin-top: 6px;
+        }
+        #level-start-screen .ls-desc {
+            font-size: 0.95rem;
+            color: #eee;
+            line-height: 1.4;
+            max-width: 90%;
+            margin: 8px 0;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 18px;
+            border-left: 3px solid var(--neon-purple);
+            border-radius: 6px;
+            font-family: var(--font-body);
+        }
+        #ls-start-btn {
+            width: 80%;
+            padding: 14px;
+            background: transparent;
+            border: 2px solid var(--neon-cyan);
+            border-radius: 10px;
+            color: var(--neon-cyan);
+            font-family: var(--font-heading);
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 0 20px rgba(0,245,255,0.15);
+        }
+        #ls-start-btn:hover, #ls-start-btn:active {
+            background: rgba(0,245,255,0.12);
+            box-shadow: 0 0 30px rgba(0,245,255,0.4);
+        }
+    </style>
+    <style>
+        /* ── LEVEL 1: TAP SEQUENCE ── */
+        .level-header p, .level-header h3 { display: none; } /* Hide in-game instructions */
+        .seq-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5%;
+            padding: 10px 0 20px;
+            max-width: 420px;
+            width: 95%;
+            margin: 0 auto;
+        }
+        .seq-btn {
+            aspect-ratio: 1;
+            border-radius: 50%;
+            border: 3px solid rgba(0,245,255,0.3);
+            background: rgba(0,30,60,0.7);
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: rgba(0,245,255,0.6);
+            cursor: pointer;
+            transition: all 0.15s;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .seq-btn.seq-lit {
+            background: rgba(0,200,255,0.35);
+            border-color: #00f5ff;
+            color: #fff;
+            box-shadow: 0 0 22px rgba(0,245,255,0.7), 0 0 8px rgba(0,245,255,0.4) inset;
+            transform: scale(1.06);
+        }
+        .seq-btn.seq-hit {
+            background: rgba(57,255,20,0.3);
+            border-color: #39ff14;
+            color: #39ff14;
+            box-shadow: 0 0 18px rgba(57,255,20,0.5);
+        }
+        .seq-btn.seq-miss {
+            background: rgba(255,34,68,0.3);
+            border-color: #ff2244;
+            color: #ff2244;
+            box-shadow: 0 0 18px rgba(255,34,68,0.5);
+        }
+        .seq-progress {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 8px 0 16px;
+        }
+        .seq-dot {
+            width: 20px; height: 20px;
+            border-radius: 50%;
+            background: rgba(0,245,255,0.2);
+            border: 1.5px solid rgba(0,245,255,0.4);
+            transition: all 0.2s;
+        }
+        .seq-dot.done { background: #00f5ff; box-shadow: 0 0 8px #00f5ff; }
+        .seq-dot.miss { background: var(--neon-red); box-shadow: 0 0 8px var(--neon-red); border-color: var(--neon-red); }
+        .seq-round-info {
+            text-align: center;
+            font-family: var(--font-heading);
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 6px;
+        }
+
+        /* ── LEVEL 3: SHERLOCK — ODD ONE OUT ── */
+        .sherlock-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; padding:8px 0 16px; max-width:340px; margin:0 auto; }
+        .sherlock-cell { aspect-ratio:1; border-radius:14px; border:2px solid rgba(0,245,255,0.18); background:rgba(0,10,40,0.85); display:flex; align-items:center; justify-content:center; font-size:2.2rem; cursor:pointer; transition:all 0.15s; -webkit-tap-highlight-color:transparent; touch-action:manipulation; color:rgba(0,245,255,0.85); user-select:none; }
+        .sherlock-cell:active { transform:scale(0.93); }
+        .sherlock-cell.sh-correct { background:rgba(57,255,20,0.22); border-color:#39ff14; color:#39ff14; box-shadow:0 0 18px rgba(57,255,20,0.5); pointer-events:none; }
+        .sherlock-cell.sh-wrong { background:rgba(255,34,68,0.2); border-color:#ff2244; color:#ff2244; animation:shake .35s; }
+        .sherlock-label { font-family:var(--font-heading); font-size:0.48rem; color:rgba(0,245,255,0.35); letter-spacing:0.05em; }
+        .sherlock-round { text-align:center; font-family:var(--font-heading); font-size:0.75rem; color:#668; margin-bottom:4px; }
+        /* ── LEVEL 8: DECODER GRID ── */
+        .decoder-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; max-width:420px; width:95%; margin:0 auto; padding:6px 0; }
+        .dec-cell { aspect-ratio:1; border-radius:16px; border:2px solid rgba(0,245,255,0.2); background:rgba(0,10,40,0.85); display:flex; align-items:center; justify-content:center; font-family:var(--font-h); font-size:2.2rem; font-weight:700; color:rgba(0,245,255,0.45); cursor:pointer; transition:all 0.15s; touch-action:manipulation; -webkit-tap-highlight-color:transparent; user-select:none; }
+        .dec-cell.d-lit  { background:rgba(0,180,255,0.45); border-color:#00f5ff; color:#fff; box-shadow:0 0 22px rgba(0,245,255,0.6); transform:scale(1.08); }
+        .dec-cell.d-ok   { background:rgba(57,255,20,0.2); border-color:#39ff14; color:#39ff14; pointer-events:none; }
+        .dec-cell.d-err  { background:rgba(255,34,68,0.2); border-color:#ff2244; color:#ff2244; animation:shake .35s; }
+        .dec-cell.d-off  { pointer-events:none; }
+        /* ── LEVEL 9: BURST SIGNAL ── */
+        .bs-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:6px 0; max-width:340px; margin:0 auto; }
+        .bs-cell { aspect-ratio:1; border-radius:10px; border:2px solid rgba(0,245,255,0.2); background:rgba(0,8,30,0.85); display:flex; align-items:center; justify-content:center; font-family:var(--font-h); font-size:1.1rem; font-weight:700; color:rgba(0,245,255,0.18); cursor:pointer; transition:all 0.15s; touch-action:manipulation; -webkit-tap-highlight-color:transparent; user-select:none; }
+        .bs-cell.bs-active { background:rgba(255,180,0,0.35); border-color:#ffe600; color:#ffe600; font-size:1.25rem; box-shadow:0 0 18px rgba(255,210,0,0.55); }
+        .bs-cell.bs-ok  { background:rgba(57,255,20,0.2); border-color:#39ff14; color:#39ff14; pointer-events:none; }
+        .bs-cell.bs-err { background:rgba(255,34,68,0.2); border-color:#ff2244; animation:shake .35s; }
+        .bs-target { text-align:center; background:rgba(255,180,0,0.07); border:1px solid rgba(255,180,0,0.28); border-radius:12px; padding:10px; margin:8px 0; }
+        .bs-target .bt-label { font-size:0.72rem; color:#8ab; font-family:var(--font-h); letter-spacing:0.1em; }
+        .bs-target .bt-num { font-size:2.4rem; color:#ffe600; font-family:var(--font-h); text-shadow:0 0 14px rgba(255,210,0,0.5); display:block; }
+        .bs-round { text-align:center; font-size:0.75rem; color:#668; font-family:var(--font-h); margin-bottom:4px; }
+        /* ── LEVEL 9 progress dots ── */
+        .bs-dots { display:flex; justify-content:center; gap:10px; margin:8px 0 4px; }
+        .bs-dot { width:18px; height:18px; border-radius:50%; background:rgba(0,245,255,0.12); border:2px solid rgba(0,245,255,0.3); transition:all 0.2s; }
+        .bs-dot.done { background:#39ff14; border-color:#39ff14; box-shadow:0 0 10px #39ff14; }
+        /* ── LEVEL 10: MASTERMIND ── */
+        .mm-row { display:flex; gap:6px; align-items:center; padding:5px 6px; border:1px solid rgba(0,245,255,0.08); border-radius:10px; margin-bottom:5px; background:rgba(0,5,20,0.55); flex-wrap:wrap; }
+        .mm-row.mm-active { border-color:rgba(0,245,255,0.35); background:rgba(0,245,255,0.04); }
+        .mm-sym { width:42px; height:42px; border-radius:10px; border:2px solid rgba(0,245,255,0.25); background:rgba(0,10,40,0.8); display:flex; align-items:center; justify-content:center; font-size:1.4rem; cursor:pointer; transition:all 0.15s; touch-action:manipulation; -webkit-tap-highlight-color:transparent; user-select:none; flex-shrink:0; }
+        .mm-sym:active { transform:scale(0.9); }
+        .mm-fb { flex:1; min-width:60px; display:flex; flex-wrap:wrap; gap:3px; padding-left:4px; align-items:center; }
+        .mm-pip { width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; }
+        .mm-pip.hit, .mm-sym.hit { background:rgba(57,255,20,0.25); border-color:#39ff14; color:#39ff14; }
+        .mm-pip.close, .mm-sym.close { background:rgba(255,180,0,0.2); border-color:#ffb300; color:#ffb300; }
+        .mm-pip.miss, .mm-sym.miss { background:rgba(30,30,30,0.5); border-color:#555; color:#666; }
+        .mm-history { max-height:220px; overflow-y:auto; margin-bottom:8px; }
+        .mm-tries-left { text-align:center; font-family:var(--font-heading); font-size:0.75rem; color:#8ab; margin-bottom:6px; }
+
+        /* ── LEVEL 4: SCHULTE TABLE (big, beautiful) ── */
+        .schulte-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            padding: 10px 0;
+            max-width: 360px;
+            margin: 0 auto;
+        }
+        .schulte-num {
+            aspect-ratio: 1;
+            border-radius: 14px;
+            border: 2px solid rgba(0,245,255,0.25);
+            background: rgba(0,20,50,0.8);
+            font-family: var(--font-heading);
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: #cde;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.15s;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            user-select: none;
+        }
+        .schulte-num:active { transform: scale(0.94); }
+        .schulte-num.schulte-next {
+            border-color: rgba(255,220,0,0.5);
+            background: rgba(255,220,0,0.08);
+            color: #ffe600;
+            animation: schulte-pulse 0.8s ease-in-out infinite alternate;
+        }
+        .schulte-num.schulte-found {
+            background: rgba(57,255,20,0.15);
+            border-color: #39ff14;
+            color: #39ff14;
+            cursor: default;
+            pointer-events: none;
+            box-shadow: 0 0 12px rgba(57,255,20,0.3);
+        }
+        .schulte-num.schulte-wrong {
+            background: rgba(255,34,68,0.2);
+            border-color: #ff2244;
+            color: #ff2244;
+            animation: shake-cell 0.35s;
+        }
+        @keyframes schulte-pulse {
+            from { box-shadow: 0 0 6px rgba(255,220,0,0.3); }
+            to { box-shadow: 0 0 18px rgba(255,220,0,0.7); }
+        }
+        @keyframes shake-cell {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+        .schulte-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 360px;
+            margin: 0 auto 6px;
+            font-family: var(--font-heading);
+            font-size: 0.9rem;
+            color: #aaa;
+            padding: 0 4px;
+        }
+        .schulte-timer { color: var(--neon-cyan); font-size: 1.1rem; font-weight: 700; }
+
+        /* ── LEVEL 6: SPARK SEQUENCE (cable cutter) ── */
+        .spark-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            padding: 10px 0 16px;
+            max-width: 360px;
+            margin: 0 auto;
+        }
+        .spark-cable {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 2px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
+            padding: 14px 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: rgba(10,5,30,0.7);
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            overflow: hidden;
+        }
+        .spark-cable::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.4s;
+        }
+        .spark-cable:active::before { transform: translateX(100%); }
+        .spark-cable.spark-pending { cursor: pointer; }
+        .spark-cable.spark-active {
+            border-color: rgba(255,220,0,0.6);
+            background: rgba(255,180,0,0.1);
+            box-shadow: 0 0 16px rgba(255,180,0,0.25);
+        }
+        .spark-cable.spark-cut {
+            border-color: rgba(57,255,20,0.5);
+            background: rgba(57,255,20,0.08);
+            pointer-events: none;
+            opacity: 0.65;
+        }
+        .spark-cable.spark-error {
+            border-color: #ff2244;
+            background: rgba(255,34,68,0.12);
+            animation: spark-shake 0.35s;
+        }
+        @keyframes spark-shake {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-7px); }
+            75% { transform: translateX(7px); }
+        }
+        .spark-icon { font-size: 1.5rem; min-width: 28px; }
+        .spark-label {
+            flex: 1;
+            font-family: var(--font-heading);
+            font-size: 0.95rem;
+            color: #ccc;
+            letter-spacing: 0.04em;
+        }
+        .spark-status-icon { font-size: 1.2rem; min-width: 24px; text-align: right; }
+        .spark-order-hint {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #555;
+            font-style: italic;
+            margin-top: 4px;
+        }
+
+        /* ── LEVEL 8: SIGNAL MATRIX (find the odd) ── */
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            max-width: 400px;
+            width: 95%;
+            margin: 0 auto;
+            padding: 10px 0;
+        }
+        .matrix-cell {
+            aspect-ratio: 1;
+            border-radius: 14px;
+            border: 2px solid rgba(0,245,255,0.2);
+            background: rgba(0,15,40,0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            gap: 4px;
+            padding: 8px 4px;
+            position: relative;
+        }
+        .matrix-cell:active { transform: scale(0.94); }
+        .matrix-cell.matrix-selected {
+            border-color: #f0f;
+            background: rgba(255,0,255,0.12);
+            box-shadow: 0 0 14px rgba(255,0,255,0.3);
+        }
+        .matrix-cell.lit {
+            border-color: #00f5ff;
+            background: rgba(0,245,255,0.4);
+            box-shadow: 0 0 20px rgba(0,245,255,0.8), inset 0 0 10px rgba(0,245,255,0.5);
+            transform: scale(1.05);
+        }
+        .matrix-cell.matrix-correct {
+            border-color: #39ff14;
+            background: rgba(57,255,20,0.15);
+            box-shadow: 0 0 18px rgba(57,255,20,0.4);
+            cursor: default;
+        }
+        .matrix-cell.wrong {
+            border-color: #ff2244;
+            background: rgba(255,34,68,0.15);
+            animation: shake-cell 0.35s;
+        }
+        .matrix-shape { font-size: 1.8rem; line-height: 1; }
+        .matrix-label {
+            font-family: var(--font-heading);
+            font-size: 0.55rem;
+            color: rgba(0,245,255,0.45);
+            letter-spacing: 0.05em;
+        }
+        .matrix-phase-msg {
+            text-align: center;
+            font-family: var(--font-heading);
+            font-size: 0.9rem;
+            color: var(--neon-cyan);
+            margin-bottom: 8px;
+            min-height: 22px;
+        }
+
+        /* ── LEVEL 9: SIMON (color tiles) ── */
+        .simon-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            max-width: 340px;
+            margin: 0 auto;
+            padding: 8px 0 16px;
+        }
+        .simon-cell {
+            aspect-ratio: 1;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.12s;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        .simon-cell::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0);
+            transition: background 0.1s;
+            border-radius: inherit;
+        }
+        .simon-cell:active::after { background: rgba(255,255,255,0.15); }
+        .simon-cell.simon-lit::after { background: rgba(255,255,255,0.35); }
+        .simon-cell.simon-lit {
+            transform: scale(1.08);
+            box-shadow: 0 0 24px var(--simon-glow, rgba(255,255,255,0.5));
+        }
+        .simon-cell.simon-tapped::after { background: rgba(255,255,255,0.25); }
+        .simon-seq-display {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin: 6px 0 10px;
+            flex-wrap: wrap;
+        }
+        .simon-seq-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            border: 1.5px solid rgba(255,255,255,0.3);
+            transition: all 0.2s;
+        }
+        .simon-seq-dot.active { background: var(--neon-cyan); box-shadow: 0 0 6px var(--neon-cyan); }
+        .simon-seq-dot.done { background: #39ff14; border-color: #39ff14; }
+    </style>
+    <style>
+        /* ── LEVEL 2: CALORIE SORTER ── */
+        .calorie-sorter { display:flex; flex-direction:column; gap:16px; padding:8px 0 20px; touch-action:none; width: 100%; max-width: 500px; margin: 0 auto; }
+        .calorie-item { display:flex; align-items:center; gap:14px; background:rgba(0,245,255,0.05); border:2px solid rgba(0,245,255,0.2); border-radius:14px; padding:20px 16px; user-select:none; transition:all 0.18s; -webkit-tap-highlight-color:transparent; width: 100%; }
+        .calorie-rank { font-family:var(--font-h); font-size:1.3rem; color:var(--neon-cyan); min-width:28px; text-align:center; }
+        .calorie-emoji { font-size:2.4rem; }
+        .calorie-name { font-size:1.15rem; color:#cde; flex:1; line-height:1.4; }
+        .arrow-btns { display:flex; flex-direction:column; gap:8px; }
+        .mv-up, .mv-dn { background:rgba(0,245,255,0.1); border:1px solid rgba(0,245,255,0.3); color:var(--neon-cyan); border-radius:8px; padding:12px 20px; font-size:1.4rem; cursor:pointer; }
+        .mv-up:active, .mv-dn:active { background:var(--neon-cyan); color:#000; }
+
+        /* ── LEVEL 4: PAIR MATCHING ── */
+        .pairs-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:7px; padding:6px 0; }
+        .pair-card { aspect-ratio:1; border:2px solid rgba(0,245,255,0.25); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:0.68rem; font-family:var(--font-h); cursor:pointer; transition:all 0.17s; background:rgba(0,245,255,0.04); text-align:center; padding:3px; line-height:1.2; color:#bcd; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+        .pair-card.selected { border-color:#f0f; background:rgba(255,0,255,0.14); color:#fff; transform:scale(1.07); }
+        .pair-card.matched { border-color:var(--neon-green); background:rgba(57,255,20,0.12); color:var(--neon-green); cursor:default; opacity:0.72; }
+        .pair-card.wrong { border-color:var(--neon-red); animation:shake .38s; }
+        .pairs-score { text-align:center; font-family:var(--font-h); font-size:0.8rem; color:#8ab; margin-bottom:6px; }
+
+        /* ── LEVEL 5: INVISIBLE TIMER ── */
+        #l5-blind-btn { display:block; width:100%; padding:16px; font-size:1rem; }
+        .blind-phase-msg { text-align:center; font-family:var(--font-h); font-size:0.88rem; color:var(--neon-cyan); min-height:26px; margin:10px 0; }
+        .blind-target-box { text-align:center; background:rgba(0,245,255,0.05); border:1px solid rgba(0,245,255,0.2); border-radius:10px; padding:16px; margin:10px 0; }
+        .blind-target-box .big-num { font-family:var(--font-h); font-size:2.8rem; color:var(--neon-yellow); text-shadow:0 0 18px rgba(255,230,0,0.5); display:block; }
+        .blind-target-box .sub { font-size:0.72rem; color:#8ab; letter-spacing:0.1em; }
+
+        /* ── LEVEL 6: GHOST BUTTON ── */
+        #l6-arena { position:relative; width:100%; height:220px; background:rgba(0,0,0,0.3); border:1px solid rgba(0,245,255,0.12); border-radius:14px; overflow:hidden; margin:8px 0; flex-shrink:0; }
+        #l6-main-btn { position:absolute; padding:10px 20px; font-size:0.88rem; transition:left 0.25s ease, bottom 0.25s ease; white-space:nowrap; }
+        #l6-reset-btn { position:absolute; display:none; padding:8px 14px; font-size:0.78rem; border-color:var(--neon-purple); color:var(--neon-purple); white-space:nowrap; transition:left 0.25s ease, bottom 0.25s ease; }
+        .l6-countdown { text-align:center; font-family:var(--font-h); font-size:2.2rem; color:var(--neon-cyan); line-height:1; min-height:48px; margin:6px 0; }
+        .l6-round-info { text-align:center; font-family:var(--font-h); font-size:0.75rem; color:#668; letter-spacing:0.1em; margin-bottom:4px; }
+
+    </style>
+</head>
+<body>
+
+<div id="particles-bg"></div>
+
+<!-- DEV BAR — UKRYTY DLA PRODUKCJI -->
+<div id="dev-bar" style="display:none;">
+    <span id="dev-label">&#x1F6E0; TRYB TESTOWY</span>
+    <button id="skip-btn">&#x23ED; POMIN POZIOM</button>
+    <button id="restart-btn">&#x1F504; RESTART</button>
+</div>
+
+<div id="app" class="glass-panel">
+
+    <!-- LEVEL START SCREEN -->
+    <div id="level-start-screen" class="screen hidden" style="flex-direction:column; justify-content:center; align-items:center; background:rgba(0,10,25,0.95); z-index:2000;">
+        <div style="background:rgba(0,15,35,0.8); border:1px solid rgba(0,245,255,0.3); padding:25px; border-radius:12px; max-width:90%; text-align:center;">
+            <div class="ls-badge" id="ls-level-num" style="margin-bottom:10px; font-size:1.8rem; color:var(--neon-green);">POZIOM 1</div>
+            <div class="ls-name" id="ls-level-name" style="margin-bottom:15px; font-size:1.4rem;">Sekwencja Dostepu</div>
+            <div class="ls-desc" id="ls-level-desc" style="margin-bottom:25px; color:#88aaff; line-height:1.4;">Opis zadania...</div>
+            <button id="ls-start-btn" style="width:100%; margin-bottom:10px;">&#x25B6; ROZPOCZNIJ RUNDE</button>
+            <button id="ls-back-btn" class="action-btn" style="width:100%; margin-bottom:10px; background:rgba(255,165,0,0.1); border:1px solid orange; color:orange; font-size:0.8rem; padding:10px;">&#x2B05; COFNIJ DO POPRZEDNIEGO POZIOMU</button>
+            <button id="ls-end-btn" class="action-btn" style="width:100%; margin-bottom:10px; background:rgba(255,42,42,0.1); border:1px solid var(--neon-red); color:var(--neon-red); font-size:0.8rem; padding:10px;">&#x23F9; ZAKOŃCZ GRĘ (ZAPISZ WYNIK)</button>
+            <button id="ls-hard-reset-btn" class="action-btn" style="width:100%; background:rgba(255,0,0,0.2); border:1px solid red; color:white; font-size:0.75rem; padding:8px;">♻️ ZRESETUJ POSTĘP (NOWA GRA)</button>
+        </div>
+    </div>
+
+    <!-- START SCREEN -->
+    <div id="start-screen" class="screen active scrollable">
+        <div class="hero-section">
+            <div class="logo-wrap">
+                <h1 class="glitch" data-text="ENIGMA">ENIGMA</h1>
+                <h2 class="subtitle">PROTOCOL <span class="version-badge">V2</span></h2>
+            </div>
+            <p class="description">Nowa generacja zagadek interaktywnych.<br>Każda próba to inne wyzwanie.</p>
+            <div class="nick-wrap">
+                <input type="text" id="player-nick" class="player-nick-input" placeholder="WPISZ SWÓJ NICK" autocomplete="off">
+            </div>
+        </div>
+        <button id="start-btn" class="neon-button">ROZPOCZNIJ PROTOKÓŁ</button>
+    </div>
+
+    <!-- LEVEL 1: TAP SEQUENCE — zapamiętaj sekwencję i powtórz -->
+    <div id="level-1" class="screen hidden scrollable">
+        <div class="level-header">
+            <span class="level-badge">POZIOM 1</span>
+            <h3>Sekwencja Dostępu</h3>
+            <p>Zapamiętaj kolejność <b>podświetleń</b>, a następnie powtórz je klikając kwadraty we właściwej kolejności.</p>
+        </div>
+        <div class="seq-round-info">Runda: <span id="l1-round">1</span> / <span id="l1-total-rounds">3</span> &nbsp;|&nbsp; Długość sekwencji: <span id="l1-seq-len">3</span></div>
+        <div class="seq-progress" id="l1-progress"></div>
+        <div class="seq-grid" id="seq-grid"></div>
+        <div class="level-footer">
+            <span class="status-msg error" id="l1-status">Obserwuj sekwencję...</span>
+        </div>
+    </div>
+
+    <!-- LEVEL 2: CALORIE SORTER -->
+    <div id="level-2" class="screen hidden scrollable">
+        <div class="level-header">
+            <span class="level-badge">POZIOM 2</span>
+            <h3>Analiza Energetyczna</h3>
+            <p>Ułóż posiłki <b>od najbardziej do najmniej kalorycznych</b>. Nie znasz kalorii — bazuj na swojej wiedzy i przeciągaj kafelki!</p>
+        </div>
+        <div class="calorie-sorter" id="calorie-sorter"></div>
+        <button id="verify-l2-btn" class="action-btn">✓ ZATWIERDŹ KOLEJNOŚĆ</button>
+        <button id="l2-hint-btn" class="action-btn secondary-btn" style="margin-top:8px;">💡 PODPOWIEDŹ (-30s)</button>
+        <div class="level-footer">
+            <span class="status-msg error" id="l2-status">Ułóż od najcięższego do najlżejszego...</span>
+        </div>
+    </div>
+
+    <!-- LEVEL 3: ANALIZA PRZESTRZENNA -->
+    <div id="level-3" class="screen hidden scrollable">
+        <div class="level-header">
+            <span class="level-badge">POZIOM 3</span>
+            <h3>Analiza Przestrzenna</h3>
+        </div>
+        <div class="tries-display" id="l3-round-info">ETAP: 1 / 3</div>
+        <div class="matrix-grid" id="l3-grid"></div>
+        <button id="l3-verify-btn" class="action-btn" style="margin-top:15px; display:none;">✓ ZATWIERDŹ WZÓR</button>
+        <div class="level-footer">
+            <span class="status-msg error" id="l3-status">Przygotuj się na błysk matrycy...</span>
+        </div>
+    </div>
+
+    <!-- LEVEL 4: PAIR MATCHING (4 grupy po 4) — auto-zatwierdzanie -->
+    <div id="level-4" class="screen hidden scrollable">
+        <div class="level-header">
+            <span class="level-badge">POZIOM 4</span>
+            <h3>Klasyfikator Danych</h3>
+            <p>Znajdź <b>4 grupy po 4</b> powiązane elementy. Zaznacz 4 — zatwierdzi się automatycznie!</p>
+        </div>
+        <div class="pairs-score">Grupy: <span id="l4-pairs-count">0</span> / 4 &nbsp;|&nbsp; Błędy: <span id="l4-errors">0</span></div>
+        <div class="pairs-grid" id="pairs-grid"></div>
+        <div class="level-footer">
+            <span class="status-msg error" id="l4-status">Zaznacz 4 pasujące elementy</span>
+        </div>
+    </div>
+
+    <!-- LEVEL 5: INVISIBLE TIMER -->
+    <div id="level-5" class="screen hidden scrollable">
+        <div class="level-header">
+            <span class="level-badge">POZIOM 5</span>
+            <h3>Ślepy Chronometr</h3>
+            <p>Uruchom timer i naciśnij STOP dokładnie gdy minie cel. <b>Timera nie zobaczysz</b> — licz w głowie!</p>
+        </div>
+        <div class="blind-target-box">
+            <span class="big-num" id="l5-target-display">7</span>
+            <span class="sub">SEKUND — tyle musisz odczekać</span>
+        </div>
+        <p class="blind-phase-msg" id="l5-phase-msg">Naciśnij START aby uruchomić ukryty timer.</p>
+        <button id="l5-blind-btn" class="action-btn">▶ START</button>
+        <div class="level-footer">
+            <span class="status-msg error" id="l5-status">Timer zatrzymany</span>
+        </div>
+    </div>
+
+    <!-- LEVEL 6: REAKCJA ŁAŃCUCHOWA -->
+    <div id="level-6" class="screen hidden scrollable">
+        <div class="level-header">
+            <span class="level-badge">POZIOM 6</span>
+            <h3>Reakcja Łańcuchowa</h3>
+        </div>
+        <div class="tries-display" id="l6-round-info">CELÓW: 0 / 10</div>
+        <div id="l6-target-arena" style="position:relative; width:100%; flex:1 1 auto; min-height:250px; background:rgba(0,10,30,0.7); border:1px solid rgba(0,245,255,0.3); border-radius:12px; overflow:hidden; margin-top:20px;">
+        </div>
+        <div class="level-footer">
+            <span class="status-msg error" id="l6-status">Zbijaj cele najszybciej jak potrafisz! Uważaj szybko znikają!</span>
+        </div>
+    </div>
+
+    <!-- LEVEL 7: MECHANIZM ZAPADNIOWY (Lockpick) -->
+    <div id="level-7" class="screen hidden scrollable">
+        <div class="level-header">
+            <span class="level-badge">POZIOM 7</span>
+            <h3>Mechanizm Zapadniowy</h3>
+        </div>
+        <div class="lockpick-wrap" style="display:flex; justify-content:space-evenly; align-items:flex-end; flex:1 1 auto; min-height:250px; margin:25px 0 25px;">
+            <div class="lp-chamber">
+                <div class="lp-zone"></div>
+                <div class="lp-pin" id="lp-pin-0"></div>
+            </div>
+            <div class="lp-chamber">
+                <div class="lp-zone"></div>
+                <div class="lp-pin" id="lp-pin-1"></div>
+            </div>
+            <div class="lp-chamber">
+                <div class="lp-zone"></div>
+                <div class="lp-pin" id="lp-pin-2"></div>
+            </div>
+            <div class="lp-chamber">
+                <div class="lp-zone"></div>
+                <div class="lp-pin" id="lp-pin-3"></div>
+            </div>
+        </div>
+        <div style="display:flex; justify-content:space-evenly; gap:2%;">
+            <button class="action-btn secondary-btn" id="lp-btn-0" style="width:23%; font-size:1.8rem; padding:15px 0; border-radius:12px;">⬆</button>
+            <button class="action-btn secondary-btn" id="lp-btn-1" style="width:23%; font-size:1.8rem; padding:15px 0; border-radius:12px;">⬆</button>
+            <button class="action-btn secondary-btn" id="lp-btn-2" style="width:23%; font-size:1.8rem; padding:15px 0; border-radius:12px;">⬆</button>
+            <button class="action-btn secondary-btn" id="lp-btn-3" style="width:23%; font-size:1.8rem; padding:15px 0; border-radius:12px;">⬆</button>
+        </div>
+        <div class="level-footer">
+            <span class="status-msg error" id="l7-status">Wbij każdą zapadnię dokładnie ze STREFĄ ZIELONĄ.</span>
+        </div>
+    </div>
+
+    <!-- LEVEL 8: DEKODER WZORCA -->
+    <div id="level-8" class="screen hidden scrollable">
+        <div class="level-header">
+            <span class="level-badge">POZIOM 8</span>
+            <h3>Dekoder Wzorca</h3>
+        </div>
+        <p class="matrix-phase-msg" id="l8-phase-msg">Obserwuj...</p>
+        <div class="decoder-grid" id="decoder-grid"></div>
+        <div class="level-footer">
+            <span class="status-msg error" id="l8-status">Analizuję wzorzec...</span>
+        </div>
+    </div>
+
+    <!-- LEVEL 9: STROJENIE SYGNALU -->
+    <div id="level-9" class="screen hidden scrollable">
+        <div class="level-header">
+            <span class="level-badge">POZIOM 9</span>
+            <h3>Strojenie Sygnału</h3>
+        </div>
+        <div class="signal-display">Dopasowanie: <span id="l9-match-val">0</span>%</div>
+        <div class="sliders-wrap">
+            <input type="range" class="signal-slider" id="l9-s1" min="0" max="100" value="50">
+            <input type="range" class="signal-slider" id="l9-s2" min="0" max="100" value="50">
+            <input type="range" class="signal-slider" id="l9-s3" min="0" max="100" value="50">
+        </div>
+        <button id="l9-verify-btn" class="action-btn">📶 ZAAKCEPTUJ SYGNAŁ</button>
+        <div class="level-footer">
+            <span class="status-msg error" id="l9-status">Znajdź 100% idealne ustawienie 3 suwaków...</span>
+        </div>
+    </div>
+
+    <!-- LEVEL 10: ŁAMACZ KODU (Mastermind) — odgadnij 4-symbolowy kod -->
+    <div id="level-10" class="screen hidden scrollable">
+        <div class="level-header">
+            <span class="level-badge">POZIOM 10</span>
+            <h3>Łamacz Kodu</h3>
+            <p>Odgadnij sekretny kod <b>4 symbolów</b> w max 7 próbach. <span style="color:#39ff14">✓</span>=dobra pozycja, <span style="color:#ffb300">?</span>=zła pozycja.</p>
+        </div>
+        <p class="mm-tries-left" id="mm-tries-left">Pozostało prób: 7</p>
+        <div class="mm-history" id="mm-history"></div>
+        <div class="mm-row mm-active" id="mm-current-row"></div>
+        <button id="mm-guess-btn" class="action-btn">SPRAWDŹ KOD</button>
+        <div class="level-footer">
+            <span class="status-msg error" id="l10-status">Wybierz 4 symbole i sprawdź</span>
+        </div>
+    </div>
+
+    <!-- VICTORY -->
+    <div id="victory-screen" class="screen hidden scrollable">
+        <div class="victory-content">
+            <div class="victory-icon">🏆</div>
+            <h1 class="neon-text success-glow">ACCESS GRANTED</h1>
+            <p class="description">Protokół V2 przełamany!<br>Czas: <span id="my-time-display" class="big-time">--:--</span></p>
+            <div class="stats-panel">
+                <div class="stat-item">
+                    <span class="stat-label">Ukończone poziomy</span>
+                    <span class="stat-value" id="stat-levels">10/10</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Pominięte (dev)</span>
+                    <span class="stat-value" id="stat-skipped">0</span>
+                </div>
+            </div>
+            <button id="play-again-btn" class="neon-button" style="margin-top:20px;">ZAGRAJ PONOWNIE</button>
+        </div>
+    </div>
+
+</div>
+
+<script src="../anticheat.js"></script>
+<script src="../screenshot-guard.js"></script>
+<script src="main.js?v=2.2"></script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Enigma Protocol - Briefing Misji</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="mission-container">
+        <main class="briefing-card" id="briefing-ui">
+            <div class="card-metadata">
+                <div class="meta-item">
+                    <span class="meta-label">POSTĘP OPERACJI:</span>
+                    <span class="meta-value">POZIOM 03 <span class="dim">/ 10</span></span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">LIMIT CZASU:</span>
+                    <span class="meta-value">05:00 MIN</span>
+                </div>
+                <div class="version-tag">WERSJA: 3.0b</div>
+            </div>
+
+            <header class="level-header">
+                <span class="level-number">PROTOKÓŁ: 03-ALPHA</span>
+                <h1 class="level-title">Cichy Sygnał</h1>
+            </header>
+
+            <section class="mission-desc">
+                Twoim zadaniem jest przechwycenie zaszyfrowanej transmisji z węzła komunikacyjnego Sektora 7. Systemy obronne są aktywne – precyzja i czas są kluczowe dla sukcesu operacji. Wykrycie grozi resetem połączenia.
+            </section>
+
+            <section class="rules-section">
+                <h2 class="rules-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                    Zasady Operacyjne
+                </h2>
+                <ul class="rules-list">
+                    <li>Rundy nie można zatrzymać po jej aktywacji – wymagane pełne skupienie.</li>
+                    <li>Przerwa na analizę jest możliwa wyłącznie pomiędzy rundami.</li>
+                    <li>Masz nieograniczony czas na zapoznanie się z poleceniem przed startem pierwszej rundy.</li>
+                </ul>
+                <div class="timing-info">
+                    STATUS: LICZNIK CZASU ZOSTANIE URUCHOMIONY W MOMENCIE ROZPOCZĘCIA PIERWSZEJ RUNDY.
+                </div>
+            </section>
+
+            <footer class="action-grid">
+                <button class="btn btn-secondary" onclick="window.location.href='../index.html'">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    MENU GŁÓWNE
+                </button>
+                <button class="btn btn-primary" id="start-btn">
+                    AKTYWUJ PROTOKÓŁ
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" fill="currentColor">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                </button>
+            </footer>
+        </main>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>

@@ -2,215 +2,860 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Enigma - Panel Admina</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enigma Protocol — Admin Control Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg:       #020a14;
+            --cyan:     #00f5ff;
+            --green:    #39ff14;
+            --red:      #ff2a2a;
+            --yellow:   #ffd700;
+            --purple:   #b500ff;
+            --font-h:   'Share Tech Mono', monospace;
+            --font-p:   'Rajdhani', sans-serif;
+        }
+
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
         body {
-            background-color: #0d0d14;
-            color: #ccc;
-            font-family: monospace;
+            background: radial-gradient(circle at 20% 20%, #03101e 0%, #000 100%);
+            color: #c8d8f0;
+            font-family: var(--font-p);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── HEADER ── */
+        .admin-header {
+            background: rgba(0,10,30,0.95);
+            border-bottom: 1px solid rgba(0,245,255,0.25);
+            padding: 15px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+        .admin-header h1 {
+            font-family: var(--font-h);
+            color: var(--cyan);
+            font-size: 1.35rem;
+            letter-spacing: 3px;
+            text-shadow: 0 0 12px var(--cyan);
+        }
+        .admin-header h1 span { color: var(--red); }
+        .header-meta {
+            font-family: var(--font-h);
+            font-size: 0.78rem;
+            color: #446688;
+            text-align: right;
+        }
+        .header-meta .live-dot {
+            display: inline-block;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 6px var(--green);
+            margin-right: 6px;
+            animation: pulse 1.4s infinite;
+        }
+        @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+        /* ── TABS ── */
+        .tabs-bar {
+            display: flex;
+            gap: 4px;
+            padding: 16px 28px 0;
+            border-bottom: 1px solid rgba(0,245,255,0.12);
+        }
+        .tab-btn {
+            font-family: var(--font-h);
+            font-size: 0.85rem;
+            background: transparent;
+            border: 1px solid rgba(0,245,255,0.12);
+            border-bottom: none;
+            color: #446688;
+            padding: 8px 20px;
+            cursor: pointer;
+            border-radius: 6px 6px 0 0;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+        }
+        .tab-btn.active { background: rgba(0,245,255,0.08); color: var(--cyan); border-color: rgba(0,245,255,0.4); text-shadow: 0 0 8px var(--cyan); }
+        .tab-btn:hover:not(.active) { color: #88aacc; }
+
+        /* ── MAIN LAYOUT ── */
+        .main { padding: 24px 28px; }
+
+        .section { display: none; }
+        .section.visible { display: block; }
+
+        /* ── STATS ROW ── */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: rgba(0,15,35,0.8);
+            border: 1px solid rgba(0,245,255,0.18);
+            border-radius: 10px;
+            padding: 18px 14px;
+            text-align: center;
+        }
+        .stat-card .num {
+            font-family: var(--font-h);
+            font-size: 2rem;
+            color: var(--cyan);
+            text-shadow: 0 0 12px var(--cyan);
+        }
+        .stat-card.green .num { color: var(--green); text-shadow: 0 0 12px var(--green); }
+        .stat-card.red   .num { color: var(--red);   text-shadow: 0 0 12px var(--red); }
+        .stat-card.pur   .num { color: var(--purple); text-shadow: 0 0 12px var(--purple); }
+        .stat-card .lbl  { font-family: var(--font-h); font-size: 0.72rem; color: #556688; margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* ── PANEL BOX ── */
+        .panel {
+            background: rgba(0,10,30,0.75);
+            border: 1px solid rgba(0,245,255,0.2);
+            border-radius: 12px;
             padding: 20px;
+            margin-bottom: 24px;
+            backdrop-filter: blur(8px);
         }
-        h1 {
-            color: #0ff;
+        .panel-title {
+            font-family: var(--font-h);
+            font-size: 0.9rem;
+            color: var(--cyan);
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0,245,255,0.12);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .panel-title span { color: #446688; font-size: 0.75rem; }
+
+        /* ── TABLE ── */
+        table { width:100%; border-collapse:collapse; font-size:0.9rem; }
+        thead th {
+            font-family: var(--font-h);
+            font-size: 0.72rem;
+            color: #556688;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(0,245,255,0.15);
+            text-align: left;
+        }
+        tbody tr {
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            transition: background 0.15s;
+        }
+        tbody tr:hover { background: rgba(0,245,255,0.03); }
+        tbody td { padding: 10px 12px; vertical-align: middle; }
+
+        .badge {
+            display: inline-block;
+            font-family: var(--font-h);
+            font-size: 0.68rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            letter-spacing: 1px;
+        }
+        .badge-green  { background: rgba(57,255,20,0.12); color: var(--green); border: 1px solid var(--green); }
+        .badge-yellow { background: rgba(255,215,0,0.12); color: var(--yellow); border: 1px solid var(--yellow); }
+        .badge-red    { background: rgba(255,42,42,0.12); color: var(--red); border: 1px solid var(--red); }
+        .badge-pur    { background: rgba(181,0,255,0.12); color: var(--purple); border: 1px solid var(--purple); }
+        .badge-cyan   { background: rgba(0,245,255,0.12); color: var(--cyan); border: 1px solid var(--cyan); }
+
+        /* ── ACTION BUTTONS ── */
+        .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+        .act-btn {
+            font-family: var(--font-h);
+            font-size: 0.7rem;
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 1px solid;
+            cursor: pointer;
+            background: transparent;
+            transition: all 0.18s;
+            letter-spacing: 0.5px;
+        }
+        .act-stop   { color: var(--yellow); border-color: var(--yellow); }
+        .act-stop:hover  { background: rgba(255,215,0,0.15); }
+        .act-resume { color: var(--green); border-color: var(--green); }
+        .act-resume:hover { background: rgba(57,255,20,0.12); }
+        .act-time   { color: var(--cyan); border-color: var(--cyan); }
+        .act-time:hover { background: rgba(0,245,255,0.1); }
+        .act-finish { color: var(--purple); border-color: var(--purple); }
+        .act-finish:hover { background: rgba(181,0,255,0.12); }
+        .act-delete { color: var(--red); border-color: var(--red); }
+        .act-delete:hover { background: rgba(255,42,42,0.12); }
+
+        /* ── LEADERBOARD RANKS ── */
+        .rank-1 td { color: gold; text-shadow: 0 0 8px gold; }
+        .rank-2 td { color: silver; }
+        .rank-3 td { color: #cd7f32; }
+
+        /* ── LEVEL CHIPS ── */
+        .lvl-chip {
+            display: inline-block;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid #334;
+            border-radius: 4px;
+            padding: 2px 6px;
+            margin: 2px;
+            font-family: var(--font-h);
+            font-size: 0.65rem;
+            cursor: pointer;
+            transition: border-color 0.15s;
+        }
+        .lvl-chip:hover { border-color: var(--cyan); }
+        .lvl-chip .t { color: var(--cyan); }
+        .lvl-chip.current { border-color: var(--yellow); border-style: dashed; }
+        .lvl-chip.current .t { color: var(--yellow); }
+
+        /* ── LOCAL USERS ── */
+        .user-row-detail { font-size:0.78rem; color:#667; margin-top:2px; font-family:var(--font-h); }
+
+        /* ── SEARCH ── */
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .search-bar input {
+            flex: 1;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(0,245,255,0.2);
+            border-radius: 6px;
+            color: #fff;
+            font-family: var(--font-h);
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-bar input:focus { border-color: var(--cyan); }
+
+        .filter-btn {
+            font-family: var(--font-h);
+            font-size: 0.75rem;
+            padding: 6px 14px;
+            border-radius: 5px;
+            border: 1px solid rgba(0,245,255,0.25);
+            background: transparent;
+            color: #88aacc;
+            cursor: pointer;
+            transition: all 0.18s;
+        }
+        .filter-btn.active, .filter-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+
+        /* ── EMPTY STATE ── */
+        .empty-state {
             text-align: center;
+            padding: 40px;
+            color: #334;
+            font-family: var(--font-h);
+            font-size: 0.85rem;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
+
+        /* ── DANGER ZONE ── */
+        .danger-zone {
+            border: 1px solid rgba(255,42,42,0.25);
+            border-radius: 10px;
+            padding: 20px;
             margin-top: 20px;
-            background: #111;
         }
-        th, td {
-            border: 1px solid #333;
-            padding: 12px;
-            text-align: center;
+        .danger-zone h3 { font-family: var(--font-h); color: var(--red); font-size: 0.85rem; letter-spacing: 2px; margin-bottom: 14px; }
+        .danger-btn {
+            font-family: var(--font-h);
+            font-size: 0.8rem;
+            padding: 8px 18px;
+            border: 1px solid var(--red);
+            border-radius: 6px;
+            background: rgba(255,42,42,0.1);
+            color: var(--red);
+            cursor: pointer;
+            transition: all 0.2s;
         }
-        th {
-            background-color: #222;
-            color: #b500ff;
+        .danger-btn:hover { background: rgba(255,42,42,0.25); box-shadow: 0 0 12px rgba(255,42,42,0.3); }
+
+        @media (max-width: 600px) {
+            .main { padding: 14px; }
+            .tabs-bar { padding: 12px 14px 0; overflow-x: auto; flex-wrap: nowrap; }
+            table { font-size: 0.78rem; }
+            .stats-row { grid-template-columns: repeat(2,1fr); }
         }
-        .completed { color: #0f0; font-weight: bold; }
-        .playing { color: #f90; }
-        .stat-box {
-            text-align: center;
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-        }
+
+        .footer-note { text-align:center; color:#223; font-family:var(--font-h); font-size:0.72rem; padding:20px; }
     </style>
 </head>
 <body>
-    <h1>System Monitorowania Protokółów Zdalnych</h1>
-    <div class="stat-box">Ostatnie odświeżenie: <span id="sync-time"></span> | Aktywni/Wszyscy: <span id="player-count">0</span></div>
 
-    <h2 style="color:var(--neon-green);text-align:center;">PODSUMOWANIE MIEJSC (UKOŃCZENI)</h2>
-    <table style="width:70%; margin:0 auto 40px;">
-        <thead>
-            <tr>
-                <th>Pozycja</th>
-                <th>Nick (ID)</th>
-                <th>Całkowity Czas Gry</th>
-            </tr>
-        </thead>
-        <tbody id="leaderboard-tbody">
-            <tr><td colspan="3">Brak sfinalizowanych graczy</td></tr>
-        </tbody>
-    </table>
+<!-- HEADER -->
+<div class="admin-header">
+    <h1>ENIGMA <span>&#x25CF;</span> ADMIN PANEL</h1>
+    <div class="header-meta">
+        <span class="live-dot"></span>LIVE &nbsp;|&nbsp;
+        Ostatnie sync: <span id="sync-time">—</span>
+        &nbsp;|&nbsp;
+        <a href="/admin-logout" style="color:var(--red);text-decoration:none;font-family:var(--font-h);font-size:0.75rem;border:1px solid var(--red);padding:3px 10px;border-radius:4px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,42,42,0.15)'" onmouseout="this.style.background='transparent'">&#x23CF; WYLOGUJ</a>
+    </div>
+</div>
 
-    <h2 style="color:var(--neon-cyan);text-align:center;">MONITOROWANIE NA ŻYWO (WSZYSCY INŻYNIEROWIE)</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Nick (ID)</th>
-                <th>Aktualny Poziom</th>
-                <th>Status gry</th>
-                <th>Czas Całkowity</th>
-                <th>Logi Poziomów (w sek)</th>
-                <th>Akcja</th>
-            </tr>
-        </thead>
-        <tbody id="admin-tbody">
-            <tr><td colspan="6">Oczekiwanie na graczy...</td></tr>
-        </tbody>
-    </table>
+<!-- TABS -->
+<div class="tabs-bar">
+    <button class="tab-btn active" onclick="switchTab('backend')">&#x1F5A5; BACKEND — GRACZE</button>
+    <button class="tab-btn" onclick="switchTab('users')">&#x1F464; KONTA (Baza)</button>
+    <button class="tab-btn" onclick="switchTab('local')">&#x1F4BE; LOKALNI (localStorage)</button>
+    <button class="tab-btn" onclick="switchTab('lb')">&#x1F3C6; RANKINGI</button>
+    <button class="tab-btn" onclick="switchTab('settings')">&#x2699; USTAWIENIA</button>
+</div>
 
-    <script>
-        function formatTime(ms) {
-            let s = Math.floor(ms / 1000);
-            let m = Math.floor(s / 60);
-            s = s % 60;
-            return m + "m " + (s < 10 ? "0" : "") + s + "s";
+<div class="main">
+
+    <!-- ============================================================ -->
+    <!-- TAB 1: BACKEND PLAYERS                                        -->
+    <!-- ============================================================ -->
+    <div id="tab-backend" class="section visible">
+        <div class="stats-row">
+            <div class="stat-card green"><div class="num" id="s-total">0</div><div class="lbl">Wszyscy gracze</div></div>
+            <div class="stat-card"><div class="num" id="s-playing">0</div><div class="lbl">Aktywni</div></div>
+            <div class="stat-card pur"><div class="num" id="s-done">0</div><div class="lbl">Ukończonych</div></div>
+            <div class="stat-card red"><div class="num" id="s-stopped">0</div><div class="lbl">Wstrzymanych</div></div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">
+                MONITORING NA ŻYWO
+                <span>Auto-refresh co 2s</span>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="search-backend" placeholder="&#x1F50D; Szukaj po nicku..." oninput="filterBackend()">
+                <button class="filter-btn active" id="f-all" onclick="setFilter('all')">WSZYSCY</button>
+                <button class="filter-btn" id="f-active" onclick="setFilter('active')">ACTIVE</button>
+                <button class="filter-btn" id="f-done" onclick="setFilter('done')">UKOŃCZENI</button>
+            </div>
+            <div style="overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>GRACZ</th>
+                            <th>POZIOM</th>
+                            <th>STATUS</th>
+                            <th>CZAS</th>
+                            <th>LOGI POZIOMÓW</th>
+                            <th>AKCJE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-tbody">
+                        <tr><td colspan="6"><div class="empty-state">Ładowanie danych...</div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB: DB USERS                                                -->
+    <!-- ============================================================ -->
+    <div id="tab-users" class="section">
+        <div class="stats-row">
+            <div class="stat-card green"><div class="num" id="db-total">0</div><div class="lbl">Wszystkie konta</div></div>
+            <div class="stat-card"><div class="num" id="db-active">0</div><div class="lbl">Aktywne</div></div>
+            <div class="stat-card red"><div class="num" id="db-inactive">0</div><div class="lbl">Oczekujące (e-mail)</div></div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">ZAREJESTROWANE KONTA W BAZIE</div>
+            <div style="overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>NICKNAME</th>
+                            <th>E-MAIL</th>
+                            <th>ROLA</th>
+                            <th>STATUS</th>
+                            <th>AKCJA</th>
+                        </tr>
+                    </thead>
+                    <tbody id="db-users-tbody">
+                        <tr><td colspan="6"><div class="empty-state">Ładowanie kont...</div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 2: LOCAL STORAGE USERS                                    -->
+    <!-- ============================================================ -->
+    <div id="tab-local" class="section">
+        <div class="stats-row">
+            <div class="stat-card green"><div class="num" id="ls-total">0</div><div class="lbl">Zarejestrowani</div></div>
+            <div class="stat-card"><div class="num" id="ls-v1">0</div><div class="lbl">Ukończyło V1</div></div>
+            <div class="stat-card pur"><div class="num" id="ls-v2">0</div><div class="lbl">Ukończyło V2</div></div>
+            <div class="stat-card red"><div class="num" id="ls-missions">0</div><div class="lbl">Łącznie misji</div></div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">GRACZE LOKALNI (localStorage)</div>
+            <div style="overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>NICK</th>
+                            <th>E-MAIL</th>
+                            <th>REKORD V1</th>
+                            <th>REKORD V2</th>
+                            <th>MISJE V1</th>
+                            <th>MISJE V2</th>
+                            <th>AKCJA</th>
+                        </tr>
+                    </thead>
+                    <tbody id="local-tbody">
+                        <tr><td colspan="7"><div class="empty-state">Brak lokalnych graczy</div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="danger-zone">
+            <h3>&#x26A0; STREFA NIEBEZPIECZNA</h3>
+            <button class="danger-btn" onclick="clearLocalData()">&#x1F5D1; WYCZYŚĆ WSZYSTKICH GRACZY (localStorage)</button>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 3: RANKINGS                                               -->
+    <!-- ============================================================ -->
+    <div id="tab-lb" class="section">
+        <div class="panel">
+            <div class="panel-title">
+                GLOBALNY RANKING — BACKEND (V1 PROTOKÓŁ)
+                <span>Posortowane wg czasu</span>
+            </div>
+            <table>
+                <thead><tr><th>#</th><th>NICK</th><th>CZAS</th></tr></thead>
+                <tbody id="leaderboard-tbody">
+                    <tr><td colspan="3"><div class="empty-state">Brak danych z backendu</div></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">RANKING LOKALNY — V1 PROTOKÓŁ</div>
+            <table>
+                <thead><tr><th>#</th><th>NICK</th><th>1. WYNIK (Globalny)</th><th>NAJLEPSZY WYNIK (Osobisty)</th><th>MISJE</th></tr></thead>
+                <tbody id="local-lb-v1"></tbody>
+            </table>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">RANKING LOKALNY — V2 PROTOKÓŁ</div>
+            <table>
+                <thead><tr><th>#</th><th>NICK</th><th>1. WYNIK (Globalny)</th><th>NAJLEPSZY WYNIK (Osobisty)</th><th>MISJE</th></tr></thead>
+                <tbody id="local-lb-v2"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 4: SETTINGS                                               -->
+    <!-- ============================================================ -->
+    <div id="tab-settings" class="section">
+        <div class="panel">
+            <div class="panel-title">INFORMACJE O SYSTEMIE</div>
+            <table>
+                <tbody>
+                    <tr><td style="color:#446688; font-family:var(--font-h); width:220px;">WERSJA PROTOKOŁU</td><td><span class="badge badge-cyan">V1 + V2 + V3 (OFFLINE)</span></td></tr>
+                    <tr><td style="color:#446688; font-family:var(--font-h);">SILNIK GRY</td><td><span class="badge badge-green">HTML5 / Vanilla JS</span></td></tr>
+                    <tr><td style="color:#446688; font-family:var(--font-h);">BACKEND</td><td><span class="badge badge-pur">Spring Boot + PostgreSQL</span></td></tr>
+                    <tr><td style="color:#446688; font-family:var(--font-h);">BAZA GRACZY (LOCAL)</td><td><span id="info-local-count" class="badge badge-cyan">0 graczy</span></td></tr>
+                    <tr><td style="color:#446688; font-family:var(--font-h);">SESJA AKTYWNA</td><td><span id="info-session" class="badge badge-yellow">—</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">SZYBKIE LINKI</div>
+            <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                <a href="/" style="text-decoration:none;"><button class="act-btn act-time" style="padding:10px 20px; font-size:0.85rem;">&#x1F3E0; HUB GŁÓWNY</button></a>
+                <a href="/v1/index.html" style="text-decoration:none;"><button class="act-btn act-resume" style="padding:10px 20px; font-size:0.85rem;">&#x25B6; V1 Alpha</button></a>
+                <a href="/v2/index.html" style="text-decoration:none;"><button class="act-btn act-resume" style="padding:10px 20px; font-size:0.85rem;">&#x25B6; V2 Evolution</button></a>
+            </div>
+        </div>
+
+        <div class="danger-zone">
+            <h3>&#x26A0; STREFA NIEBEZPIECZNA</h3>
+            <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                <button class="danger-btn" onclick="clearLocalData()">&#x1F5D1; USUŃ LOKALNYCH GRACZY</button>
+                <button class="danger-btn" onclick="clearSession()">&#x1F512; WYCZYŚĆ SESJĘ</button>
+            </div>
+        </div>
+    </div>
+
+</div><!-- /main -->
+
+<div class="footer-note">ENIGMA PROTOCOL &mdash; ADMIN CONTROL PANEL &mdash; Website by WiktorS</div>
+
+<script>
+    // ─── UTILITIES ───────────────────────────────────────────────
+    function fmt(ms) {
+        let s = Math.floor(ms / 1000);
+        let m = Math.floor(s / 60);
+        s = s % 60;
+        return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    // ─── TABS ────────────────────────────────────────────────────
+    function switchTab(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + id).classList.add('visible');
+        event.currentTarget.classList.add('active');
+        if (id === 'local' || id === 'lb' || id === 'settings') renderLocal();
+    }
+
+    // ─── FILTER STATE ────────────────────────────────────────────
+    let filterMode = 'all';
+    let allPlayers = [];
+    let dbUsers = [];
+
+    function setFilter(mode) {
+        filterMode = mode;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('f-' + mode).classList.add('active');
+        renderBackendTable(allPlayers);
+    }
+
+    function filterBackend() { renderBackendTable(allPlayers); }
+
+    // ─── BACKEND ADMIN ACTIONS ───────────────────────────────────
+    async function deletePlayer(id) {
+        if (confirm('Usuń gracza bezpowrotnie?')) {
+            await fetch('/api/players/' + id, { method: 'DELETE' });
+            fetchPlayers();
         }
-        
-        async function deletePlayer(id) {
-            if (confirm('Czy na pewno chcesz skasować tego użytkownika? \n\nDane bezpowrotnie przepadną.')) {
-                await fetch('/api/players/' + id, {method: 'DELETE'});
-                fetchPlayers();
-            }
+    }
+    async function stopTime(id)   { await fetch('/api/players/' + id + '/time/stop',   { method: 'PUT' }); fetchPlayers(); }
+    async function resumeTime(id) { await fetch('/api/players/' + id + '/time/resume', { method: 'PUT' }); fetchPlayers(); }
+    async function finishGame(id) {
+        if (confirm('Ręcznie zakończyć grę?')) {
+            await fetch('/api/players/' + id + '/finish', { method: 'PUT' });
+            fetchPlayers();
         }
-
-        async function stopTime(id) { await fetch('/api/players/' + id + '/time/stop', {method: 'PUT'}); fetchPlayers(); }
-        async function resumeTime(id) { await fetch('/api/players/' + id + '/time/resume', {method: 'PUT'}); fetchPlayers(); }
-        async function finishGame(id) {
-            if (confirm('Czy na pewno chcesz ręcznie zakończyć grę tego użytkownika?')) {
-                await fetch('/api/players/' + id + '/finish', {method: 'PUT'});
-                fetchPlayers();
-            }
-        }
-        
-        async function promptSetTime(id) {
-            let mins = prompt("Podaj całkowity czas gry (w minutach):");
-            if (mins !== null) {
-                let secs = prompt("Podaj nowe sekundy (opcjonalnie):", "0");
-                if (secs !== null) {
-                    let totalMs = (parseInt(mins || 0) * 60 + parseInt(secs || 0)) * 1000;
-                    await fetch('/api/players/' + id + '/time/set', {
-                        method: 'PUT', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({timeMs: totalMs})
-                    });
-                    fetchPlayers();
-                }
-            }
-        }
-
-        async function editLevelTime(id, level, currentSecs) {
-            let newSecs = prompt(`Podaj nowy czas (w sekundach) dla zadania/poziomu ${level}:`, currentSecs);
-            if (newSecs !== null) {
-                let ms = parseInt(newSecs) * 1000;
-                if (!isNaN(ms)) {
-                    await fetch(`/api/players/${id}/level-time/${level}`, {
-                        method: 'PUT', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({timeMs: ms})
-                    });
-                    fetchPlayers();
-                }
-            }
-        }
-
-        async function fetchPlayers() {
-            try {
-                // Konkurencyjne pobieranie list
-                const [resPlayers, resLb] = await Promise.all([
-                    fetch('/api/players'),
-                    fetch('/api/players/leaderboard')
-                ]);
-                const players = await resPlayers.json();
-                const leaderboards = await resLb.json();
-                
-                document.getElementById('sync-time').innerText = new Date().toLocaleTimeString();
-                document.getElementById('player-count').innerText = players.length;
-                
-                // Tabela 1: Leaderboards
-                const tbLb = document.getElementById('leaderboard-tbody');
-                if (leaderboards.length === 0) {
-                    tbLb.innerHTML = '<tr><td colspan="3">Brak sfinalizowanych graczy</td></tr>';
-                } else {
-                    tbLb.innerHTML = '';
-                    leaderboards.forEach((p, i) => {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td style="color:#0f0;font-weight:bold;">#${i + 1}</td>
-                            <td>${p.nickname} <span style="font-size:10px;color:#555;">(${p.id.split('-')[0]})</span></td>
-                            <td style="color:#0ff;font-weight:bold;">${formatTime(p.totalTimeMs)}</td>
-                        `;
-                        tbLb.appendChild(tr);
-                    });
-                }
-                
-                // Tabela 2: Live
-                const tbody = document.getElementById('admin-tbody');
-                tbody.innerHTML = '';
-                
-                players.forEach(p => {
-                    const tr = document.createElement('tr');
-                    const timeMs = p.completed ? p.totalTimeMs : (p.timeStopped ? (p.timeStoppedAt - p.startTime) : (Date.now() - p.startTime));
-                    
-                    let timeLogs = '';
-                    if (p.levelTimes) {
-                        const levels = Object.keys(p.levelTimes).sort((a,b) => parseInt(a)-parseInt(b));
-                        timeLogs = levels.map(lvl => {
-                            let s = Math.floor(p.levelTimes[lvl] / 1000);
-                            return `<span style="display:inline-block; background:#000; padding:2px 5px; margin:2px; border-radius:3px; border:1px solid #444; cursor:pointer;" onclick="editLevelTime('${p.id}', ${lvl}, ${s})" title="Kliknij, aby edytować">L${lvl}: <span style="color:#0ff;">${s}s</span></span>`;
-                        }).join(' ');
-                    }
-                    
-                    if (!p.completed && p.currentLevel > 0) {
-                        let currentMs = p.timeStopped ? (p.timeStoppedAt - p.lastLevelStartTime) : (Date.now() - p.lastLevelStartTime);
-                        let s = Math.floor(currentMs / 1000);
-                        timeLogs += ` <span style="display:inline-block; background:#220; padding:2px 5px; margin:2px; border-radius:3px; border:1px dashed #aa0; cursor:pointer;" onclick="editLevelTime('${p.id}', ${p.currentLevel}, ${s})" title="Kliknij, aby edytować">L${p.currentLevel} (Trwa): <span style="color:#ff0;">${s}s</span></span>`;
-                    }
-                    
-                    let actionButtons = '';
-                    if (!p.completed) {
-                        if (p.timeStopped) {
-                            actionButtons += `<button onclick="resumeTime('${p.id}')" style="background:green;color:#fff;border:none;padding:5px;cursor:pointer;margin-right:5px;font-size:0.8rem;">WZNÓW</button>`;
-                        } else {
-                            actionButtons += `<button onclick="stopTime('${p.id}')" style="background:orange;color:#fff;border:none;padding:5px;cursor:pointer;margin-right:5px;font-size:0.8rem;">ZATRZYMAJ</button>`;
-                        }
-                        actionButtons += `<br><button onclick="promptSetTime('${p.id}')" style="background:blue;color:#fff;border:none;padding:5px;margin-top:5px;cursor:pointer;margin-right:5px;font-size:0.8rem;">USTAW CZAS</button>`;
-                        actionButtons += `<button onclick="finishGame('${p.id}')" style="background:#b500ff;color:#fff;border:none;padding:5px;margin-top:5px;cursor:pointer;margin-right:5px;font-size:0.8rem;">ZAKOŃCZ</button>`;
-                    }
-                    actionButtons += `<br><button onclick="deletePlayer('${p.id}')" style="background:darkred;color:#fff;border:none;padding:5px 10px;margin-top:5px;cursor:pointer;font-size:0.8rem;">USUŃ</button>`;
-                    
-                    let timeDisplay = `<span style="color:${p.timeStopped ? '#f00' : '#0ff'}; font-weight:bold;">${formatTime(timeMs)}</span>`;
-                    if (p.timeStopped) timeDisplay += `<br><span style="color:#f00;font-size:0.8rem;">(Zatrzymany)</span>`;
-
-                    tr.innerHTML = `
-                        <td><strong>${p.nickname}</strong> <span style="font-size:10px;color:#555;">(${p.id.split('-')[0]})</span></td>
-                        <td style="font-weight:bold;">${p.completed ? 'FINAŁ' : 'POZIOM ' + p.currentLevel}</td>
-                        <td class="${p.completed ? 'completed' : 'playing'}">${p.completed ? 'Zakończono' : (p.timeStopped ? 'Wstrzymana' : 'Hakowanie...')}</td>
-                        <td>${timeDisplay}</td>
-                        <td style="font-size:0.8rem;text-align:left;max-width:300px;">${timeLogs || '- Brak danych -'}</td>
-                        <td>${actionButtons}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            } catch (e) {
-                console.error("Błąd połączenia z serwerem API.", e);
-            }
-        }
-        
-        setInterval(fetchPlayers, 2000);
+    }
+    async function promptSetTime(id) {
+        let mins = prompt('Nowy czas — minuty:');
+        if (mins === null) return;
+        let secs = prompt('Nowy czas — sekundy:', '0');
+        if (secs === null) return;
+        let ms = (parseInt(mins || 0) * 60 + parseInt(secs || 0)) * 1000;
+        await fetch('/api/players/' + id + '/time/set', {
+            method: 'PUT', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ timeMs: ms })
+        });
         fetchPlayers();
-    </script>
+    }
+    async function editLevelTime(id, lvl, curSecs) {
+        let ns = prompt(`Nowy czas (sekundy) dla L${lvl}:`, curSecs);
+        if (ns === null) return;
+        let ms = parseInt(ns) * 1000;
+        if (!isNaN(ms)) {
+            await fetch(`/api/players/${id}/level-time/${lvl}`, {
+                method: 'PUT', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ timeMs: ms })
+            });
+            fetchPlayers();
+        }
+    }
+
+    // ─── RENDER BACKEND TABLE ────────────────────────────────────
+    function renderBackendTable(players) {
+        const query = (document.getElementById('search-backend').value || '').toLowerCase();
+        let list = players;
+        if (query)           list = list.filter(p => p.nickname.toLowerCase().includes(query));
+        if (filterMode === 'active') list = list.filter(p => !p.completed);
+        if (filterMode === 'done')   list = list.filter(p => p.completed);
+
+        const tbody = document.getElementById('admin-tbody');
+        if (!list.length) {
+            tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state">Brak pasujących graczy</div></td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = '';
+        list.forEach(p => {
+            const timeMs = p.completed
+                ? p.totalTimeMs
+                : (p.timeStopped ? (p.timeStoppedAt - p.startTime) : (Date.now() - p.startTime));
+
+            // Level chips
+            let chips = '';
+            if (p.levelTimes) {
+                const lvls = Object.keys(p.levelTimes).sort((a,b) => +a - +b);
+                chips = lvls.map(lvl => {
+                    let s = Math.floor(p.levelTimes[lvl] / 1000);
+                    return `<span class="lvl-chip" onclick="editLevelTime('${p.id}',${lvl},${s})" title="Kliknij aby edytować">L${lvl} <span class="t">${s}s</span></span>`;
+                }).join('');
+            }
+            if (!p.completed && p.currentLevel > 0) {
+                let cs = p.timeStopped ? (p.timeStoppedAt - p.lastLevelStartTime) : (Date.now() - p.lastLevelStartTime);
+                let s = Math.floor(cs / 1000);
+                chips += `<span class="lvl-chip current" onclick="editLevelTime('${p.id}',${p.currentLevel},${s})" title="Aktualny poziom">L${p.currentLevel} <span class="t">${s}s▶</span></span>`;
+            }
+
+            // Status badge
+            let statusBadge = p.completed
+                ? '<span class="badge badge-green">UKOŃCZONO</span>'
+                : (p.timeStopped
+                    ? '<span class="badge badge-red">WSTRZYMANY</span>'
+                    : '<span class="badge badge-yellow">AKTYWNY</span>');
+
+            // Actions
+            let actions = '<div class="actions">';
+            if (!p.completed) {
+                if (p.timeStopped) {
+                    actions += `<button class="act-btn act-resume" onclick="resumeTime('${p.id}')">▶ WZNÓW</button>`;
+                } else {
+                    actions += `<button class="act-btn act-stop" onclick="stopTime('${p.id}')">⏸ ZATRZYMAJ</button>`;
+                }
+                actions += `<button class="act-btn act-time"   onclick="promptSetTime('${p.id}')">⏱ USTAW CZAS</button>`;
+                actions += `<button class="act-btn act-finish" onclick="finishGame('${p.id}')">✔ ZAKOŃCZ</button>`;
+            }
+            actions += `<button class="act-btn act-delete" onclick="deletePlayer('${p.id}')">✕ USUŃ</button>`;
+            actions += '</div>';
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>
+                    <strong style="color:#ddf;">${p.nickname}</strong>
+                    <div style="font-family:var(--font-h);font-size:0.65rem;color:#336;">${p.id.split('-')[0]}</div>
+                </td>
+                <td><span style="font-family:var(--font-h);color:var(--cyan);">${p.completed ? 'FINAŁ' : 'LVL ' + p.currentLevel}</span></td>
+                <td>${statusBadge}</td>
+                <td style="font-family:var(--font-h);color:${p.timeStopped ? 'var(--red)' : 'var(--cyan)'};">${fmt(timeMs)}</td>
+                <td style="max-width:280px;">${chips || '<span style="color:#334;">—</span>'}</td>
+                <td>${actions}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // ─── FETCH DB USERS ──────────────────────────────────────────
+    async function fetchDbUsers() {
+        try {
+            const res = await fetch('/api/admin/users');
+            if (res.ok) {
+                dbUsers = await res.json();
+                renderDbUsers();
+            }
+        } catch (e) { console.error('Brak dostępu do /api/admin/users'); }
+    }
+
+    function renderDbUsers() {
+        document.getElementById('db-total').textContent = dbUsers.length;
+        document.getElementById('db-active').textContent = dbUsers.filter(u => u.enabled).length;
+        document.getElementById('db-inactive').textContent = dbUsers.filter(u => !u.enabled).length;
+
+        const tbody = document.getElementById('db-users-tbody');
+        tbody.innerHTML = '';
+        if (dbUsers.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state">Brak kont w bazie</div></td></tr>';
+            return;
+        }
+
+        dbUsers.forEach(u => {
+            const tr = document.createElement('tr');
+            const stat = u.enabled ? '<span class="badge badge-green">AKTYWNE</span>' : '<span class="badge badge-yellow">NIEZWERYFIKOWANE</span>';
+            const roleBadge = u.role === 'ADMIN' ? '<span class="badge badge-red">ADMIN</span>' : '<span class="badge badge-cyan">PLAYER</span>';
+            
+            tr.innerHTML = `
+                <td style="font-family:var(--font-h);font-size:0.65rem;color:#446;">${u.id.split('-')[0]}</td>
+                <td><strong style="color:#ddf;">${u.username}</strong></td>
+                <td>${u.email || '-'}</td>
+                <td>${roleBadge}</td>
+                <td>${stat}</td>
+                <td><button class="act-btn act-delete" onclick="deleteDbUser('${u.id}')">✕ USUŃ</button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    async function deleteDbUser(id) {
+        if (!confirm('Na pewno usunąć to konto z bazy danych? Ta akcja jest nieodwracalna!')) return;
+        try {
+            const res = await fetch('/api/admin/users/' + id, { method: 'DELETE' });
+            if (res.ok) {
+                fetchDbUsers();
+            } else {
+                const data = await res.json();
+                alert('Błąd: ' + (data.message || 'Nie można usunąć'));
+            }
+        } catch (e) { alert('Wystąpił błąd'); }
+    }
+
+    // ─── FETCH BACKEND PLAYERS ───────────────────────────────────
+    async function fetchPlayers() {
+        try {
+            const [rPlayers, rLb] = await Promise.all([
+                fetch('/api/players'),
+                fetch('/api/players/leaderboard')
+            ]);
+            const players    = await rPlayers.json();
+            const leaderboard = await rLb.json();
+
+            allPlayers = players;
+            document.getElementById('sync-time').textContent = new Date().toLocaleTimeString();
+            document.getElementById('s-total').textContent   = players.length;
+            document.getElementById('s-playing').textContent = players.filter(p => !p.completed && !p.timeStopped).length;
+            document.getElementById('s-done').textContent    = players.filter(p => p.completed).length;
+            document.getElementById('s-stopped').textContent = players.filter(p => p.timeStopped).length;
+
+            renderBackendTable(players);
+
+            // Backend leaderboard
+            const tbLb = document.getElementById('leaderboard-tbody');
+            tbLb.innerHTML = '';
+            if (!leaderboard.length) {
+                tbLb.innerHTML = '<tr><td colspan="3"><div class="empty-state">Brak ukończonych graczy</div></td></tr>';
+            } else {
+                leaderboard.forEach((p, i) => {
+                    const tr = document.createElement('tr');
+                    tr.className = i < 3 ? `rank-${i+1}` : '';
+                    tr.innerHTML = `<td><strong>#${i+1}</strong></td><td>${p.nickname}</td><td style="font-family:var(--font-h);">${fmt(p.totalTimeMs)}</td>`;
+                    tbLb.appendChild(tr);
+                });
+            }
+        } catch(e) {
+            document.getElementById('admin-tbody').innerHTML =
+                '<tr><td colspan="6"><div class="empty-state" style="color:var(--red);">⚠ Brak połączenia z backendem Spring Boot</div></td></tr>';
+        }
+    }
+
+    // ─── LOCAL STORAGE USERS ─────────────────────────────────────
+    function getLocalUsers() {
+        try { return JSON.parse(localStorage.getItem('enigma_mock_users') || '[]'); } catch { return []; }
+    }
+    function saveLocalUsers(u) { localStorage.setItem('enigma_mock_users', JSON.stringify(u)); }
+
+    function renderLocal() {
+        const users = getLocalUsers();
+
+        document.getElementById('ls-total').textContent    = users.length;
+        document.getElementById('ls-v1').textContent       = users.filter(u => u.results?.v1?.length > 0).length;
+        document.getElementById('ls-v2').textContent       = users.filter(u => u.results?.v2?.length > 0).length;
+
+        let totalMissions = 0;
+        users.forEach(u => {
+            totalMissions += (u.results?.v1?.length || 0) + (u.results?.v2?.length || 0);
+        });
+        document.getElementById('ls-missions').textContent = totalMissions;
+        document.getElementById('info-local-count').textContent = users.length + ' graczy';
+
+        const session = (() => { try { return JSON.parse(localStorage.getItem('enigma_mock_session')); } catch { return null; }})();
+        document.getElementById('info-session').textContent = session ? session.nick + ' <' + session.email + '>' : 'Brak sesji';
+
+        // Main local table
+        const tbody = document.getElementById('local-tbody');
+        tbody.innerHTML = '';
+        if (!users.length) {
+            tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state">Brak graczy</div></td></tr>';
+        } else {
+            users.forEach((u, idx) => {
+                const v1 = u.results?.v1 || [];
+                const v2 = u.results?.v2 || [];
+                const v1Best = v1.length ? Math.min(...v1.map(r => r.timeMs)) : null;
+                const v2Best = v2.length ? Math.min(...v2.map(r => r.timeMs)) : null;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong style="color:#ddf;">${u.nick}</strong></td>
+                    <td style="font-family:var(--font-h);font-size:0.75rem;color:#446;">${u.email}</td>
+                    <td>${v1Best !== null ? '<span class="badge badge-cyan">'+fmt(v1Best)+'</span>' : '<span style="color:#334;">—</span>'}</td>
+                    <td>${v2Best !== null ? '<span class="badge badge-pur">'+fmt(v2Best)+'</span>' : '<span style="color:#334;">—</span>'}</td>
+                    <td style="text-align:center;">${v1.length}</td>
+                    <td style="text-align:center;">${v2.length}</td>
+                    <td><button class="act-btn act-delete" onclick="deleteLocalUser(${idx})">✕ USUŃ</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Local leaderboards
+        renderLocalLb('v1', 'local-lb-v1');
+        renderLocalLb('v2', 'local-lb-v2');
+    }
+
+    function renderLocalLb(proto, tbId) {
+        const users = getLocalUsers();
+        const tbody = document.getElementById(tbId);
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        let entries = [];
+        users.forEach(u => {
+            const results = u.results?.[proto] || [];
+            if (!results.length) return;
+            const firstMs = results[0].timeMs;
+            const bestMs  = Math.min(...results.map(r => r.timeMs));
+            entries.push({ nick: u.nick, firstMs, bestMs, missions: results.length });
+        });
+        entries.sort((a,b) => a.firstMs - b.firstMs);
+
+        if (!entries.length) {
+            tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state">Brak ukończonych graczy dla ${proto.toUpperCase()}</div></td></tr>`;
+            return;
+        }
+        entries.forEach((e, i) => {
+            const tr = document.createElement('tr');
+            tr.className = i < 3 ? `rank-${i+1}` : '';
+            tr.innerHTML = `
+                <td><strong>#${i+1}</strong></td>
+                <td>${e.nick}</td>
+                <td style="font-family:var(--font-h);">${fmt(e.firstMs)}</td>
+                <td style="font-family:var(--font-h);">${fmt(e.bestMs)}</td>
+                <td style="text-align:center;">${e.missions}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function deleteLocalUser(idx) {
+        const users = getLocalUsers();
+        if (!confirm(`Usunąć użytkownika "${users[idx]?.nick}"?`)) return;
+        users.splice(idx, 1);
+        saveLocalUsers(users);
+        renderLocal();
+    }
+
+    function clearLocalData() {
+        if (!confirm('UWAGA: Usunąć WSZYSTKICH lokalnych graczy? Ta operacja jest nieodwracalna.')) return;
+        localStorage.removeItem('enigma_mock_users');
+        renderLocal();
+    }
+
+    function clearSession() {
+        if (!confirm('Wyczyścić aktywną sesję?')) return;
+        localStorage.removeItem('enigma_mock_session');
+        renderLocal();
+    }
+
+    // ─── BOOT ────────────────────────────────────────────────────
+    renderLocal();
+    fetchPlayers();
+    fetchDbUsers();
+    setInterval(fetchPlayers, 2000);
+    setInterval(fetchDbUsers, 5000);
+</script>    <script src="screenshot-guard.js"></script>
 </body>
 </html>
