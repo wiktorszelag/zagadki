@@ -411,22 +411,6 @@
                 </tbody>
             </table>
         </div>
-
-        <div class="panel">
-            <div class="panel-title">RANKING LOKALNY — V1 PROTOKÓŁ</div>
-            <table>
-                <thead><tr><th>#</th><th>NICK</th><th>1. WYNIK (Globalny)</th><th>NAJLEPSZY WYNIK (Osobisty)</th><th>MISJE</th></tr></thead>
-                <tbody id="local-lb-v1"></tbody>
-            </table>
-        </div>
-
-        <div class="panel">
-            <div class="panel-title">RANKING LOKALNY — V2 PROTOKÓŁ</div>
-            <table>
-                <thead><tr><th>#</th><th>NICK</th><th>1. WYNIK (Globalny)</th><th>NAJLEPSZY WYNIK (Osobisty)</th><th>MISJE</th></tr></thead>
-                <tbody id="local-lb-v2"></tbody>
-            </table>
-        </div>
     </div>
 
     <!-- ============================================================ -->
@@ -701,6 +685,8 @@
             document.getElementById('admin-tbody').innerHTML =
                 '<tr><td colspan="6"><div class="empty-state" style="color:var(--red);">⚠ Brak połączenia z backendem Spring Boot</div></td></tr>';
         }
+    }
+
     // ─── BOOT ────────────────────────────────────────────────────
     fetchPlayers();
     fetchDbUsers();
