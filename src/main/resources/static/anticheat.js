@@ -88,41 +88,6 @@
         }
     });
 
-    // ── 5. LOCALSTORAGE TAMPER DETECTION ─────────────────────────
-    // Podpisuje dane wyników securenym hashem, wykrywa manipulację
-    const LS_SIGN_KEY = '__ep_integrity__';
-    const SALT = 'enigma_prt_2025_salt_x9kz';
-
-    async function signData(data) {
-        const str = JSON.stringify(data) + SALT;
-        const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-        return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-    }
-
-    async function verifyIntegrity() {
-        try {
-            const users = JSON.parse(localStorage.getItem('enigma_mock_users') || '[]');
-            const stored = localStorage.getItem(LS_SIGN_KEY);
-            if (!stored && users.length === 0) return; // nothing to verify
-            const expected = await signData(users);
-            if (stored && stored !== expected) {
-                // Tampering detected — clear results but keep accounts
-                users.forEach(u => { delete u.results; });
-                localStorage.setItem('enigma_mock_users', JSON.stringify(users));
-                localStorage.removeItem(LS_SIGN_KEY);
-            }
-        } catch(e) {}
-    }
-
-    // Export sign function so main.js can update signature after saving results
-    window.__ep_sign__ = async function() {
-        try {
-            const users = JSON.parse(localStorage.getItem('enigma_mock_users') || '[]');
-            const sig = await signData(users);
-            localStorage.setItem(LS_SIGN_KEY, sig);
-        } catch(e) {}
-    };
-
-    document.addEventListener('DOMContentLoaded', verifyIntegrity);
+    // ── 5. LOCALSTORAGE TAMPER DETECTION (REMOVED FOR PUBLIC) ────────
 
 })();

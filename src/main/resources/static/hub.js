@@ -1,24 +1,9 @@
 // ==========================================================
-// MOCK DATABASE & CRYPTO FOR DEMONSTRATION
+// SESSION MANAGEMENT (Real Backend Authentication tied to LocalStorage)
 // ==========================================================
 
-// Simple SHA-256 mock (SubtleCrypto)
-async function hashStr(str) {
-    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-    return Array.prototype.map.call(new Uint8Array(buf), x=>(('00'+x.toString(16)).slice(-2))).join('');
-}
-
-// In-memory / localStorage DB
-const DB_USERS_KEY = 'enigma_mock_users';
 const DB_SESSION_KEY = 'enigma_mock_session';
 
-function getUsers() {
-    return JSON.parse(localStorage.getItem(DB_USERS_KEY) || '[]');
-}
-function saveUsers(users) {
-    localStorage.setItem(DB_USERS_KEY, JSON.stringify(users));
-    if(window.__ep_sign__) window.__ep_sign__();
-}
 function getSession() {
     return JSON.parse(localStorage.getItem(DB_SESSION_KEY));
 }
@@ -398,8 +383,7 @@ function showDashboard() {
     const missionsEl = document.getElementById('stat-missions');
     if (missionsEl) missionsEl.textContent = '0';
 
-    const users = getUsers();
-    const user = users.find(u => u.email === session.email);
+    const user = null; // No local saves for user progress on public version
     const MAX_LEVELS = 10;
     let totalMissions = 0;
 
@@ -409,45 +393,10 @@ function showDashboard() {
         const cardBestBox = document.getElementById(`card-${v}-best`);
         const cardBestTime = document.getElementById(`card-${v}-best-time`);
 
-        if (user && user.results && user.results[v] && user.results[v].length > 0) {
-            const results = user.results[v];
-            totalMissions += results.length;
-            const bestTime = Math.min(...results.map(r => r.timeMs));
-
-            if (statEl) statEl.textContent = formatMsLocal(bestTime);
-            if (cardBestBox && cardBestTime) {
-                cardBestTime.textContent = formatMsLocal(bestTime);
-                cardBestBox.style.display = 'block';
-            }
-
-            // Progress Logic: If there's at least one result, we check if it's "fully done"
-            // For now, if they have any result in the results array, we assume they reached a certain level
-            // or we use a stored 'progress' value. 
-            // Mock: If they have finished at least once, it's 10/10. 
-            // If the user object has a .progress[v] field, we use that.
-            let currentProgress = (user.progress && user.progress[v]) || 0;
-            
-            // If they have a result, they must have finished all 10 levels at least once
-            if (results.length > 0) currentProgress = MAX_LEVELS;
-
-            if (badge) {
-                badge.classList.remove('hidden');
-                if (currentProgress >= MAX_LEVELS) {
-                    badge.innerHTML = '✅ UKOŃCZONO';
-                    badge.className = 'card-status status-done';
-                } else {
-                    badge.innerHTML = `⏳ POSTĘP: ${currentProgress} / ${MAX_LEVELS}`;
-                    badge.className = 'card-status status-active';
-                }
-            }
-        } else {
-            // Check if there is partial progress even without a full result
-            let currentProgress = (user && user.progress && user.progress[v]) || 0;
-            if (currentProgress > 0 && badge) {
-                badge.classList.remove('hidden');
-                badge.innerHTML = `⏳ POSTĘP: ${currentProgress} / ${MAX_LEVELS}`;
-                badge.className = 'card-status status-active';
-            }
+        if (badge) {
+            badge.classList.remove('hidden');
+            badge.innerHTML = `⏳ POSTĘP: 0 / ${MAX_LEVELS}`;
+            badge.className = 'card-status status-active';
         }
     });
 
@@ -478,16 +427,8 @@ function renderLeaderboard() {
     const tbody = document.getElementById('leaderboard-body');
     if (!tbody) return;
     tbody.innerHTML = '';
-    const users = getUsers();
     
     let entries = [];
-    users.forEach(u => {
-        if (u.results && u.results[proto] && u.results[proto].length > 0) {
-            // First chronological completion
-            const firstResult = u.results[proto][0];
-            entries.push({ nick: u.nick, timeMs: firstResult.timeMs });
-        }
-    });
     
     entries.sort((a,b) => a.timeMs - b.timeMs);
     

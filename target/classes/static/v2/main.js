@@ -1189,20 +1189,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let lvls = earlyEnd ? (currentLevel === 0 ? 0 : currentLevel - 1) : TOTAL_LEVELS;
         document.getElementById('stat-levels').textContent = `${lvls}/${TOTAL_LEVELS}`;
         
-        try {
-            const session = JSON.parse(localStorage.getItem('enigma_mock_session'));
-            if (session) {
-                const users = JSON.parse(localStorage.getItem('enigma_mock_users')) || [];
-                const idx = users.findIndex(u => u.email === session.email);
-                if (idx !== -1) {
-                    if (!users[idx].results) users[idx].results = {};
-                    if (!users[idx].results.v2) users[idx].results.v2 = [];
-                    users[idx].results.v2.push({ timeMs: totalElapsedMs, date: Date.now(), levels: lvls });
-                    localStorage.setItem('enigma_mock_users', JSON.stringify(users));
-                    if(window.__ep_sign__) window.__ep_sign__();
-                }
-            }
-        } catch(e) {}
+        // Brak zapisów lokalnych dla publicznej wersji
     }
 
     // play-again handled by closure above

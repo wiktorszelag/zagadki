@@ -315,7 +315,6 @@
 <div class="tabs-bar">
     <button class="tab-btn active" onclick="switchTab('backend')">&#x1F5A5; BACKEND — GRACZE</button>
     <button class="tab-btn" onclick="switchTab('users')">&#x1F464; KONTA (Baza)</button>
-    <button class="tab-btn" onclick="switchTab('local')">&#x1F4BE; LOKALNI (localStorage)</button>
     <button class="tab-btn" onclick="switchTab('lb')">&#x1F3C6; RANKINGI</button>
     <button class="tab-btn" onclick="switchTab('settings')">&#x2699; USTAWIENIA</button>
 </div>
@@ -393,45 +392,6 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-    </div>
-
-    <!-- ============================================================ -->
-    <!-- TAB 2: LOCAL STORAGE USERS                                    -->
-    <!-- ============================================================ -->
-    <div id="tab-local" class="section">
-        <div class="stats-row">
-            <div class="stat-card green"><div class="num" id="ls-total">0</div><div class="lbl">Zarejestrowani</div></div>
-            <div class="stat-card"><div class="num" id="ls-v1">0</div><div class="lbl">Ukończyło V1</div></div>
-            <div class="stat-card pur"><div class="num" id="ls-v2">0</div><div class="lbl">Ukończyło V2</div></div>
-            <div class="stat-card red"><div class="num" id="ls-missions">0</div><div class="lbl">Łącznie misji</div></div>
-        </div>
-
-        <div class="panel">
-            <div class="panel-title">GRACZE LOKALNI (localStorage)</div>
-            <div style="overflow-x:auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>NICK</th>
-                            <th>E-MAIL</th>
-                            <th>REKORD V1</th>
-                            <th>REKORD V2</th>
-                            <th>MISJE V1</th>
-                            <th>MISJE V2</th>
-                            <th>AKCJA</th>
-                        </tr>
-                    </thead>
-                    <tbody id="local-tbody">
-                        <tr><td colspan="7"><div class="empty-state">Brak lokalnych graczy</div></td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="danger-zone">
-            <h3>&#x26A0; STREFA NIEBEZPIECZNA</h3>
-            <button class="danger-btn" onclick="clearLocalData()">&#x1F5D1; WYCZYŚĆ WSZYSTKICH GRACZY (localStorage)</button>
         </div>
     </div>
 
@@ -741,117 +701,7 @@
             document.getElementById('admin-tbody').innerHTML =
                 '<tr><td colspan="6"><div class="empty-state" style="color:var(--red);">⚠ Brak połączenia z backendem Spring Boot</div></td></tr>';
         }
-    }
-
-    // ─── LOCAL STORAGE USERS ─────────────────────────────────────
-    function getLocalUsers() {
-        try { return JSON.parse(localStorage.getItem('enigma_mock_users') || '[]'); } catch { return []; }
-    }
-    function saveLocalUsers(u) { localStorage.setItem('enigma_mock_users', JSON.stringify(u)); }
-
-    function renderLocal() {
-        const users = getLocalUsers();
-
-        document.getElementById('ls-total').textContent    = users.length;
-        document.getElementById('ls-v1').textContent       = users.filter(u => u.results?.v1?.length > 0).length;
-        document.getElementById('ls-v2').textContent       = users.filter(u => u.results?.v2?.length > 0).length;
-
-        let totalMissions = 0;
-        users.forEach(u => {
-            totalMissions += (u.results?.v1?.length || 0) + (u.results?.v2?.length || 0);
-        });
-        document.getElementById('ls-missions').textContent = totalMissions;
-        document.getElementById('info-local-count').textContent = users.length + ' graczy';
-
-        const session = (() => { try { return JSON.parse(localStorage.getItem('enigma_mock_session')); } catch { return null; }})();
-        document.getElementById('info-session').textContent = session ? session.nick + ' <' + session.email + '>' : 'Brak sesji';
-
-        // Main local table
-        const tbody = document.getElementById('local-tbody');
-        tbody.innerHTML = '';
-        if (!users.length) {
-            tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state">Brak graczy</div></td></tr>';
-        } else {
-            users.forEach((u, idx) => {
-                const v1 = u.results?.v1 || [];
-                const v2 = u.results?.v2 || [];
-                const v1Best = v1.length ? Math.min(...v1.map(r => r.timeMs)) : null;
-                const v2Best = v2.length ? Math.min(...v2.map(r => r.timeMs)) : null;
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><strong style="color:#ddf;">${u.nick}</strong></td>
-                    <td style="font-family:var(--font-h);font-size:0.75rem;color:#446;">${u.email}</td>
-                    <td>${v1Best !== null ? '<span class="badge badge-cyan">'+fmt(v1Best)+'</span>' : '<span style="color:#334;">—</span>'}</td>
-                    <td>${v2Best !== null ? '<span class="badge badge-pur">'+fmt(v2Best)+'</span>' : '<span style="color:#334;">—</span>'}</td>
-                    <td style="text-align:center;">${v1.length}</td>
-                    <td style="text-align:center;">${v2.length}</td>
-                    <td><button class="act-btn act-delete" onclick="deleteLocalUser(${idx})">✕ USUŃ</button></td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        // Local leaderboards
-        renderLocalLb('v1', 'local-lb-v1');
-        renderLocalLb('v2', 'local-lb-v2');
-    }
-
-    function renderLocalLb(proto, tbId) {
-        const users = getLocalUsers();
-        const tbody = document.getElementById(tbId);
-        if (!tbody) return;
-        tbody.innerHTML = '';
-
-        let entries = [];
-        users.forEach(u => {
-            const results = u.results?.[proto] || [];
-            if (!results.length) return;
-            const firstMs = results[0].timeMs;
-            const bestMs  = Math.min(...results.map(r => r.timeMs));
-            entries.push({ nick: u.nick, firstMs, bestMs, missions: results.length });
-        });
-        entries.sort((a,b) => a.firstMs - b.firstMs);
-
-        if (!entries.length) {
-            tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state">Brak ukończonych graczy dla ${proto.toUpperCase()}</div></td></tr>`;
-            return;
-        }
-        entries.forEach((e, i) => {
-            const tr = document.createElement('tr');
-            tr.className = i < 3 ? `rank-${i+1}` : '';
-            tr.innerHTML = `
-                <td><strong>#${i+1}</strong></td>
-                <td>${e.nick}</td>
-                <td style="font-family:var(--font-h);">${fmt(e.firstMs)}</td>
-                <td style="font-family:var(--font-h);">${fmt(e.bestMs)}</td>
-                <td style="text-align:center;">${e.missions}</td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
-
-    function deleteLocalUser(idx) {
-        const users = getLocalUsers();
-        if (!confirm(`Usunąć użytkownika "${users[idx]?.nick}"?`)) return;
-        users.splice(idx, 1);
-        saveLocalUsers(users);
-        renderLocal();
-    }
-
-    function clearLocalData() {
-        if (!confirm('UWAGA: Usunąć WSZYSTKICH lokalnych graczy? Ta operacja jest nieodwracalna.')) return;
-        localStorage.removeItem('enigma_mock_users');
-        renderLocal();
-    }
-
-    function clearSession() {
-        if (!confirm('Wyczyścić aktywną sesję?')) return;
-        localStorage.removeItem('enigma_mock_session');
-        renderLocal();
-    }
-
     // ─── BOOT ────────────────────────────────────────────────────
-    renderLocal();
     fetchPlayers();
     fetchDbUsers();
     setInterval(fetchPlayers, 2000);
