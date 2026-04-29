@@ -23,6 +23,7 @@ public class EmailService {
                 + "=== TRANSMISJA SZYFROWANA ===";
 
         SimpleMailMessage email = new SimpleMailMessage();
+        email.setFrom("wsproject@wsproject.pl");
         email.setTo(toEmail);
         email.setSubject(subject);
         email.setText(message);
@@ -49,6 +50,7 @@ public class EmailService {
                 + "=== TRANSMISJA SZYFROWANA ===";
 
         SimpleMailMessage email = new SimpleMailMessage();
+        email.setFrom("wsproject@wsproject.pl");
         email.setTo(toEmail);
         email.setSubject(subject);
         email.setText(message);
