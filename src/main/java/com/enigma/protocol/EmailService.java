@@ -13,7 +13,7 @@ public class EmailService {
 
     public void sendVerificationEmail(String toEmail, String token) {
         String subject = "ENIGMA PROTOCOL - Autoryzacja Konta";
-        String confirmationUrl = "http://localhost:8080/api/auth/verify?token=" + token;
+        String confirmationUrl = "https://wsproject.pl/api/auth/verify?token=" + token;
         
         String message = "Witaj Agencie,\n\n"
                 + "Została rozpoczęta procedura rejestracji konta w systemie ENIGMA PROTOCOL.\n"
@@ -39,8 +39,7 @@ public class EmailService {
 
     public void sendPasswordResetEmail(String toEmail, String token) {
         String subject = "ENIGMA PROTOCOL - Reset Hasła";
-        // W produkcji podmień localhost na swoją domenę!
-        String resetUrl = "http://localhost:8080/api/auth/reset-password?token=" + token;
+        String resetUrl = "https://wsproject.pl/api/auth/reset-password?token=" + token;
         
         String message = "Witaj Agencie,\n\n"
                 + "Otrzymaliśmy prośbę o zresetowanie hasła dla Twojego konta.\n"
