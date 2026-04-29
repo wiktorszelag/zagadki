@@ -2,6 +2,7 @@ package com.enigma.protocol;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
