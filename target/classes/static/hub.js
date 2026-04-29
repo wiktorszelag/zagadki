@@ -5,11 +5,17 @@
 const DB_SESSION_KEY = 'enigma_mock_session';
 
 function getSession() {
-    return JSON.parse(localStorage.getItem(DB_SESSION_KEY));
+    try {
+        return JSON.parse(localStorage.getItem(DB_SESSION_KEY));
+    } catch(e) {
+        return null;
+    }
 }
 function saveSession(user) {
-    if(user) localStorage.setItem(DB_SESSION_KEY, JSON.stringify(user));
-    else localStorage.removeItem(DB_SESSION_KEY);
+    try {
+        if(user) localStorage.setItem(DB_SESSION_KEY, JSON.stringify(user));
+        else localStorage.removeItem(DB_SESSION_KEY);
+    } catch(e) {}
 }
 
 function formatMsLocal(ms) {
@@ -143,7 +149,7 @@ function init3DTilt() {
 // ==========================================================
 // UI LOGIC
 // ==========================================================
-document.addEventListener('DOMContentLoaded', () => {
+function initApp() {
     initPrologue(() => {
         // Callback after prologue finishes or is skipped
         document.getElementById('hub-container').style.display = 'flex';
@@ -153,15 +159,26 @@ document.addEventListener('DOMContentLoaded', () => {
         initForms();
         checkSession();
     });
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+} else {
+    initApp();
+}
 
 function initPrologue(onComplete) {
     const overlay = document.getElementById('prologue-overlay');
     const textEl = document.getElementById('prologue-text');
     const skipBtn = document.getElementById('skip-prologue-btn');
     
-    // Check if seen
-    if (localStorage.getItem('ep_prologue_seen') === '1') {
+    // Check if seen (with try-catch for strict incognito modes)
+    let seen = false;
+    try {
+        seen = localStorage.getItem('ep_prologue_seen') === '1';
+    } catch(e) {}
+
+    if (seen) {
         overlay.style.display = 'none';
         onComplete();
         return;
@@ -197,7 +214,7 @@ function initPrologue(onComplete) {
     const finishPrologue = () => {
         if (isSkipped) return;
         isSkipped = true;
-        localStorage.setItem('ep_prologue_seen', '1');
+        try { localStorage.setItem('ep_prologue_seen', '1'); } catch(e) {}
         overlay.classList.add('fade-out');
         setTimeout(() => {
             overlay.style.display = 'none';
@@ -451,7 +468,7 @@ function openModal(id) { document.getElementById(id).classList.remove('hidden');
 function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
 function logout() {
-    localStorage.removeItem('enigma_mock_session');
+    try { localStorage.removeItem('enigma_mock_session'); } catch(e) {}
     checkSession();
 }
 
