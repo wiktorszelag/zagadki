@@ -21,7 +21,7 @@ public class AuthController {
     private EmailService emailService;
 
     // Minimum 8 znaków, co najmniej jedna mała litera, jedna duża litera, jedna cyfra i jeden znak specjalny
-    private static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>]).{8,20}$";
+    private static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,20}$";
 
     @PostMapping("/register")
     public Map<String, Object> register(@RequestBody Map<String, String> body) {

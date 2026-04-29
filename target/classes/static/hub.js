@@ -299,7 +299,7 @@ function initForms() {
             return;
         }
 
-        const passRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>]).{8,20}$/;
+        const passRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,20}$/;
         if (!passRegex.test(pass)) {
             msg.className = 'msg-box msg-err';
             msg.textContent = 'Hasło nie spełnia wymagań bezpieczeństwa.';
