@@ -376,35 +376,65 @@ document.addEventListener('DOMContentLoaded', () => {
         if(st){st.textContent='🔍 PODPOWIEDŹ zastosowana (+8 minut). Ułożono poprawnie!'; st.style.color='#f90';}
     });
 
-    // L4 Kod Liczbowy (sequence puzzle - HEAVILY UPGRADED)
-    const l4Sequences=[
-        {seq:[2,4,16,-1,65536],ans:256,choices:[32,64,128,256],hint:'X do kwadratu.'},
-        {seq:[1,3,7,15,-1],ans:31,choices:[27,29,31,33],hint:'Różnica to potęgi liczby 2.'},
-        {seq:[2,3,5,8,-1,21],ans:13,choices:[11,12,13,14],hint:'Znany ciąg z dodawania dwóch poprzednich.'},
-        {seq:[100,99,95,86,-1],ans:70,choices:[68,70,72,74],hint:'Odejmowane liczby to 1, 4, 9, 16...'},
-        {seq:[2,6,12,20,-1,42],ans:30,choices:[28,30,32,36],hint:'Mnożenie kolejnych wierszy: 1×2, 2×3, 3×4, 4×5...'},
-        {seq:[7,11,19,35,-1],ans:67,choices:[57,63,67,71],hint:'(x × 2) - 3'},
-        {seq:[1,8,27,64,-1],ans:125,choices:[81,100,125,144],hint:'Sześciany liczb całkowitych (x³).'},
-    ];
-    let l4ActiveSeq=null;
-    window.initL4=function(){
-        l4ActiveSeq=l4Sequences[Math.floor(Math.random()*l4Sequences.length)];
-        const seqEl=document.getElementById('l4-sequence');
-        const hintEl=document.getElementById('l4-hint');
-        const chEl=document.getElementById('l4-choices');
-        if(!seqEl||!chEl) return;
-        seqEl.textContent=l4ActiveSeq.seq.map(n=>n===-1?'  ?  ':n).join(' • ');
+    // L4 Kod Liczbowy (Proceduralnie generowane ciągi)
+    let l4ActiveSeq = null;
+    
+    window.initL4 = function() {
+        const types = [
+            // 0: x + N
+            () => { const step = Math.floor(Math.random()*15)+3; const start = Math.floor(Math.random()*20)+1; return { seq: [start, start+step, start+step*2, start+step*3, start+step*4], ans: start+step*3, idx: 3, hint: 'Stała różnica (dodawanie)' }; },
+            // 1: x * N
+            () => { const step = Math.floor(Math.random()*3)+2; const start = Math.floor(Math.random()*4)+2; return { seq: [start, start*step, start*step*step, start*step*step*step, start*Math.pow(step,4)], ans: start*step*step, idx: 2, hint: 'Stały mnożnik' }; },
+            // 2: x^2
+            () => { const start = Math.floor(Math.random()*4)+2; return { seq: [start, start*start, Math.pow(start,4), Math.pow(start,8), Math.pow(start,16)], ans: Math.pow(start,4), idx: 2, hint: 'Poprzednia liczba do kwadratu' }; },
+            // 3: Fibonacci-like
+            () => { const a = Math.floor(Math.random()*5)+1; const b = Math.floor(Math.random()*5)+1; const s = [a, b, a+b, a+2*b, 2*a+3*b, 3*a+5*b]; return { seq: s, ans: s[4], idx: 4, hint: 'Suma dwóch poprzednich' }; },
+            // 4: x^3
+            () => { const s = [1, 8, 27, 64, 125, 216]; const shift = Math.floor(Math.random()*2); return { seq: s.slice(shift, shift+5), ans: s[shift+3], idx: 3, hint: 'Sześciany liczb całkowitych (x³)' }; }
+        ];
+
+        const generator = types[Math.floor(Math.random() * types.length)]();
+        
+        let choices = new Set();
+        choices.add(generator.ans);
+        while(choices.size < 4) {
+            let offset = Math.floor(Math.random() * 20) - 10;
+            if (offset === 0) offset = 1;
+            let wrong = generator.ans + offset;
+            if (generator.ans > 100) wrong = generator.ans + (offset * 10);
+            if (wrong > 0 && !choices.has(wrong)) choices.add(wrong);
+        }
+
+        let seqDisplay = [...generator.seq];
+        seqDisplay[generator.idx] = -1;
+
+        l4ActiveSeq = { seq: seqDisplay, ans: generator.ans, choices: Array.from(choices), hint: generator.hint };
+
+        const seqEl = document.getElementById('l4-sequence');
+        const hintEl = document.getElementById('l4-hint');
+        const chEl = document.getElementById('l4-choices');
+        
+        if(!seqEl || !chEl) return;
+        seqEl.textContent = l4ActiveSeq.seq.map(n => n === -1 ? '  ?  ' : n).join(' • ');
         if(hintEl) hintEl.textContent = '';
-        chEl.innerHTML='';
-        const st=document.getElementById('l4-status'); if(st) st.textContent='';
-        [...l4ActiveSeq.choices].sort(()=>Math.random()-0.5).forEach(c=>{
-            const btn=document.createElement('button');
-            btn.className='act-btn';
-            btn.style.cssText='font-size:1.6rem;font-family:var(--font-mono);font-weight:bold;padding:14px 24px;border-color:#0af;color:#0af;min-width:80px;';
-            btn.textContent=c;
-            btn.onclick=()=>{
-                if(c===l4ActiveSeq.ans){btn.style.background='#0a3a0a';btn.style.borderColor='#0f5';btn.style.color='#0f5';triggerSuccess('l4-status');}
-                else{btn.style.background='#3a0a0a';btn.style.borderColor='#f55';btn.disabled=true;setTimeout(()=>initL4(),900);}
+        chEl.innerHTML = '';
+        
+        const st = document.getElementById('l4-status'); 
+        if(st) st.textContent = '';
+        
+        [...l4ActiveSeq.choices].sort(() => Math.random() - 0.5).forEach(c => {
+            const btn = document.createElement('button');
+            btn.className = 'act-btn';
+            btn.style.cssText = 'font-size:1.6rem;font-family:var(--font-mono);font-weight:bold;padding:14px 24px;border-color:#0af;color:#0af;min-width:80px;';
+            btn.textContent = c;
+            btn.onclick = () => {
+                if(c === l4ActiveSeq.ans) { 
+                    btn.style.background = '#0a3a0a'; btn.style.borderColor = '#0f5'; btn.style.color = '#0f5'; 
+                    triggerSuccess('l4-status'); 
+                } else { 
+                    btn.style.background = '#3a0a0a'; btn.style.borderColor = '#f55'; btn.disabled = true; 
+                    setTimeout(() => initL4(), 900); 
+                }
             };
             chEl.appendChild(btn);
         });
