@@ -36,6 +36,7 @@ public class User {
     private String v2LevelTimesJson = "{}";
     private Long v1LevelStartedAt = 0L; // timestamp ms kiedy gracz zaczal biezacy poziom V1
     private Long v2LevelStartedAt = 0L;
+    private Long lastActiveAt = 0L; // timestamp ostatniego heartbeatu/aktywności
 
     public User() {}
 
@@ -103,4 +104,7 @@ public class User {
 
     public long getV2LevelStartedAt() { return v2LevelStartedAt != null ? v2LevelStartedAt : 0L; }
     public void setV2LevelStartedAt(Long v) { this.v2LevelStartedAt = v; }
+
+    public long getLastActiveAt() { return lastActiveAt != null ? lastActiveAt : 0L; }
+    public void setLastActiveAt(Long v) { this.lastActiveAt = v; }
 }

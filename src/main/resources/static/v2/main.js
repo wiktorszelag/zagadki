@@ -109,10 +109,20 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => screen.classList.add('active'), 100);
     };
 
+    const updateSession = (data) => {
+        try {
+            let s = JSON.parse(localStorage.getItem('enigma_mock_session')) || {};
+            Object.assign(s, data);
+            localStorage.setItem('enigma_mock_session', JSON.stringify(s));
+        } catch(e) {}
+    };
+
     document.getElementById('ls-start-btn').addEventListener('click', () => {
         const screen = document.getElementById('level-start-screen');
         screen.classList.remove('active');
         currentLevelStartMs = Date.now(); // Start timer for this specific level
+        updateSession({ v2StartedAt: currentLevelStartMs });
+
         // Informuj serwer o starcie konkretnego poziomu (live monitoring)
         if (sessionNick) {
             fetch('/api/auth/progress', {
@@ -156,6 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentLevel > 0 && currentLevelStartMs) {
             elapsed = Date.now() - currentLevelStartMs;
             totalElapsedMs += elapsed;
+            updateSession({ v2StartedAt: 0, v2TimeMs: totalElapsedMs });
         }
         currentLevelStartMs = null;
 
@@ -303,6 +314,43 @@ document.addEventListener('DOMContentLoaded', () => {
                 const devBar = document.getElementById('dev-bar');
                 if (devBar) devBar.style.display = 'flex';
             }
+
+            // --- SYNC Z BAZĄ DANYCH (kluczowe po resecie admina) ---
+            fetch('/api/auth/profile?username=' + encodeURIComponent(sessionNick))
+                .then(r => r.ok ? r.json() : null)
+                .then(db => {
+                    if (!db || !db.found) return;
+                    // Jeśli DB ma niższy poziom (był reset) – użyj danych z DB
+                    const lsLevel = session.v2Level || 1;
+                    const dbLevel = db.v2Level || 1;
+                    if (dbLevel < lsLevel || db.v2TimeMs < (session.v2TimeMs || 0)) {
+                        session.v2Level = dbLevel;
+                        session.v2TimeMs = db.v2TimeMs || 0;
+                        session.v2Completed = db.v2Completed || false;
+                        localStorage.setItem('enigma_mock_session', JSON.stringify(session));
+                        currentLevel = Math.max(0, dbLevel - 1);
+                        totalElapsedMs = db.v2TimeMs || 0;
+                    } else {
+                        if (lsLevel > 1) {
+                            currentLevel = Math.min(lsLevel - 1, TOTAL_LEVELS);
+                            totalElapsedMs = session.v2TimeMs || 0;
+                        }
+                    }
+
+                    // Odśwież levelStartMs z localStorage/DB
+                    if (session.v2StartedAt && !session.v2Completed) {
+                        currentLevelStartMs = session.v2StartedAt;
+                        fetch('/api/auth/progress', {
+                            method: 'POST', headers: {'Content-Type':'application/json'},
+                            body: JSON.stringify({ username: sessionNick, protocol: 'v2', level: currentLevel || 1, timeMs: totalElapsedMs, completed: false, levelStartedAt: currentLevelStartMs })
+                        }).catch(() => {});
+                    }
+                }).catch(() => {
+                    if (session.v2Level && session.v2Level > 1) {
+                        currentLevel = Math.min(session.v2Level - 1, TOTAL_LEVELS);
+                        totalElapsedMs = session.v2TimeMs || 0;
+                    }
+                });
         }
     } catch(e) {}
 

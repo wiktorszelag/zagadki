@@ -59,10 +59,20 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => screen.classList.add('active'), 80);
     };
 
+    const updateSession = (data) => {
+        try {
+            let s = JSON.parse(localStorage.getItem('enigma_mock_session')) || {};
+            Object.assign(s, data);
+            localStorage.setItem('enigma_mock_session', JSON.stringify(s));
+        } catch(e) {}
+    };
+
     document.getElementById('ls-start-btn')?.addEventListener('click', () => {
         const screen = document.getElementById('level-start-screen');
         screen.classList.remove('active');
         levelStartMs = Date.now();
+        updateSession({ v1StartedAt: levelStartMs });
+
         // Informuj serwer o starcie konkretnego poziomu (live monitoring)
         if (sessionNick) {
             fetch('/api/auth/progress', {
@@ -110,7 +120,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const advanceLevel = (showIntermission = true) => {
         let elapsed = 0;
-        if (currentLevel > 0 && levelStartMs) { elapsed = Date.now() - levelStartMs; totalTimeMs += elapsed; levelStartMs = null; }
+        if (currentLevel > 0 && levelStartMs) { 
+            elapsed = Date.now() - levelStartMs; 
+            totalTimeMs += elapsed; 
+            levelStartMs = null; 
+            updateSession({ v1StartedAt: 0, v1TimeMs: totalTimeMs });
+        }
         if (currentLevel > 0) {
             levelHistory.push(currentLevel);
             levelTimes[currentLevel] = (levelTimes[currentLevel] || 0) + elapsed;
@@ -233,6 +248,17 @@ document.addEventListener('DOMContentLoaded', () => {
                             totalTimeMs = session.v1TimeMs || 0;
                         }
                     }
+                    
+                    // Odśwież levelStartMs z localStorage/DB
+                    if (session.v1StartedAt && !session.v1Completed) {
+                        levelStartMs = session.v1StartedAt;
+                        // Wyślij ping do serwera żeby admin widział nas po odświeżeniu
+                        fetch('/api/auth/progress', {
+                            method: 'POST', headers: {'Content-Type':'application/json'},
+                            body: JSON.stringify({ username: sessionNick, protocol: 'v1', level: currentLevel || 1, timeMs: totalTimeMs, completed: false, levelStartedAt: levelStartMs })
+                        }).catch(() => {});
+                    }
+
                 }).catch(() => {
                     // Fallback: użyj localStorage
                     if (session.v1Level && session.v1Level > 1) {

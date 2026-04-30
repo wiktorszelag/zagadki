@@ -296,6 +296,12 @@
         }
 
         .footer-note { text-align:center; color:#223; font-family:var(--font-h); font-size:0.72rem; padding:20px; }
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.98); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .pulse { animation: pulse 1s infinite ease-in-out; }
     </style>
 </head>
 <body>
@@ -554,6 +560,8 @@
 
         const parseT = (str) => { try { return JSON.parse(str || '{}'); } catch(e) { return {}; } };
 
+        const parseT = (str) => { try { return JSON.parse(str || '{}'); } catch(e) { return {}; } };
+
         tbody.innerHTML = '';
         list.forEach(p => {
             const u = p._raw || {};
@@ -574,75 +582,67 @@
 
             // Aktywny poziom z tykającym zegarem
             const now = Date.now();
-            const v1StartedAt = u.v1LevelStartedAt || 0;
-            const v2StartedAt = u.v2LevelStartedAt || 0;
-            // "NA ŻYWO" jeśli heartbeat był w ciągu ostatnich 30 sekund
-            const isV1Active = v1StartedAt > 0 && !u.v1Completed && (now - v1StartedAt) < 3600000;
-            const isV2Active = v2StartedAt > 0 && !u.v2Completed && (now - v2StartedAt) < 3600000;
-            // Gracz aktywnie pinguje (heartbeat < 30s temu = naprawdę teraz rozwiązuje)
-            const v1TimeMs = u.v1TimeMs || 0;
-            const v1CurrentSec = isV1Active ? Math.round((now - v1StartedAt) / 1000) : 0;
-            const isV1Solving = isV1Active && v1CurrentSec < 30; // świeży ping
-            const isV2Solving = isV2Active && Math.round((now - v2StartedAt) / 1000) < 30;
+            const v1At = parseInt(u.v1LevelStartedAt || 0);
+            const v2At = parseInt(u.v2LevelStartedAt || 0);
+            const lastPing = parseInt(u.lastActiveAt || 0);
 
-            const liveV1Id = `live-v1-${u.id?.split('-')[0]}`;
-            const liveV2Id = `live-v2-${u.id?.split('-')[0]}`;
+            // "Aktywny" jeśli grał w ciągu ostatniej godziny
+            const isV1Active = v1At > 0 && !u.v1Completed && (now - v1At) < 3600000;
+            const isV2Active = v2At > 0 && !u.v2Completed && (now - v2At) < 3600000;
+            
+            // "Na żywo" jeśli heartbeat < 45s temu
+            const isLiveNow = lastPing > 0 && (now - lastPing) < 45000;
+
+            const uid = (u.id||'').split('-')[0];
+            const liveV1Id = `live-v1-${uid}`;
+            const liveV2Id = `live-v2-${uid}`;
+            const totalId = `total-${uid}`;
 
             if (isV1Active) {
-                const pulse = isV1Solving ? ' style="animation:pulse 1s infinite;"' : '';
-                chipsV1 += `<span class="lvl-chip current"${pulse}>L${u.v1Level} <span class="t" id="${liveV1Id}">…</span>▶</span>`;
+                const pulse = isLiveNow ? ' class="pulse"' : '';
+                chipsV1 += `<span class="lvl-chip current"><span${pulse}>L${u.v1Level}</span> <span class="t" id="${liveV1Id}">…</span>▶</span>`;
             }
             if (isV2Active) {
-                const pulse = isV2Solving ? ' style="animation:pulse 1s infinite;border-color:#b500ff;"' : 'style="border-color:#b500ff;"';
-                chipsV2 += `<span class="lvl-chip current" ${pulse}>L${u.v2Level} <span class="t" id="${liveV2Id}">…</span>▶</span>`;
+                const pulse = isLiveNow ? ' class="pulse"' : '';
+                chipsV2 += `<span class="lvl-chip current" style="border-color:#b500ff;"><span${pulse}>L${u.v2Level}</span> <span class="t" id="${liveV2Id}">…</span>▶</span>`;
             }
 
             const allChips = (chipsV1 || chipsV2) 
-                ? `<div style="margin-bottom:4px;"><span style="color:#446;font-size:0.6rem;font-family:var(--font-h);">V1►</span> ${chipsV1 || '<span style="color:#334;">brak danych</span>'}</div><div><span style="color:#446;font-size:0.6rem;font-family:var(--font-h);">V2►</span> ${chipsV2 || '<span style="color:#334;">brak danych</span>'}</div>`
+                ? `<div style="margin-bottom:6px;"><span style="color:#446;font-size:0.6rem;font-family:var(--font-h);display:inline-block;width:30px;">V1►</span> ${chipsV1 || '<span style="color:#223;">brak danych</span>'}</div><div><span style="color:#446;font-size:0.6rem;font-family:var(--font-h);display:inline-block;width:30px;">V2►</span> ${chipsV2 || '<span style="color:#223;">brak danych</span>'}</div>`
                 : '<span style="color:#334;">—</span>';
 
-            // Status – wykryj czy gracz TERAZ rozwiązuje (heartbeat < 30s)
+            // Status
             const v1Done = u.v1Completed, v2Done = u.v2Completed;
-            const isLiveNow = isV1Solving || isV2Solving;
             const statusBadge = (v1Done && v2Done)
                 ? '<span class="badge badge-green">FINAŁ V1+V2</span>'
                 : v1Done ? '<span class="badge badge-green">FINAŁ V1</span>'
                 : v2Done ? '<span class="badge badge-green" style="background:rgba(181,0,255,.2);border-color:#b500ff;">FINAŁ V2</span>'
-                : isLiveNow ? '<span class="badge badge-yellow" style="animation:pulse 0.8s infinite;">🟢 ROZWIĄZUJE</span>'
-                : (isV1Active || isV2Active) ? '<span class="badge badge-yellow">🟡 NA POZIOMIE</span>'
+                : isLiveNow ? '<span class="badge badge-yellow pulse">🟢 ROZWIĄZUJE</span>'
+                : (isV1Active || isV2Active) ? '<span class="badge badge-yellow">🟡 SESJA OTWARTA</span>'
                 : u.v1Level > 1 || u.v2Level > 1 ? '<span class="badge" style="color:#556;">W TOKU</span>'
                 : '<span class="badge" style="color:#446;">ZAREJESTROWANY</span>';
 
-            // Łączny czas (V1 + aktywny bieżący jeśli gra teraz)
-            const totalId = `total-${u.id?.split('-')[0]}`;
             const baseMs = (u.v1TimeMs || 0) + (u.v2TimeMs || 0);
 
             const tr = document.createElement('tr');
-            tr.dataset.v1StartedAt = v1StartedAt;
-            tr.dataset.v2StartedAt = v2StartedAt;
-            tr.dataset.v1BaseMs = u.v1TimeMs || 0;
-            tr.dataset.v2BaseMs = u.v2TimeMs || 0;
-            tr.dataset.liveV1Id = liveV1Id;
-            tr.dataset.liveV2Id = liveV2Id;
-            tr.dataset.totalId = totalId;
             tr.innerHTML = `
                 <td>
                     <strong style="color:#ddf;">${u.username || p.nickname}</strong>
-                    <div style="font-family:var(--font-h);font-size:0.6rem;color:#336;">${(u.id||'').split('-')[0]}</div>
+                    <div style="font-family:var(--font-h);font-size:0.6rem;color:#336;">${uid}</div>
                 </td>
                 <td>
                     <div style="font-family:var(--font-h);color:var(--cyan);font-size:0.85rem;">V1: L${u.v1Level||1}</div>
                     <div style="font-family:var(--font-h);color:#b500ff;font-size:0.85rem;">V2: L${u.v2Level||1}</div>
                 </td>
                 <td>${statusBadge}</td>
-                <td style="font-family:var(--font-h);color:var(--cyan);" id="${totalId}">${fmt(baseMs)}</td>
-                <td style="max-width:300px; font-size:0.8rem;">${allChips}</td>
+                <td style="font-family:var(--font-h);color:var(--cyan); transition:color 0.3s;" id="${totalId}">${fmt(baseMs)}</td>
+                <td style="max-width:350px; font-size:0.8rem;">${allChips}</td>
                 <td><button class="act-btn act-delete" onclick="resetProgress('${u.id}', '${u.username || p.nickname}')" title="Resetuj postęp gry (nie usuwa konta)">↺ RESET</button></td>
             `;
             tbody.appendChild(tr);
         });
 
-        // Uruchom ticker co sekundę
+        // Start ticker loop
         if (liveTickInterval) clearInterval(liveTickInterval);
         liveTickInterval = setInterval(() => {
             const now = Date.now();
@@ -651,31 +651,31 @@
                 const uid = (u.id||'').split('-')[0];
                 const v1At = parseInt(u.v1LevelStartedAt || 0);
                 const v2At = parseInt(u.v2LevelStartedAt || 0);
-                const v1Base = u.v1TimeMs || 0;
-                const v2Base = u.v2TimeMs || 0;
+                const lastPing = parseInt(u.lastActiveAt || 0);
+                const isLive = lastPing > 0 && (now - lastPing) < 45000;
 
-                // Chip bieżącego poziomu V1 (tyka tylko jeśli mamy levelStartedAt)
+                // Ticker poziomu V1
                 if (v1At > 0 && !u.v1Completed) {
                     const el = document.getElementById(`live-v1-${uid}`);
                     if (el) el.textContent = Math.floor((now - v1At)/1000) + 's';
                 }
-                // Chip bieżącego poziomu V2
+                // Ticker poziomu V2
                 if (v2At > 0 && !u.v2Completed) {
                     const el = document.getElementById(`live-v2-${uid}`);
                     if (el) el.textContent = Math.floor((now - v2At)/1000) + 's';
                 }
-                // Łączny czas – zawsze aktualizuj (nawet bez levelStartedAt)
+                // Ticker łączny
                 const totalEl = document.getElementById(`total-${uid}`);
                 if (totalEl) {
-                    let live = v1Base + v2Base;
+                    let live = (u.v1TimeMs || 0) + (u.v2TimeMs || 0);
                     if (v1At > 0 && !u.v1Completed) live += now - v1At;
                     if (v2At > 0 && !u.v2Completed) live += now - v2At;
                     totalEl.textContent = fmt(live);
-                    // Kolor: zielony gdy aktywny, biały gdy statyczny
-                    totalEl.style.color = (v1At > 0 || v2At > 0) ? 'var(--green)' : 'var(--cyan)';
+                    totalEl.style.color = isLive ? 'var(--green)' : 'var(--cyan)';
                 }
             });
         }, 1000);
+    }
     }
 
     // ─── FETCH DB USERS ──────────────────────────────────────────

@@ -220,6 +220,7 @@ public class AuthController {
             if (startedAt != null && !u.isV2Completed()) u.setV2LevelStartedAt(startedAt.longValue());
         }
 
+        u.setLastActiveAt(System.currentTimeMillis());
         userRepository.save(u);
         return Map.of("success", true);
     }
