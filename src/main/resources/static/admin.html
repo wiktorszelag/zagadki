@@ -634,6 +634,7 @@
                 <td style="font-family:var(--font-h);color:var(--cyan);">${v1Prog} (${Math.floor(u.v1TimeMs/1000)}s)</td>
                 <td style="font-family:var(--font-h);color:var(--cyan);">${v2Prog} (${Math.floor(u.v2TimeMs/1000)}s)</td>
                 <td>${stat}</td>
+                <td><span style="font-family:var(--font-h); color:${u.leaveCount > 0 ? '#ff9900' : '#446'}; font-size:0.9rem;" title="Liczba wyświetleń ekranu SESJA ZABEZPIECZONA">🚪 ${u.leaveCount || 0}</span></td>
                 <td>
                     <button class="act-btn act-time" onclick="askModTime('${u.id}', 'v1')" title="Edytuj czas V1">⏱ V1</button>
                     <button class="act-btn act-time" onclick="askModTime('${u.id}', 'v2')" title="Edytuj czas V2">⏱ V2</button>

@@ -41,7 +41,20 @@
         </p>
     `;
 
-    function showOverlay() { overlay.style.display = 'flex'; }
+    function showOverlay() {
+        overlay.style.display = 'flex';
+        // Wyślij licznik do serwera
+        try {
+            const session = JSON.parse(localStorage.getItem('enigma_mock_session') || '{}');
+            if (session.username) {
+                fetch('/api/auth/leave', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: session.username })
+                }).catch(() => {});
+            }
+        } catch(e) {}
+    }
     function hideOverlay() { overlay.style.display = 'none'; }
 
     // Używamy readyState bo skrypt może być załadowany przed <body>

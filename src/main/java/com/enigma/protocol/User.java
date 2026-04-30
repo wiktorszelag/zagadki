@@ -28,6 +28,7 @@ public class User {
     private Long v2TimeMs = 0L;
     private Boolean v1Completed = false;
     private Boolean v2Completed = false;
+    private Integer leaveCount = 0; // Licznik opuszczeń sesji
 
     public User() {}
 
@@ -80,4 +81,7 @@ public class User {
     
     public boolean isV2Completed() { return v2Completed != null ? v2Completed : false; }
     public void setV2Completed(Boolean v2Completed) { this.v2Completed = v2Completed; }
+
+    public int getLeaveCount() { return leaveCount != null ? leaveCount : 0; }
+    public void setLeaveCount(Integer leaveCount) { this.leaveCount = leaveCount; }
 }

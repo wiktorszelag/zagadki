@@ -207,6 +207,20 @@ public class AuthController {
         return leaderboard;
     }
 
+    @PostMapping("/leave")
+    public Map<String, Object> trackLeave(@RequestBody Map<String, Object> body) {
+        String username = (String) body.get("username");
+        if (username == null) return Map.of("success", false);
+        
+        Optional<User> uOpt = userRepository.findByUsername(username);
+        if (uOpt.isEmpty()) return Map.of("success", false);
+        
+        User u = uOpt.get();
+        u.setLeaveCount(u.getLeaveCount() + 1);
+        userRepository.save(u);
+        return Map.of("success", true, "leaveCount", u.getLeaveCount());
+    }
+
     private String generateRandomPassword() {
         // Generuje mocne, losowe haslo 12-znakowe
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
