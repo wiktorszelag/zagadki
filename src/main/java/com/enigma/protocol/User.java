@@ -34,6 +34,8 @@ public class User {
     private String v1LevelTimesJson = "{}"; // {"1":12345,"2":6789,...}
     @jakarta.persistence.Column(columnDefinition = "TEXT")
     private String v2LevelTimesJson = "{}";
+    private Long v1LevelStartedAt = 0L; // timestamp ms kiedy gracz zaczal biezacy poziom V1
+    private Long v2LevelStartedAt = 0L;
 
     public User() {}
 
@@ -95,4 +97,10 @@ public class User {
 
     public String getV2LevelTimesJson() { return v2LevelTimesJson != null ? v2LevelTimesJson : "{}"; }
     public void setV2LevelTimesJson(String v2LevelTimesJson) { this.v2LevelTimesJson = v2LevelTimesJson; }
+
+    public long getV1LevelStartedAt() { return v1LevelStartedAt != null ? v1LevelStartedAt : 0L; }
+    public void setV1LevelStartedAt(Long v) { this.v1LevelStartedAt = v; }
+
+    public long getV2LevelStartedAt() { return v2LevelStartedAt != null ? v2LevelStartedAt : 0L; }
+    public void setV2LevelStartedAt(Long v) { this.v2LevelStartedAt = v; }
 }

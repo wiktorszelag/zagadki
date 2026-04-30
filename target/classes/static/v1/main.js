@@ -63,6 +63,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const screen = document.getElementById('level-start-screen');
         screen.classList.remove('active');
         levelStartMs = Date.now();
+        // Informuj serwer o starcie konkretnego poziomu (live monitoring)
+        if (sessionNick) {
+            fetch('/api/auth/progress', {
+                method: 'POST', headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({ username: sessionNick, protocol: 'v1', level: currentLevel, timeMs: totalTimeMs, completed: false, levelStartedAt: levelStartMs })
+            }).catch(() => {});
+        }
         setTimeout(() => {
             screen.classList.add('hidden');
             initLevel(currentLevel);

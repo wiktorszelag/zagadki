@@ -523,13 +523,15 @@
         }
     }
 
-    // ─── RENDER BACKEND TABLE ────────────────────────────────────
+    // ─── RENDER BACKEND TABLE (LIVE) ─────────────────────────────
+    let liveTickInterval = null;
+
     function renderBackendTable(players) {
         const query = (document.getElementById('search-backend').value || '').toLowerCase();
         let list = players;
-        if (query)           list = list.filter(p => p.nickname.toLowerCase().includes(query));
-        if (filterMode === 'active') list = list.filter(p => !p.completed);
-        if (filterMode === 'done')   list = list.filter(p => p.completed);
+        if (query) list = list.filter(p => (p.nickname||'').toLowerCase().includes(query));
+        if (filterMode === 'active') list = list.filter(p => !p._raw?.v1Completed && !p._raw?.v2Completed);
+        if (filterMode === 'done')   list = list.filter(p => p._raw?.v1Completed || p._raw?.v2Completed);
 
         const tbody = document.getElementById('admin-tbody');
         if (!list.length) {
@@ -537,62 +539,116 @@
             return;
         }
 
+        const parseT = (str) => { try { return JSON.parse(str || '{}'); } catch(e) { return {}; } };
+
         tbody.innerHTML = '';
         list.forEach(p => {
-            const timeMs = p.completed
-                ? p.totalTimeMs
-                : (p.timeStopped ? (p.timeStoppedAt - p.startTime) : (Date.now() - p.startTime));
+            const u = p._raw || {};
+            const v1Times = parseT(u.v1LevelTimesJson);
+            const v2Times = parseT(u.v2LevelTimesJson);
 
-            // Level chips
-            let chips = '';
-            if (p.levelTimes) {
-                const lvls = Object.keys(p.levelTimes).sort((a,b) => +a - +b);
-                chips = lvls.map(lvl => {
-                    let s = Math.floor(p.levelTimes[lvl] / 1000);
-                    return `<span class="lvl-chip" onclick="editLevelTime('${p.id}',${lvl},${s})" title="Kliknij aby edytować">L${lvl} <span class="t">${s}s</span></span>`;
-                }).join('');
+            // Czasy ukończonych poziomów V1
+            let chipsV1 = Object.keys(v1Times).sort((a,b) => +a - +b).map(lvl => {
+                const s = (v1Times[lvl]/1000).toFixed(1);
+                return `<span class="lvl-chip" title="V1 Poziom ${lvl}">L${lvl} <span class="t">${s}s</span></span>`;
+            }).join('');
+
+            // Czasy ukończonych poziomów V2
+            let chipsV2 = Object.keys(v2Times).sort((a,b) => +a - +b).map(lvl => {
+                const s = (v2Times[lvl]/1000).toFixed(1);
+                return `<span class="lvl-chip" style="border-color:#b500ff;color:#b500ff;" title="V2 Poziom ${lvl}">L${lvl} <span class="t">${s}s</span></span>`;
+            }).join('');
+
+            // Aktywny poziom z tykającym zegarem
+            const v1StartedAt = u.v1LevelStartedAt || 0;
+            const v2StartedAt = u.v2LevelStartedAt || 0;
+            const isV1Active = v1StartedAt > 0 && !u.v1Completed;
+            const isV2Active = v2StartedAt > 0 && !u.v2Completed;
+
+            const liveV1Id = `live-v1-${u.id?.split('-')[0]}`;
+            const liveV2Id = `live-v2-${u.id?.split('-')[0]}`;
+
+            if (isV1Active) {
+                chipsV1 += `<span class="lvl-chip current">L${u.v1Level} <span class="t" id="${liveV1Id}">…</span>▶</span>`;
             }
-            if (!p.completed && p.currentLevel > 0) {
-                let cs = p.timeStopped ? (p.timeStoppedAt - p.lastLevelStartTime) : (Date.now() - p.lastLevelStartTime);
-                let s = Math.floor(cs / 1000);
-                chips += `<span class="lvl-chip current" onclick="editLevelTime('${p.id}',${p.currentLevel},${s})" title="Aktualny poziom">L${p.currentLevel} <span class="t">${s}s▶</span></span>`;
+            if (isV2Active) {
+                chipsV2 += `<span class="lvl-chip current" style="border-color:#b500ff;">L${u.v2Level} <span class="t" id="${liveV2Id}">…</span>▶</span>`;
             }
 
-            // Status badge
-            let statusBadge = p.completed
-                ? '<span class="badge badge-green">UKOŃCZONO</span>'
-                : (p.timeStopped
-                    ? '<span class="badge badge-red">WSTRZYMANY</span>'
-                    : '<span class="badge badge-yellow">AKTYWNY</span>');
+            const allChips = (chipsV1 || chipsV2) 
+                ? `<div style="margin-bottom:4px;">${chipsV1}</div><div>${chipsV2}</div>`
+                : '<span style="color:#334;">—</span>';
 
-            // Actions
-            let actions = '<div class="actions">';
-            if (!p.completed) {
-                if (p.timeStopped) {
-                    actions += `<button class="act-btn act-resume" onclick="resumeTime('${p.id}')">▶ WZNÓW</button>`;
-                } else {
-                    actions += `<button class="act-btn act-stop" onclick="stopTime('${p.id}')">⏸ ZATRZYMAJ</button>`;
-                }
-                actions += `<button class="act-btn act-time"   onclick="promptSetTime('${p.id}')">⏱ USTAW CZAS</button>`;
-                actions += `<button class="act-btn act-finish" onclick="finishGame('${p.id}')">✔ ZAKOŃCZ</button>`;
-            }
-            actions += `<button class="act-btn act-delete" onclick="deletePlayer('${p.id}')">✕ USUŃ</button>`;
-            actions += '</div>';
+            // Status
+            const v1Done = u.v1Completed, v2Done = u.v2Completed;
+            const statusBadge = (v1Done && v2Done)
+                ? '<span class="badge badge-green">FINAŁ V1+V2</span>'
+                : v1Done ? '<span class="badge badge-green">FINAŁ V1</span>'
+                : v2Done ? '<span class="badge badge-green" style="background:rgba(181,0,255,.2);border-color:#b500ff;">FINAŁ V2</span>'
+                : (isV1Active || isV2Active) ? '<span class="badge badge-yellow">🟢 NA ŻYWO</span>'
+                : u.v1Level > 1 || u.v2Level > 1 ? '<span class="badge badge-yellow">W TOKU</span>'
+                : '<span class="badge" style="color:#446;">ZAREJESTROWANY</span>';
+
+            // Łączny czas (V1 + aktywny bieżący jeśli gra teraz)
+            const totalId = `total-${u.id?.split('-')[0]}`;
+            const baseMs = (u.v1TimeMs || 0) + (u.v2TimeMs || 0);
 
             const tr = document.createElement('tr');
+            tr.dataset.v1StartedAt = v1StartedAt;
+            tr.dataset.v2StartedAt = v2StartedAt;
+            tr.dataset.v1BaseMs = u.v1TimeMs || 0;
+            tr.dataset.v2BaseMs = u.v2TimeMs || 0;
+            tr.dataset.liveV1Id = liveV1Id;
+            tr.dataset.liveV2Id = liveV2Id;
+            tr.dataset.totalId = totalId;
             tr.innerHTML = `
                 <td>
-                    <strong style="color:#ddf;">${p.nickname}</strong>
-                    <div style="font-family:var(--font-h);font-size:0.65rem;color:#336;">${p.id.split('-')[0]}</div>
+                    <strong style="color:#ddf;">${u.username || p.nickname}</strong>
+                    <div style="font-family:var(--font-h);font-size:0.6rem;color:#336;">${(u.id||'').split('-')[0]}</div>
                 </td>
-                <td><span style="font-family:var(--font-h);color:var(--cyan);">${p.completed ? 'FINAŁ' : 'LVL ' + p.currentLevel}</span></td>
+                <td>
+                    <div style="font-family:var(--font-h);color:var(--cyan);font-size:0.85rem;">V1: L${u.v1Level||1}</div>
+                    <div style="font-family:var(--font-h);color:#b500ff;font-size:0.85rem;">V2: L${u.v2Level||1}</div>
+                </td>
                 <td>${statusBadge}</td>
-                <td style="font-family:var(--font-h);color:${p.timeStopped ? 'var(--red)' : 'var(--cyan)'};">${fmt(timeMs)}</td>
-                <td style="max-width:280px;">${chips || '<span style="color:#334;">—</span>'}</td>
-                <td>${actions}</td>
+                <td style="font-family:var(--font-h);color:var(--cyan);" id="${totalId}">${fmt(baseMs)}</td>
+                <td style="max-width:300px; font-size:0.8rem;">${allChips}</td>
+                <td><button class="act-btn act-delete" onclick="deleteDbUser('${u.id}')">✕</button></td>
             `;
             tbody.appendChild(tr);
         });
+
+        // Uruchom ticker co sekundę
+        if (liveTickInterval) clearInterval(liveTickInterval);
+        liveTickInterval = setInterval(() => {
+            const now = Date.now();
+            tbody.querySelectorAll('tr[data-live-v1-id]').forEach(() => {}); // fallback
+            list.forEach(p => {
+                const u = p._raw || {};
+                const uid = (u.id||'').split('-')[0];
+                const v1At = parseInt(p._raw?.v1LevelStartedAt || 0);
+                const v2At = parseInt(p._raw?.v2LevelStartedAt || 0);
+                const v1Base = u.v1TimeMs || 0;
+                const v2Base = u.v2TimeMs || 0;
+
+                if (v1At > 0 && !u.v1Completed) {
+                    const el = document.getElementById(`live-v1-${uid}`);
+                    if (el) el.textContent = ((now - v1At)/1000).toFixed(0) + 's';
+                }
+                if (v2At > 0 && !u.v2Completed) {
+                    const el = document.getElementById(`live-v2-${uid}`);
+                    if (el) el.textContent = ((now - v2At)/1000).toFixed(0) + 's';
+                }
+                // Łączny czas live
+                const totalEl = document.getElementById(`total-${uid}`);
+                if (totalEl) {
+                    let live = v1Base + v2Base;
+                    if (v1At > 0 && !u.v1Completed) live += now - v1At;
+                    if (v2At > 0 && !u.v2Completed) live += now - v2At;
+                    totalEl.textContent = fmt(live);
+                }
+            });
+        }, 1000);
     }
 
     // ─── FETCH DB USERS ──────────────────────────────────────────

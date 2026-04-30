@@ -185,15 +185,20 @@ public class AuthController {
                 u.setV1Level(level);
                 u.setV1TimeMs(timeMs);
                 if (levelTimesJson != null) u.setV1LevelTimesJson(levelTimesJson);
-                if (isDone && level > 10) u.setV1Completed(true);
+                if (isDone && level > 10) { u.setV1Completed(true); u.setV1LevelStartedAt(0L); }
             }
+            // Zawsze aktualizuj timestamp startu bieżącego poziomu
+            Number startedAt = (Number) body.get("levelStartedAt");
+            if (startedAt != null && !u.isV1Completed()) u.setV1LevelStartedAt(startedAt.longValue());
         } else if ("v2".equalsIgnoreCase(protocol)) {
             if (!u.isV2Completed()) {
                 u.setV2Level(level);
                 u.setV2TimeMs(timeMs);
                 if (levelTimesJson != null) u.setV2LevelTimesJson(levelTimesJson);
-                if (isDone && level > 10) u.setV2Completed(true);
+                if (isDone && level > 10) { u.setV2Completed(true); u.setV2LevelStartedAt(0L); }
             }
+            Number startedAt = (Number) body.get("levelStartedAt");
+            if (startedAt != null && !u.isV2Completed()) u.setV2LevelStartedAt(startedAt.longValue());
         }
 
         userRepository.save(u);
