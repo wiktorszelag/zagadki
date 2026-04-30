@@ -152,6 +152,25 @@ public class AuthController {
              + "</body></html>";
     }
 
+    /** Zwraca aktualny stan gracza z bazy – używany przez grę do synchronizacji po resecie admina */
+    @GetMapping("/profile")
+    public Map<String, Object> getProfile(@RequestParam String username) {
+        Optional<User> uOpt = userRepository.findByUsername(username);
+        if (uOpt.isEmpty()) return Map.of("found", false);
+        User u = uOpt.get();
+        return Map.of(
+            "found", true,
+            "v1Level", u.getV1Level(),
+            "v2Level", u.getV2Level(),
+            "v1TimeMs", u.getV1TimeMs(),
+            "v2TimeMs", u.getV2TimeMs(),
+            "v1Completed", u.isV1Completed(),
+            "v2Completed", u.isV2Completed(),
+            "v1LevelTimesJson", u.getV1LevelTimesJson(),
+            "v2LevelTimesJson", u.getV2LevelTimesJson()
+        );
+    }
+
     @PostMapping("/progress")
     public Map<String, Object> updateProgress(@RequestBody Map<String, Object> body) {
         String username = (String) body.get("username");

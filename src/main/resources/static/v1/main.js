@@ -197,7 +197,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (nickInput) {
                 nickInput.value = sessionNick;
                 nickInput.style.display = 'none';
-                
                 const nickDisplay = document.createElement('div');
                 nickDisplay.innerHTML = `OPERATOR PODŁĄCZONY:<br><b style="color:var(--neon-green)">${sessionNick}</b>`;
                 nickDisplay.style.cssText = 'color:#88aaff; font-family:var(--font-h); text-align:center; margin:15px 0; letter-spacing:2px; font-size:1.1rem;';
@@ -207,15 +206,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 const devBar = document.getElementById('dev-bar');
                 if (devBar) devBar.style.display = 'flex';
             }
-            if (session.v1Level && session.v1Level > 1) {
-                if (session.v1Level <= 10) {
-                    currentLevel = session.v1Level - 1;
-                    totalTimeMs = session.v1TimeMs || 0;
-                } else {
-                    currentLevel = 10;
-                    totalTimeMs = session.v1TimeMs || 0;
-                }
-            }
+
+            // --- SYNC Z BAZĄ DANYCH (kluczowe po resecie admina) ---
+            fetch('/api/auth/profile?username=' + encodeURIComponent(sessionNick))
+                .then(r => r.ok ? r.json() : null)
+                .then(db => {
+                    if (!db || !db.found) return;
+                    // Jeśli DB ma niższy poziom (był reset) – użyj danych z DB
+                    const lsLevel = session.v1Level || 1;
+                    const dbLevel = db.v1Level || 1;
+                    if (dbLevel < lsLevel || db.v1TimeMs < (session.v1TimeMs || 0)) {
+                        // Admin zresetował – aktualizuj localStorage
+                        session.v1Level = dbLevel;
+                        session.v1TimeMs = db.v1TimeMs || 0;
+                        session.v1Completed = db.v1Completed || false;
+                        localStorage.setItem('enigma_mock_session', JSON.stringify(session));
+                        currentLevel = Math.max(0, dbLevel - 1);
+                        totalTimeMs = db.v1TimeMs || 0;
+                    } else {
+                        // localStorage aktualne – przywróć z niego
+                        if (lsLevel > 1 && lsLevel <= 10) {
+                            currentLevel = lsLevel - 1;
+                            totalTimeMs = session.v1TimeMs || 0;
+                        } else if (lsLevel > 10) {
+                            currentLevel = 10;
+                            totalTimeMs = session.v1TimeMs || 0;
+                        }
+                    }
+                }).catch(() => {
+                    // Fallback: użyj localStorage
+                    if (session.v1Level && session.v1Level > 1) {
+                        currentLevel = Math.min(session.v1Level - 1, 10);
+                        totalTimeMs = session.v1TimeMs || 0;
+                    }
+                });
         }
     } catch(e) {}
 
