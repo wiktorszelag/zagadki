@@ -139,13 +139,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Heartbeat co 10s – admin widzi że gracz aktywnie rozwiązuje
     setInterval(() => {
-        if (sessionNick && currentLevelStartMs && currentLevel > 0) {
-            fetch('/api/auth/progress', {
-                method: 'POST', headers: {'Content-Type':'application/json'},
-                // UWAGA: totalElapsedMs NIE zawiera bieżącego poziomu – admin sam liczy (now - levelStartedAt)
-                body: JSON.stringify({ username: sessionNick, protocol: 'v2', level: currentLevel, timeMs: totalElapsedMs, completed: false, levelStartedAt: currentLevelStartMs })
+        if (!sessionNick) return;
+
+        fetch('/api/auth/profile?username=' + encodeURIComponent(sessionNick))
+            .then(r => r.ok ? r.json() : null)
+            .then(db => {
+                if (!db || !db.found) return;
+
+                if (db.isPaused) {
+                    if (!document.getElementById('pause-overlay')) {
+                        const ov = document.createElement('div');
+                        ov.id = 'pause-overlay';
+                        ov.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--neon-red); font-family:var(--font-h); text-align:center;';
+                        ov.innerHTML = '<h1 style="font-size:3rem; text-shadow:0 0 20px var(--neon-red);">SESJA WSTRZYMANA</h1><p style="letter-spacing:4px; margin-top:20px; color:#fff;">OCZEKIWANIE NA DECYZJĘ ADMINISTRATORA...</p>';
+                        document.body.appendChild(ov);
+                        if (currentLevelStartMs) currentLevelStartMs += 10000;
+                    } else {
+                        if (currentLevelStartMs) currentLevelStartMs += 10000;
+                    }
+                    return;
+                } else {
+                    const ov = document.getElementById('pause-overlay');
+                    if (ov) ov.remove();
+                }
+
+                if (currentLevelStartMs && currentLevel > 0) {
+                    let currentElapsed = Date.now() - currentLevelStartMs;
+                    let combinedTimes = { ...levelTimes };
+                    combinedTimes[currentLevel] = (combinedTimes[currentLevel] || 0) + currentElapsed;
+
+                    fetch('/api/auth/progress', {
+                        method: 'POST', headers: {'Content-Type':'application/json'},
+                        body: JSON.stringify({ 
+                            username: sessionNick, protocol: 'v2', level: currentLevel, 
+                            timeMs: totalElapsedMs, completed: false, levelStartedAt: currentLevelStartMs,
+                            levelTimes: combinedTimes
+                        })
+                    }).catch(() => {});
+                }
             }).catch(() => {});
-        }
     }, 10000);
 
     document.getElementById('ls-end-btn').addEventListener('click', () => {

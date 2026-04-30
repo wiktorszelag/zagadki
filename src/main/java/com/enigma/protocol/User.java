@@ -37,6 +37,7 @@ public class User {
     private Long v1LevelStartedAt = 0L; // timestamp ms kiedy gracz zaczal biezacy poziom V1
     private Long v2LevelStartedAt = 0L;
     private Long lastActiveAt = 0L; // timestamp ostatniego heartbeatu/aktywności
+    private Boolean isPaused = false; // czy sesja jest wstrzymana przez admina
 
     public User() {}
 
@@ -107,4 +108,7 @@ public class User {
 
     public long getLastActiveAt() { return lastActiveAt != null ? lastActiveAt : 0L; }
     public void setLastActiveAt(Long v) { this.lastActiveAt = v; }
+
+    public boolean isPaused() { return isPaused != null ? isPaused : false; }
+    public void setPaused(Boolean v) { this.isPaused = v; }
 }

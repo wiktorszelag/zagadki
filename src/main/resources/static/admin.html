@@ -468,6 +468,13 @@
         return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
     }
 
+    async function pauseSession(id) {
+        if (await fetch(`/api/admin/users/${id}/pause`, { method:'POST' })) fetchPlayers();
+    }
+    async function resumeSession(id) {
+        if (await fetch(`/api/admin/users/${id}/resume`, { method:'POST' })) fetchPlayers();
+    }
+
     function switchTab(id, el) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -549,6 +556,17 @@
         const query = (document.getElementById('search-backend').value || '').toLowerCase();
         let list = players;
         if (query) list = list.filter(p => (p.nickname||'').toLowerCase().includes(query));
+        
+        // Statystyki góra
+        const activeCount = list.filter(p => p._raw && !p._raw.v1Completed && !p._raw.v2Completed).length;
+        const doneCount = list.filter(p => p._raw && (p._raw.v1Completed || p._raw.v2Completed)).length;
+        const pausedCount = list.filter(p => p._raw && p._raw.isPaused).length;
+        
+        document.getElementById('s-total').textContent = list.length;
+        document.getElementById('s-playing').textContent = activeCount;
+        document.getElementById('s-done').textContent = doneCount;
+        document.getElementById('s-stopped').textContent = pausedCount;
+
         if (filterMode === 'active') list = list.filter(p => !p._raw?.v1Completed && !p._raw?.v2Completed);
         if (filterMode === 'done')   list = list.filter(p => p._raw?.v1Completed || p._raw?.v2Completed);
 
@@ -611,8 +629,8 @@
 
             // Status
             const v1Done = u.v1Completed, v2Done = u.v2Completed;
-            const statusBadge = (v1Done && v2Done)
-                ? '<span class="badge badge-green">FINAŁ V1+V2</span>'
+            const statusBadge = u.isPaused ? '<span class="badge badge-red pulse" style="background:rgba(255,0,0,0.2);border-color:var(--red);">⛔ PAUZA</span>'
+                : (v1Done && v2Done) ? '<span class="badge badge-green">FINAŁ V1+V2</span>'
                 : v1Done ? '<span class="badge badge-green">FINAŁ V1</span>'
                 : v2Done ? '<span class="badge badge-green" style="background:rgba(181,0,255,.2);border-color:#b500ff;">FINAŁ V2</span>'
                 : isLiveNow ? '<span class="badge badge-yellow pulse">🟢 ROZWIĄZUJE</span>'
@@ -621,6 +639,10 @@
                 : '<span class="badge" style="color:#446;">ZAREJESTROWANY</span>';
 
             const baseMs = (u.v1TimeMs || 0) + (u.v2TimeMs || 0);
+            
+            const pauseBtn = u.isPaused 
+                ? `<button class="act-btn" onclick="resumeSession('${u.id}')" style="border-color:var(--green); color:var(--green); width:75px;">▶ WZNÓW</button>`
+                : `<button class="act-btn" onclick="pauseSession('${u.id}')" style="border-color:var(--red); color:var(--red); width:75px;">⏸ PAUZA</button>`;
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -635,7 +657,10 @@
                 <td>${statusBadge}</td>
                 <td style="font-family:var(--font-h);color:var(--cyan); transition:color 0.3s;" id="${totalId}">${fmt(baseMs)}</td>
                 <td style="max-width:350px; font-size:0.8rem;">${allChips}</td>
-                <td><button class="act-btn act-delete" onclick="resetProgress('${u.id}', '${u.username || p.nickname}')" title="Resetuj postęp gry (nie usuwa konta)">↺ RESET</button></td>
+                <td style="display:flex; gap:5px; align-items:center; justify-content:center; height:100%;">
+                    ${pauseBtn}
+                    <button class="act-btn act-delete" onclick="resetProgress('${u.id}', '${u.username || p.nickname}')" title="Resetuj postęp gry">↺ RESET</button>
+                </td>
             `;
             tbody.appendChild(tr);
         });

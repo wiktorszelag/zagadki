@@ -77,8 +77,29 @@ public class AdminController {
         u.setV1LevelStartedAt(0L);
         u.setV2LevelStartedAt(0L);
         u.setLeaveCount(0);
+        u.setPaused(false);
 
         userRepository.save(u);
         return ResponseEntity.ok(Map.of("success", true, "message", "Postęp gracza zresetowany."));
+    }
+
+    @PostMapping("/users/{id}/pause")
+    public ResponseEntity<?> pauseUser(@PathVariable String id) {
+        Optional<User> uOpt = userRepository.findById(id);
+        if (uOpt.isEmpty()) return ResponseEntity.notFound().build();
+        User u = uOpt.get();
+        u.setPaused(true);
+        userRepository.save(u);
+        return ResponseEntity.ok(Map.of("success", true));
+    }
+
+    @PostMapping("/users/{id}/resume")
+    public ResponseEntity<?> resumeUser(@PathVariable String id) {
+        Optional<User> uOpt = userRepository.findById(id);
+        if (uOpt.isEmpty()) return ResponseEntity.notFound().build();
+        User u = uOpt.get();
+        u.setPaused(false);
+        userRepository.save(u);
+        return ResponseEntity.ok(Map.of("success", true));
     }
 }

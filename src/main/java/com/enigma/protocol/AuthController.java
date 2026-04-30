@@ -167,7 +167,8 @@ public class AuthController {
             "v1Completed", u.isV1Completed(),
             "v2Completed", u.isV2Completed(),
             "v1LevelTimesJson", u.getV1LevelTimesJson(),
-            "v2LevelTimesJson", u.getV2LevelTimesJson()
+            "v2LevelTimesJson", u.getV2LevelTimesJson(),
+            "isPaused", u.isPaused()
         );
     }
 
