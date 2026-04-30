@@ -560,33 +560,44 @@
             }).join('');
 
             // Aktywny poziom z tykającym zegarem
+            const now = Date.now();
             const v1StartedAt = u.v1LevelStartedAt || 0;
             const v2StartedAt = u.v2LevelStartedAt || 0;
-            const isV1Active = v1StartedAt > 0 && !u.v1Completed;
-            const isV2Active = v2StartedAt > 0 && !u.v2Completed;
+            // "NA ŻYWO" jeśli heartbeat był w ciągu ostatnich 30 sekund
+            const isV1Active = v1StartedAt > 0 && !u.v1Completed && (now - v1StartedAt) < 3600000;
+            const isV2Active = v2StartedAt > 0 && !u.v2Completed && (now - v2StartedAt) < 3600000;
+            // Gracz aktywnie pinguje (heartbeat < 30s temu = naprawdę teraz rozwiązuje)
+            const v1TimeMs = u.v1TimeMs || 0;
+            const v1CurrentSec = isV1Active ? Math.round((now - v1StartedAt) / 1000) : 0;
+            const isV1Solving = isV1Active && v1CurrentSec < 30; // świeży ping
+            const isV2Solving = isV2Active && Math.round((now - v2StartedAt) / 1000) < 30;
 
             const liveV1Id = `live-v1-${u.id?.split('-')[0]}`;
             const liveV2Id = `live-v2-${u.id?.split('-')[0]}`;
 
             if (isV1Active) {
-                chipsV1 += `<span class="lvl-chip current">L${u.v1Level} <span class="t" id="${liveV1Id}">…</span>▶</span>`;
+                const pulse = isV1Solving ? ' style="animation:pulse 1s infinite;"' : '';
+                chipsV1 += `<span class="lvl-chip current"${pulse}>L${u.v1Level} <span class="t" id="${liveV1Id}">…</span>▶</span>`;
             }
             if (isV2Active) {
-                chipsV2 += `<span class="lvl-chip current" style="border-color:#b500ff;">L${u.v2Level} <span class="t" id="${liveV2Id}">…</span>▶</span>`;
+                const pulse = isV2Solving ? ' style="animation:pulse 1s infinite;border-color:#b500ff;"' : 'style="border-color:#b500ff;"';
+                chipsV2 += `<span class="lvl-chip current" ${pulse}>L${u.v2Level} <span class="t" id="${liveV2Id}">…</span>▶</span>`;
             }
 
             const allChips = (chipsV1 || chipsV2) 
-                ? `<div style="margin-bottom:4px;">${chipsV1}</div><div>${chipsV2}</div>`
+                ? `<div style="margin-bottom:4px;"><span style="color:#446;font-size:0.6rem;font-family:var(--font-h);">V1►</span> ${chipsV1 || '<span style="color:#334;">brak danych</span>'}</div><div><span style="color:#446;font-size:0.6rem;font-family:var(--font-h);">V2►</span> ${chipsV2 || '<span style="color:#334;">brak danych</span>'}</div>`
                 : '<span style="color:#334;">—</span>';
 
-            // Status
+            // Status – wykryj czy gracz TERAZ rozwiązuje (heartbeat < 30s)
             const v1Done = u.v1Completed, v2Done = u.v2Completed;
+            const isLiveNow = isV1Solving || isV2Solving;
             const statusBadge = (v1Done && v2Done)
                 ? '<span class="badge badge-green">FINAŁ V1+V2</span>'
                 : v1Done ? '<span class="badge badge-green">FINAŁ V1</span>'
                 : v2Done ? '<span class="badge badge-green" style="background:rgba(181,0,255,.2);border-color:#b500ff;">FINAŁ V2</span>'
-                : (isV1Active || isV2Active) ? '<span class="badge badge-yellow">🟢 NA ŻYWO</span>'
-                : u.v1Level > 1 || u.v2Level > 1 ? '<span class="badge badge-yellow">W TOKU</span>'
+                : isLiveNow ? '<span class="badge badge-yellow" style="animation:pulse 0.8s infinite;">🟢 ROZWIĄZUJE</span>'
+                : (isV1Active || isV2Active) ? '<span class="badge badge-yellow">🟡 NA POZIOMIE</span>'
+                : u.v1Level > 1 || u.v2Level > 1 ? '<span class="badge" style="color:#556;">W TOKU</span>'
                 : '<span class="badge" style="color:#446;">ZAREJESTROWANY</span>';
 
             // Łączny czas (V1 + aktywny bieżący jeśli gra teraz)

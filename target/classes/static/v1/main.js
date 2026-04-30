@@ -77,6 +77,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 350);
     });
 
+    // Heartbeat co 10s – admin widzi że gracz aktywnie rozwiązuje
+    setInterval(() => {
+        if (sessionNick && levelStartMs && currentLevel > 0) {
+            fetch('/api/auth/progress', {
+                method: 'POST', headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({ username: sessionNick, protocol: 'v1', level: currentLevel, timeMs: totalTimeMs + (Date.now() - levelStartMs), completed: false, levelStartedAt: levelStartMs })
+            }).catch(() => {});
+        }
+    }, 10000);
+
     document.getElementById('ls-back-btn')?.addEventListener('click', () => {
         if (levelHistory.length === 0) return;
         const screen = document.getElementById('level-start-screen');
