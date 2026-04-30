@@ -382,6 +382,8 @@
                             <th>NICKNAME</th>
                             <th>E-MAIL</th>
                             <th>ROLA</th>
+                            <th>POSTĘP V1</th>
+                            <th>POSTĘP V2</th>
                             <th>STATUS</th>
                             <th>AKCJA</th>
                         </tr>
@@ -612,7 +614,7 @@
         const tbody = document.getElementById('db-users-tbody');
         tbody.innerHTML = '';
         if (dbUsers.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state">Brak kont w bazie</div></td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state">Brak kont w bazie</div></td></tr>';
             return;
         }
 
@@ -621,11 +623,16 @@
             const stat = u.enabled ? '<span class="badge badge-green">AKTYWNE</span>' : '<span class="badge badge-yellow">NIEZWERYFIKOWANE</span>';
             const roleBadge = u.role === 'ADMIN' ? '<span class="badge badge-red">ADMIN</span>' : '<span class="badge badge-cyan">PLAYER</span>';
             
+            const v1Prog = u.v1Completed ? '<span class="badge badge-pur">FINAŁ</span>' : 'L' + u.v1Level;
+            const v2Prog = u.v2Completed ? '<span class="badge badge-pur">FINAŁ</span>' : 'L' + u.v2Level;
+            
             tr.innerHTML = `
                 <td style="font-family:var(--font-h);font-size:0.65rem;color:#446;">${u.id.split('-')[0]}</td>
                 <td><strong style="color:#ddf;">${u.username}</strong></td>
                 <td>${u.email || '-'}</td>
                 <td>${roleBadge}</td>
+                <td style="font-family:var(--font-h);color:var(--cyan);">${v1Prog} (${Math.floor(u.v1TimeMs/1000)}s)</td>
+                <td style="font-family:var(--font-h);color:var(--cyan);">${v2Prog} (${Math.floor(u.v2TimeMs/1000)}s)</td>
                 <td>${stat}</td>
                 <td><button class="act-btn act-delete" onclick="deleteDbUser('${u.id}')">✕ USUŃ</button></td>
             `;

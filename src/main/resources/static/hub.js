@@ -353,7 +353,16 @@ function initForms() {
             if (data.success) {
                 msg.className = 'msg-box msg-suc';
                 msg.textContent = 'Autoryzacja przyznana...';
-                saveSession({ nick: data.username, role: data.role });
+                saveSession({ 
+                    nick: data.username, 
+                    role: data.role,
+                    v1Level: data.v1Level,
+                    v2Level: data.v2Level,
+                    v1TimeMs: data.v1TimeMs,
+                    v2TimeMs: data.v2TimeMs,
+                    v1Completed: data.v1Completed,
+                    v2Completed: data.v2Completed
+                });
                 setTimeout(() => {
                     loginForm.reset();
                     showDashboard();
@@ -410,11 +419,26 @@ function showDashboard() {
         const cardBestBox = document.getElementById(`card-${v}-best`);
         const cardBestTime = document.getElementById(`card-${v}-best-time`);
 
+        let lvl = session[`${v}Level`] || 1;
+        let ms = session[`${v}TimeMs`] || 0;
+        let comp = session[`${v}Completed`] || false;
+
         if (badge) {
             badge.classList.remove('hidden');
-            badge.innerHTML = `⏳ POSTĘP: 0 / ${MAX_LEVELS}`;
-            badge.className = 'card-status status-active';
+            if (comp) {
+                badge.innerHTML = `&#10003; UKOŃCZONY`;
+                badge.className = 'card-status status-active';
+                if (cardBestBox && ms > 0) {
+                    cardBestBox.style.display = 'block';
+                    cardBestTime.textContent = formatMsLocal(ms);
+                    if (statEl) statEl.textContent = formatMsLocal(ms);
+                }
+            } else {
+                badge.innerHTML = `⏳ POSTĘP: ${lvl > MAX_LEVELS ? MAX_LEVELS : lvl - 1} / ${MAX_LEVELS}`;
+                badge.className = 'card-status status-active';
+            }
         }
+        if (lvl > 1) totalMissions += (lvl > MAX_LEVELS ? MAX_LEVELS : lvl - 1);
     });
 
     if (missionsEl) missionsEl.textContent = totalMissions;

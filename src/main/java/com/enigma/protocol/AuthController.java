@@ -94,7 +94,17 @@ public class AuthController {
             return Map.of("success", false, "message", "Konto nie zostało jeszcze aktywowane. Sprawdź pocztę e-mail.");
         }
         
-        return Map.of("success", true, "username", u.getUsername(), "role", u.getRole());
+        return Map.of(
+            "success", true,
+            "username", u.getUsername(),
+            "role", u.getRole(),
+            "v1Level", u.getV1Level(),
+            "v2Level", u.getV2Level(),
+            "v1TimeMs", u.getV1TimeMs(),
+            "v2TimeMs", u.getV2TimeMs(),
+            "v1Completed", u.isV1Completed(),
+            "v2Completed", u.isV2Completed()
+        );
     }
 
     @PostMapping("/forgot-password")
@@ -137,6 +147,41 @@ public class AuthController {
              + "<p>Skopiuj je dokładnie i zachowaj w bezpiecznym miejscu.</p>"
              + "<p><a href='/' style='color:#0ff;font-size:1.2rem;text-decoration:none;'>[ WRÓĆ DO LOGOWANIA ]</a></p>"
              + "</body></html>";
+    }
+
+    @PostMapping("/progress")
+    public Map<String, Object> updateProgress(@RequestBody Map<String, Object> body) {
+        String username = (String) body.get("username");
+        String protocol = (String) body.get("protocol"); // "v1" or "v2"
+        Integer level = (Integer) body.get("level");
+        Number timeMsObj = (Number) body.get("timeMs");
+        Boolean completed = (Boolean) body.get("completed");
+
+        if (username == null || protocol == null || level == null) {
+            return Map.of("success", false, "message", "Brak wymaganych danych");
+        }
+
+        Optional<User> uOpt = userRepository.findByUsername(username);
+        if (uOpt.isEmpty()) {
+            return Map.of("success", false, "message", "Użytkownik nie istnieje");
+        }
+
+        User u = uOpt.get();
+        long timeMs = timeMsObj != null ? timeMsObj.longValue() : 0L;
+        boolean isDone = completed != null ? completed : false;
+
+        if ("v1".equalsIgnoreCase(protocol)) {
+            u.setV1Level(level);
+            u.setV1TimeMs(timeMs);
+            u.setV1Completed(isDone);
+        } else if ("v2".equalsIgnoreCase(protocol)) {
+            u.setV2Level(level);
+            u.setV2TimeMs(timeMs);
+            u.setV2Completed(isDone);
+        }
+
+        userRepository.save(u);
+        return Map.of("success", true);
     }
 
     private String generateRandomPassword() {

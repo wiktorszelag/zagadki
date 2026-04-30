@@ -142,8 +142,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
         cleanupLevel(currentLevel);
         currentLevel++;
+        
+        // Zapis postępu do bazy
+        if (sessionNick) {
+            fetch('/api/auth/progress', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({
+                    username: sessionNick,
+                    protocol: 'v2',
+                    level: currentLevel,
+                    timeMs: totalElapsedMs,
+                    completed: currentLevel > TOTAL_LEVELS
+                })
+            });
+            try {
+                let s = JSON.parse(localStorage.getItem('enigma_mock_session'));
+                if (s) { s.v2Level = currentLevel; s.v2TimeMs = totalElapsedMs; if(currentLevel > TOTAL_LEVELS) s.v2Completed = true; localStorage.setItem('enigma_mock_session', JSON.stringify(s)); }
+            } catch(e) {}
+        }
+
         if (currentLevel <= TOTAL_LEVELS) {
-            saveProgress(); // Zapisz po zwiększeniu levelu!
             showLevelStart(currentLevel);
         } else {
             showVictory(false);
@@ -165,7 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
         currentLevel = 0; totalElapsedMs = 0; currentLevelStartMs = null; skippedCount = 0;
         levelHistory = [];
         cleanupLevel(-1);
-        localStorage.removeItem('ep_v2_progress'); // zawsze czyść przy restarcie
         showScreen('start-screen');
     };
 
@@ -261,26 +279,22 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Zawsze czyść stary zapis — nowa gra zaczyna od 1
-        localStorage.removeItem('ep_v2_progress');
         currentLevel = 0; totalElapsedMs = 0; currentLevelStartMs = null; skippedCount = 0;
         levelHistory = [];
 
-        // TWORZYSZ NOWĄ SESJĘ NA SERWERZE (Admin widzi gracza!)
-        // Pomijamy dla ADMINA (jego wynik nie jest zapisywany)
-        if (sessionRole !== 'ADMIN') {
-            try {
-                const resp = await fetch('/api/players', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nickname: nick })
-                });
-                if (resp.ok) {
-                    const p = await resp.json();
-                    backendPlayerId = p.id;
+        // Odczyt postępu z sesji V2
+        try {
+            const session = JSON.parse(localStorage.getItem('enigma_mock_session'));
+            if (session && session.nick === nick && session.v2Level > 1) {
+                if (session.v2Level <= TOTAL_LEVELS) {
+                    currentLevel = session.v2Level - 1;
+                    totalElapsedMs = session.v2TimeMs || 0;
+                } else {
+                    currentLevel = TOTAL_LEVELS;
+                    totalElapsedMs = session.v2TimeMs || 0;
                 }
-            } catch(e) { console.log("Tryb offline - backend niedostępny"); }
-        }
+            }
+        } catch(e) {}
 
         advanceLevel();
     });

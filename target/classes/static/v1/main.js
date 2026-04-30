@@ -89,11 +89,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 350);
     });
 
-    // --- ADVANCE LEVEL ---
     const advanceLevel = () => {
         if (currentLevel > 0 && levelStartMs) { totalTimeMs += (Date.now() - levelStartMs); levelStartMs = null; }
         if (currentLevel > 0) levelHistory.push(currentLevel);
         currentLevel++;
+        
+        // Zapis postępu do bazy
+        if (sessionNick) {
+            fetch('/api/auth/progress', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({
+                    username: sessionNick,
+                    protocol: 'v1',
+                    level: currentLevel,
+                    timeMs: totalTimeMs,
+                    completed: currentLevel > 10
+                })
+            });
+            // Update local session to avoid needing a relogin to see dashboard update
+            try {
+                let s = JSON.parse(localStorage.getItem('enigma_mock_session'));
+                if (s) { s.v1Level = currentLevel; s.v1TimeMs = totalTimeMs; if(currentLevel > 10) s.v1Completed = true; localStorage.setItem('enigma_mock_session', JSON.stringify(s)); }
+            } catch(e) {}
+        }
+
         if (currentLevel <= 10) {
             showLevelStart(currentLevel);
         } else {
@@ -130,7 +150,6 @@ document.addEventListener('DOMContentLoaded', () => {
         advanceLevel();
     };
 
-    // --- INTEGRACJA Z SESJĄ HUBA ---
     let sessionNick = null;
     let sessionRole = null;
     try {
@@ -151,6 +170,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (sessionRole === 'ADMIN') {
                 const devBar = document.getElementById('dev-bar');
                 if (devBar) devBar.style.display = 'flex';
+            }
+            if (session.v1Level && session.v1Level > 1) {
+                if (session.v1Level <= 10) {
+                    currentLevel = session.v1Level - 1;
+                    totalTimeMs = session.v1TimeMs || 0;
+                } else {
+                    currentLevel = 10;
+                    totalTimeMs = session.v1TimeMs || 0;
+                }
             }
         }
     } catch(e) {}
