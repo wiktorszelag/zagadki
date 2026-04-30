@@ -496,12 +496,22 @@
             <div class="ls-desc" id="ls-level-desc" style="margin-bottom:10px; color:#88aaff; line-height:1.4;">Opis zadania...</div>
             <div style="font-size:0.8rem; color:#88aaff; margin-bottom:25px; font-family:var(--font-mono); border:1px dashed rgba(136,170,255,0.3); padding:8px;">
                 ⏱ Czas jest mierzony TYLKO podczas trwania poziomu.<br>
-                💾 Postęp zapisuje się automatycznie po każdym kroku.
+                💾 Tylko pierwszy wynik zostaje zapisany do rankingu.
             </div>
             <button id="ls-start-btn" style="width:100%; margin-bottom:10px;">&#x25B6; ROZPOCZNIJ RUNDE</button>
             <button id="ls-back-btn" class="action-btn" style="width:100%; margin-bottom:10px; background:rgba(255,165,0,0.1); border:1px solid orange; color:orange; font-size:0.8rem; padding:10px;">&#x2B05; COFNIJ DO POPRZEDNIEGO POZIOMU</button>
             <button id="ls-end-btn" class="action-btn" style="width:100%; margin-bottom:10px; background:rgba(255,42,42,0.1); border:1px solid var(--neon-red); color:var(--neon-red); font-size:0.8rem; padding:10px;">&#x23F9; ZAKOŃCZ GRĘ (ZAPISZ WYNIK)</button>
             <button id="ls-hard-reset-btn" class="action-btn" style="width:100%; background:rgba(255,0,0,0.2); border:1px solid red; color:white; font-size:0.75rem; padding:8px;">♻️ ZRESETUJ POSTĘP (NOWA GRA)</button>
+        </div>
+    </div>
+
+    <!-- INTERMISSION SCREEN -->
+    <div id="intermission-screen" class="screen hidden" style="flex-direction:column; justify-content:center; align-items:center; background:rgba(0,10,25,0.95); z-index:2000;">
+        <div style="background:rgba(0,15,35,0.8); border:1px solid rgba(0,245,255,0.3); padding:35px 25px; border-radius:12px; max-width:90%; text-align:center; width:100%;">
+            <div style="font-size:1.8rem; color:var(--neon-green); margin-bottom:15px; font-family:var(--font-heading);">ZABEZPIECZENIE ZŁAMANE</div>
+            <p style="color:#88aaff; margin-bottom:30px;">Poziom pomyślnie ukończony. Co chcesz zrobić teraz?</p>
+            <button id="int-next-btn" style="width:100%; margin-bottom:15px; padding:15px; font-size:1.1rem; background:transparent; border:2px solid var(--neon-cyan); border-radius:10px; color:var(--neon-cyan); font-family:var(--font-heading);">&#x25B6; KOLEJNY POZIOM</button>
+            <a href="/" style="text-decoration:none;"><button class="action-btn" style="width:100%; border-color:#88aaff; color:#88aaff; font-size:0.9rem; padding:12px; background:rgba(136,170,255,0.1);">&#x1F3E0; POWRÓT DO MENU (HUB)</button></a>
         </div>
     </div>
 

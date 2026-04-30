@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let totalElapsedMs = 0;
     let currentLevelStartMs = null;
 
-    const advanceLevel = () => {
+    const advanceLevel = (showIntermission = true) => {
         if (currentLevel > 0 && currentLevelStartMs) {
             totalElapsedMs += (Date.now() - currentLevelStartMs);
         }
@@ -163,11 +163,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (currentLevel <= TOTAL_LEVELS) {
-            showLevelStart(currentLevel);
+            if (showIntermission && currentLevel > 1) {
+                showScreen('intermission-screen');
+            } else {
+                showLevelStart(currentLevel);
+            }
         } else {
             showVictory(false);
         }
     };
+    
+    document.getElementById('int-next-btn')?.addEventListener('click', () => {
+        const screen = document.getElementById('intermission-screen');
+        screen.classList.remove('active');
+        setTimeout(() => {
+            screen.classList.add('hidden');
+            showLevelStart(currentLevel);
+        }, 350);
+    });
 
     const _skipLevel = () => {
         if (currentLevel === 0) {
@@ -296,7 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch(e) {}
 
-        advanceLevel();
+        advanceLevel(false);
     });
 
     // --- AUTO-ŁADOWANIE WCZEŚNIEJSZEGO STANU ---

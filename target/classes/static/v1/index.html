@@ -31,11 +31,21 @@
             <div class="ls-desc" id="ls-level-desc" style="margin-bottom:10px;">Opis zadania...</div>
             <div style="font-size:0.8rem; color:#88aaff; margin-bottom:20px; font-family:var(--font-mono); border:1px dashed rgba(136,170,255,0.3); padding:8px;">
                 ⏱ Czas jest mierzony TYLKO podczas trwania poziomu.<br>
-                💾 Postęp zapisuje się automatycznie po każdym kroku.
+                💾 Tylko pierwszy wynik zostaje zapisany do rankingu.
             </div>
             <button id="ls-start-btn" style="width:100%; margin-bottom:10px;">&#x25B6; ROZPOCZNIJ RUNDĘ</button>
             <button id="ls-back-btn" class="action-btn" style="width:100%; margin-bottom:8px; border-color:orange; color:orange; font-size:.75rem; padding:10px; margin-top:0;">&#x2B05; COFNIJ DO POPRZEDNIEGO</button>
             <button id="ls-end-btn" class="action-btn" style="width:100%; border-color:var(--neon-red); color:var(--neon-red); font-size:.75rem; padding:10px; margin-top:0;">&#x23F9; ZAKOŃCZ GRĘ (ZAPISZ WYNIK)</button>
+        </div>
+    </div>
+
+    <!-- INTERMISSION SCREEN -->
+    <div id="intermission-screen" class="screen hidden">
+        <div style="background:rgba(0,15,35,0.9); border:1px solid rgba(0,245,255,0.3); padding:35px 25px; border-radius:12px; max-width:90%; text-align:center; width:100%;">
+            <div style="font-size:1.8rem; color:var(--neon-green); margin-bottom:15px; font-family:var(--font-h);">POZIOM ZALICZONY</div>
+            <p style="color:#88aaff; margin-bottom:30px;">Zabezpieczenie zostało złamane. Co chcesz zrobić teraz?</p>
+            <button id="int-next-btn" style="width:100%; margin-bottom:15px; padding:15px; font-size:1.1rem;">&#x25B6; KOLEJNY POZIOM</button>
+            <a href="/" style="text-decoration:none;"><button class="action-btn" style="width:100%; border-color:#88aaff; color:#88aaff; font-size:0.9rem; padding:12px;">&#x1F3E0; POWRÓT DO MENU (HUB)</button></a>
         </div>
     </div>
 

@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 350);
     });
 
-    const advanceLevel = () => {
+    const advanceLevel = (showIntermission = true) => {
         if (currentLevel > 0 && levelStartMs) { totalTimeMs += (Date.now() - levelStartMs); levelStartMs = null; }
         if (currentLevel > 0) levelHistory.push(currentLevel);
         currentLevel++;
@@ -107,7 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     completed: currentLevel > 10
                 })
             });
-            // Update local session to avoid needing a relogin to see dashboard update
             try {
                 let s = JSON.parse(localStorage.getItem('enigma_mock_session'));
                 if (s) { s.v1Level = currentLevel; s.v1TimeMs = totalTimeMs; if(currentLevel > 10) s.v1Completed = true; localStorage.setItem('enigma_mock_session', JSON.stringify(s)); }
@@ -115,13 +114,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (currentLevel <= 10) {
-            showLevelStart(currentLevel);
+            if (showIntermission && currentLevel > 1) {
+                showScreen('intermission-screen');
+            } else {
+                showLevelStart(currentLevel);
+            }
         } else {
             showScreen('victory-screen');
             document.getElementById('my-time-display').textContent = formatTime(totalTimeMs);
             document.getElementById('stat-skipped').textContent = skippedCount;
         }
     };
+    
+    document.getElementById('int-next-btn')?.addEventListener('click', () => {
+        const screen = document.getElementById('intermission-screen');
+        screen.classList.remove('active');
+        setTimeout(() => {
+            screen.classList.add('hidden');
+            showLevelStart(currentLevel);
+        }, 350);
+    });
 
     const formatTime = (ms) => {
         const s = Math.floor(ms / 1000);
@@ -147,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     window.jumpToLevelHandler = (n) => {
         currentLevel = n - 1;
-        advanceLevel();
+        advanceLevel(false);
     };
 
     let sessionNick = null;
@@ -193,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => { inp.style.borderColor = ''; inp.style.boxShadow = ''; }, 900);
             return;
         }
-        advanceLevel();
+        advanceLevel(false);
     });
 
     const initLevel = (lvl) => { const el = document.getElementById(`l${lvl}-status`); if (el) el.textContent = ''; window[`initL${lvl}`](); };

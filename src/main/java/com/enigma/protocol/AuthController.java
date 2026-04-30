@@ -171,13 +171,17 @@ public class AuthController {
         boolean isDone = completed != null ? completed : false;
 
         if ("v1".equalsIgnoreCase(protocol)) {
-            u.setV1Level(level);
-            u.setV1TimeMs(timeMs);
-            u.setV1Completed(isDone);
+            if (!u.isV1Completed()) {
+                u.setV1Level(level);
+                u.setV1TimeMs(timeMs);
+                if (isDone) u.setV1Completed(true);
+            }
         } else if ("v2".equalsIgnoreCase(protocol)) {
-            u.setV2Level(level);
-            u.setV2TimeMs(timeMs);
-            u.setV2Completed(isDone);
+            if (!u.isV2Completed()) {
+                u.setV2Level(level);
+                u.setV2TimeMs(timeMs);
+                if (isDone) u.setV2Completed(true);
+            }
         }
 
         userRepository.save(u);
