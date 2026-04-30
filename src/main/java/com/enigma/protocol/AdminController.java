@@ -59,4 +59,26 @@ public class AdminController {
         userRepository.save(u);
         return ResponseEntity.ok(Map.of("success", true));
     }
+
+    @PostMapping("/users/{id}/reset-progress")
+    public ResponseEntity<?> resetProgress(@PathVariable String id) {
+        Optional<User> uOpt = userRepository.findById(id);
+        if (uOpt.isEmpty()) return ResponseEntity.notFound().build();
+        User u = uOpt.get();
+
+        u.setV1Level(1);
+        u.setV2Level(1);
+        u.setV1TimeMs(0L);
+        u.setV2TimeMs(0L);
+        u.setV1Completed(false);
+        u.setV2Completed(false);
+        u.setV1LevelTimesJson("{}");
+        u.setV2LevelTimesJson("{}");
+        u.setV1LevelStartedAt(0L);
+        u.setV2LevelStartedAt(0L);
+        u.setLeaveCount(0);
+
+        userRepository.save(u);
+        return ResponseEntity.ok(Map.of("success", true, "message", "Postęp gracza zresetowany."));
+    }
 }

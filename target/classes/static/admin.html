@@ -490,6 +490,19 @@
             fetchPlayers();
         }
     }
+
+    async function resetProgress(id, nick) {
+        if (!confirm(`Czy na pewno zresetować cały postęp gry dla "${nick}"?\nPoziomy, czasy i logi zostaną wyzerowane. Konto pozostanie aktywne.`)) return;
+        try {
+            const res = await fetch('/api/admin/users/' + id + '/reset-progress', { method: 'POST' });
+            if (res.ok) {
+                fetchPlayers();
+                fetchDbUsers();
+            } else {
+                alert('Błąd resetu postępu');
+            }
+        } catch(e) { alert('Błąd połączenia'); }
+    }
     async function stopTime(id)   { await fetch('/api/players/' + id + '/time/stop',   { method: 'PUT' }); fetchPlayers(); }
     async function resumeTime(id) { await fetch('/api/players/' + id + '/time/resume', { method: 'PUT' }); fetchPlayers(); }
     async function finishGame(id) {
@@ -624,7 +637,7 @@
                 <td>${statusBadge}</td>
                 <td style="font-family:var(--font-h);color:var(--cyan);" id="${totalId}">${fmt(baseMs)}</td>
                 <td style="max-width:300px; font-size:0.8rem;">${allChips}</td>
-                <td><button class="act-btn act-delete" onclick="deleteDbUser('${u.id}')">✕</button></td>
+                <td><button class="act-btn act-delete" onclick="resetProgress('${u.id}', '${u.username || p.nickname}')" title="Resetuj postęp gry (nie usuwa konta)">↺ RESET</button></td>
             `;
             tbody.appendChild(tr);
         });
