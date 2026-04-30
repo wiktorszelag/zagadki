@@ -51,6 +51,12 @@ public class AdminAuthFilter implements Filter {
 
         String path = req.getServletPath();
 
+        // Przepuszczaj API - te endpointy mają własne zabezpieczenia
+        if (path.startsWith("/api/")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         // Only intercept admin routes
         if (!path.startsWith("/admin") && !path.equals("/admin-login") && !path.equals("/admin-logout")) {
             chain.doFilter(request, response);
