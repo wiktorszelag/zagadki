@@ -22,12 +22,12 @@ public class User {
     private String resetToken;
 
     // Progress Tracking
-    private int v1Level = 1;
-    private int v2Level = 1;
-    private long v1TimeMs = 0L;
-    private long v2TimeMs = 0L;
-    private boolean v1Completed = false;
-    private boolean v2Completed = false;
+    private Integer v1Level = 1;
+    private Integer v2Level = 1;
+    private Long v1TimeMs = 0L;
+    private Long v2TimeMs = 0L;
+    private Boolean v1Completed = false;
+    private Boolean v2Completed = false;
 
     public User() {}
 
@@ -63,21 +63,21 @@ public class User {
     public String getResetToken() { return resetToken; }
     public void setResetToken(String resetToken) { this.resetToken = resetToken; }
 
-    public int getV1Level() { return v1Level; }
-    public void setV1Level(int v1Level) { this.v1Level = v1Level; }
+    public int getV1Level() { return v1Level != null ? v1Level : 1; }
+    public void setV1Level(Integer v1Level) { this.v1Level = v1Level; }
     
-    public int getV2Level() { return v2Level; }
-    public void setV2Level(int v2Level) { this.v2Level = v2Level; }
+    public int getV2Level() { return v2Level != null ? v2Level : 1; }
+    public void setV2Level(Integer v2Level) { this.v2Level = v2Level; }
     
-    public long getV1TimeMs() { return v1TimeMs; }
-    public void setV1TimeMs(long v1TimeMs) { this.v1TimeMs = v1TimeMs; }
+    public long getV1TimeMs() { return v1TimeMs != null ? v1TimeMs : 0L; }
+    public void setV1TimeMs(Long v1TimeMs) { this.v1TimeMs = v1TimeMs; }
     
-    public long getV2TimeMs() { return v2TimeMs; }
-    public void setV2TimeMs(long v2TimeMs) { this.v2TimeMs = v2TimeMs; }
+    public long getV2TimeMs() { return v2TimeMs != null ? v2TimeMs : 0L; }
+    public void setV2TimeMs(Long v2TimeMs) { this.v2TimeMs = v2TimeMs; }
     
-    public boolean isV1Completed() { return v1Completed; }
-    public void setV1Completed(boolean v1Completed) { this.v1Completed = v1Completed; }
+    public boolean isV1Completed() { return v1Completed != null ? v1Completed : false; }
+    public void setV1Completed(Boolean v1Completed) { this.v1Completed = v1Completed; }
     
-    public boolean isV2Completed() { return v2Completed; }
-    public void setV2Completed(boolean v2Completed) { this.v2Completed = v2Completed; }
+    public boolean isV2Completed() { return v2Completed != null ? v2Completed : false; }
+    public void setV2Completed(Boolean v2Completed) { this.v2Completed = v2Completed; }
 }
