@@ -132,7 +132,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (sessionNick && currentLevelStartMs && currentLevel > 0) {
             fetch('/api/auth/progress', {
                 method: 'POST', headers: {'Content-Type':'application/json'},
-                body: JSON.stringify({ username: sessionNick, protocol: 'v2', level: currentLevel, timeMs: totalElapsedMs + (Date.now() - currentLevelStartMs), completed: false, levelStartedAt: currentLevelStartMs })
+                // UWAGA: totalElapsedMs NIE zawiera bieżącego poziomu – admin sam liczy (now - levelStartedAt)
+                body: JSON.stringify({ username: sessionNick, protocol: 'v2', level: currentLevel, timeMs: totalElapsedMs, completed: false, levelStartedAt: currentLevelStartMs })
             }).catch(() => {});
         }
     }, 10000);

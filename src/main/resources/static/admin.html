@@ -646,30 +646,33 @@
         if (liveTickInterval) clearInterval(liveTickInterval);
         liveTickInterval = setInterval(() => {
             const now = Date.now();
-            tbody.querySelectorAll('tr[data-live-v1-id]').forEach(() => {}); // fallback
             list.forEach(p => {
                 const u = p._raw || {};
                 const uid = (u.id||'').split('-')[0];
-                const v1At = parseInt(p._raw?.v1LevelStartedAt || 0);
-                const v2At = parseInt(p._raw?.v2LevelStartedAt || 0);
+                const v1At = parseInt(u.v1LevelStartedAt || 0);
+                const v2At = parseInt(u.v2LevelStartedAt || 0);
                 const v1Base = u.v1TimeMs || 0;
                 const v2Base = u.v2TimeMs || 0;
 
+                // Chip bieżącego poziomu V1 (tyka tylko jeśli mamy levelStartedAt)
                 if (v1At > 0 && !u.v1Completed) {
                     const el = document.getElementById(`live-v1-${uid}`);
-                    if (el) el.textContent = ((now - v1At)/1000).toFixed(0) + 's';
+                    if (el) el.textContent = Math.floor((now - v1At)/1000) + 's';
                 }
+                // Chip bieżącego poziomu V2
                 if (v2At > 0 && !u.v2Completed) {
                     const el = document.getElementById(`live-v2-${uid}`);
-                    if (el) el.textContent = ((now - v2At)/1000).toFixed(0) + 's';
+                    if (el) el.textContent = Math.floor((now - v2At)/1000) + 's';
                 }
-                // Łączny czas live
+                // Łączny czas – zawsze aktualizuj (nawet bez levelStartedAt)
                 const totalEl = document.getElementById(`total-${uid}`);
                 if (totalEl) {
                     let live = v1Base + v2Base;
                     if (v1At > 0 && !u.v1Completed) live += now - v1At;
                     if (v2At > 0 && !u.v2Completed) live += now - v2At;
                     totalEl.textContent = fmt(live);
+                    // Kolor: zielony gdy aktywny, biały gdy statyczny
+                    totalEl.style.color = (v1At > 0 || v2At > 0) ? 'var(--green)' : 'var(--cyan)';
                 }
             });
         }, 1000);
@@ -833,8 +836,8 @@
     // ─── BOOT ────────────────────────────────────────────────────
     fetchPlayers();
     fetchDbUsers();
-    setInterval(fetchPlayers, 2000);
-    setInterval(fetchDbUsers, 5000);
+    setInterval(fetchPlayers, 2000);  // dane z DB co 2s
+    setInterval(fetchDbUsers, 5000);  // konta co 5s
 </script>
 </body>
 </html>
