@@ -383,11 +383,27 @@ document.addEventListener('DOMContentLoaded', () => {
                         totalElapsedMs = session.v2TimeMs || 0;
                     }
                 });
+        } else {
+            // BRAK SESJI - ZABLOKUJ START
+            const sb = document.getElementById('start-btn');
+            if (sb) {
+                sb.disabled = true;
+                sb.textContent = 'WYMAGANE LOGOWANIE W HUBIE';
+                sb.style.borderColor = 'var(--neon-red)';
+                sb.style.color = 'var(--neon-red)';
+                sb.style.fontSize = '0.8rem';
+            }
+            const ni = document.getElementById('player-nick');
+            if (ni) {
+                ni.disabled = true;
+                ni.placeholder = 'Dostęp zablokowany';
+            }
         }
     } catch(e) {}
 
     // --- START SCREEN ---
     document.getElementById('start-btn').addEventListener('click', async () => {
+        if (!sessionNick) return;
         const nick = document.getElementById('player-nick').value.trim();
         const inp = document.getElementById('player-nick');
         if (!nick) {
