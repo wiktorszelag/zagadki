@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let levelStartMs = null;
     let skippedCount = 0;
     let levelHistory = [];
+    let levelTimes = {}; // czas per poziom {1: ms, 2: ms, ...}
 
     // --- SCREEN TRANSITIONS (V2-style) ---
     const showScreen = (id) => {
@@ -90,8 +91,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const advanceLevel = (showIntermission = true) => {
-        if (currentLevel > 0 && levelStartMs) { totalTimeMs += (Date.now() - levelStartMs); levelStartMs = null; }
-        if (currentLevel > 0) levelHistory.push(currentLevel);
+        let elapsed = 0;
+        if (currentLevel > 0 && levelStartMs) { elapsed = Date.now() - levelStartMs; totalTimeMs += elapsed; levelStartMs = null; }
+        if (currentLevel > 0) {
+            levelHistory.push(currentLevel);
+            levelTimes[currentLevel] = (levelTimes[currentLevel] || 0) + elapsed;
+        }
         currentLevel++;
         
         // Zapis postępu do bazy
@@ -104,7 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     protocol: 'v1',
                     level: currentLevel,
                     timeMs: totalTimeMs,
-                    completed: currentLevel > 10
+                    completed: currentLevel > 10,
+                    levelTimes: levelTimes
                 })
             });
             try {

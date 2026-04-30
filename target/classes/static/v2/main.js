@@ -131,14 +131,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let totalElapsedMs = 0;
     let currentLevelStartMs = null;
+    let levelTimes = {}; // czas per poziom {1: ms, 2: ms, ...}
 
     const advanceLevel = (showIntermission = true) => {
+        let elapsed = 0;
         if (currentLevel > 0 && currentLevelStartMs) {
-            totalElapsedMs += (Date.now() - currentLevelStartMs);
+            elapsed = Date.now() - currentLevelStartMs;
+            totalElapsedMs += elapsed;
         }
         currentLevelStartMs = null;
 
-        if (currentLevel > 0) levelHistory.push(currentLevel); // remember where we were
+        if (currentLevel > 0) {
+            levelHistory.push(currentLevel);
+            levelTimes[currentLevel] = (levelTimes[currentLevel] || 0) + elapsed;
+        }
 
         cleanupLevel(currentLevel);
         currentLevel++;
@@ -153,7 +159,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     protocol: 'v2',
                     level: currentLevel,
                     timeMs: totalElapsedMs,
-                    completed: currentLevel > TOTAL_LEVELS
+                    completed: currentLevel > TOTAL_LEVELS,
+                    levelTimes: levelTimes
                 })
             });
             try {

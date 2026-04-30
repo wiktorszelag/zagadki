@@ -618,6 +618,8 @@
             return;
         }
 
+        const parseJsonTimes = (str) => { try { return JSON.parse(str || '{}'); } catch(e) { return {}; } };
+
         dbUsers.forEach(u => {
             const tr = document.createElement('tr');
             const stat = u.enabled ? '<span class="badge badge-green">AKTYWNE</span>' : '<span class="badge badge-yellow">NIEZWERYFIKOWANE</span>';
@@ -626,13 +628,37 @@
             const v1Prog = u.v1Completed ? '<span class="badge badge-pur">FINAŁ</span>' : 'L' + u.v1Level;
             const v2Prog = u.v2Completed ? '<span class="badge badge-pur">FINAŁ</span>' : 'L' + u.v2Level;
             
+            const v1Times = parseJsonTimes(u.v1LevelTimesJson);
+            const v2Times = parseJsonTimes(u.v2LevelTimesJson);
+
+            const buildTimesHtml = (times, proto) => {
+                if (!times || Object.keys(times).length === 0) return '<span style="color:#334;">brak danych</span>';
+                let html = `<table style="font-size:0.65rem; font-family:var(--font-h); border-collapse:collapse; width:100%; margin-top:4px;">`;
+                for(let lvl=1; lvl<=10; lvl++) {
+                    const ms = times[lvl];
+                    if (ms !== undefined) {
+                        const secs = (ms/1000).toFixed(1);
+                        html += `<tr><td style="color:#556; padding:1px 6px;">L${lvl}</td><td style="color:var(--cyan);">${secs}s</td></tr>`;
+                    }
+                }
+                html += '</table>';
+                return html;
+            };
+
+            const uid = u.id.split('-')[0];
             tr.innerHTML = `
-                <td style="font-family:var(--font-h);font-size:0.65rem;color:#446;">${u.id.split('-')[0]}</td>
+                <td style="font-family:var(--font-h);font-size:0.65rem;color:#446;">${uid}</td>
                 <td><strong style="color:#ddf;">${u.username}</strong></td>
                 <td>${u.email || '-'}</td>
                 <td>${roleBadge}</td>
-                <td style="font-family:var(--font-h);color:var(--cyan);">${v1Prog} (${Math.floor(u.v1TimeMs/1000)}s)</td>
-                <td style="font-family:var(--font-h);color:var(--cyan);">${v2Prog} (${Math.floor(u.v2TimeMs/1000)}s)</td>
+                <td>
+                    <div style="font-family:var(--font-h);color:var(--cyan);">${v1Prog} (${Math.floor(u.v1TimeMs/1000)}s)</div>
+                    <details style="margin-top:4px;"><summary style="color:#446; font-size:0.65rem; cursor:pointer;">Czasy V1 per poziom</summary>${buildTimesHtml(v1Times,'v1')}</details>
+                </td>
+                <td>
+                    <div style="font-family:var(--font-h);color:var(--cyan);">${v2Prog} (${Math.floor(u.v2TimeMs/1000)}s)</div>
+                    <details style="margin-top:4px;"><summary style="color:#446; font-size:0.65rem; cursor:pointer;">Czasy V2 per poziom</summary>${buildTimesHtml(v2Times,'v2')}</details>
+                </td>
                 <td>${stat}</td>
                 <td><span style="font-family:var(--font-h); color:${u.leaveCount > 0 ? '#ff9900' : '#446'}; font-size:0.9rem;" title="Liczba wyświetleń ekranu SESJA ZABEZPIECZONA">🚪 ${u.leaveCount || 0}</span></td>
                 <td>

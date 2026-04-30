@@ -30,6 +30,11 @@ public class User {
     private Boolean v2Completed = false;
     private Integer leaveCount = 0; // Licznik opuszczeń sesji
 
+    @jakarta.persistence.Column(columnDefinition = "TEXT")
+    private String v1LevelTimesJson = "{}"; // {"1":12345,"2":6789,...}
+    @jakarta.persistence.Column(columnDefinition = "TEXT")
+    private String v2LevelTimesJson = "{}";
+
     public User() {}
 
     public User(String username, String email, String passwordHash, String role) {
@@ -84,4 +89,10 @@ public class User {
 
     public int getLeaveCount() { return leaveCount != null ? leaveCount : 0; }
     public void setLeaveCount(Integer leaveCount) { this.leaveCount = leaveCount; }
+
+    public String getV1LevelTimesJson() { return v1LevelTimesJson != null ? v1LevelTimesJson : "{}"; }
+    public void setV1LevelTimesJson(String v1LevelTimesJson) { this.v1LevelTimesJson = v1LevelTimesJson; }
+
+    public String getV2LevelTimesJson() { return v2LevelTimesJson != null ? v2LevelTimesJson : "{}"; }
+    public void setV2LevelTimesJson(String v2LevelTimesJson) { this.v2LevelTimesJson = v2LevelTimesJson; }
 }

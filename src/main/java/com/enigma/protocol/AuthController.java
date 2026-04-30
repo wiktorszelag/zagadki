@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.List;
 import java.util.ArrayList;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.regex.Pattern;
 
 @RestController
@@ -172,16 +173,25 @@ public class AuthController {
         long timeMs = timeMsObj != null ? timeMsObj.longValue() : 0L;
         boolean isDone = completed != null ? completed : false;
 
+        // Parsowanie levelTimes z frontendu
+        String levelTimesJson = null;
+        Object levelTimesObj = body.get("levelTimes");
+        if (levelTimesObj != null) {
+            try { levelTimesJson = new ObjectMapper().writeValueAsString(levelTimesObj); } catch(Exception e) {}
+        }
+
         if ("v1".equalsIgnoreCase(protocol)) {
             if (!u.isV1Completed()) {
                 u.setV1Level(level);
                 u.setV1TimeMs(timeMs);
+                if (levelTimesJson != null) u.setV1LevelTimesJson(levelTimesJson);
                 if (isDone && level > 10) u.setV1Completed(true);
             }
         } else if ("v2".equalsIgnoreCase(protocol)) {
             if (!u.isV2Completed()) {
                 u.setV2Level(level);
                 u.setV2TimeMs(timeMs);
+                if (levelTimesJson != null) u.setV2LevelTimesJson(levelTimesJson);
                 if (isDone && level > 10) u.setV2Completed(true);
             }
         }
