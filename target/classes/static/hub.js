@@ -322,9 +322,9 @@ function initForms() {
             
             if (data.success) {
                 msg.className = 'msg-box msg-suc';
-                msg.textContent = 'Zarejestrowano pomyślnie! Możesz się zalogować.';
+                msg.textContent = 'Zarejestrowano! Na Twój e-mail wysłaliśmy link aktywacyjny. (Sprawdź też SPAM)';
                 regForm.reset();
-                setTimeout(() => document.getElementById('tab-login').click(), 1500);
+                setTimeout(() => document.getElementById('tab-login').click(), 2500);
             } else {
                 msg.className = 'msg-box msg-err';
                 msg.textContent = 'Błąd: ' + data.message;

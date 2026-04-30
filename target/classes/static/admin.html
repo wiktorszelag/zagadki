@@ -311,12 +311,11 @@
     </div>
 </div>
 
-<!-- TABS -->
 <div class="tabs-bar">
-    <button class="tab-btn active" onclick="switchTab('backend')">&#x1F5A5; BACKEND — GRACZE</button>
-    <button class="tab-btn" onclick="switchTab('users')">&#x1F464; KONTA (Baza)</button>
-    <button class="tab-btn" onclick="switchTab('lb')">&#x1F3C6; RANKINGI</button>
-    <button class="tab-btn" onclick="switchTab('settings')">&#x2699; USTAWIENIA</button>
+    <button class="tab-btn active" onclick="switchTab('backend', this)">&#x1F5A5; BACKEND — GRACZE</button>
+    <button class="tab-btn" onclick="switchTab('users', this)">&#x1F464; KONTA (Baza)</button>
+    <button class="tab-btn" onclick="switchTab('lb', this)">&#x1F3C6; RANKINGI</button>
+    <button class="tab-btn" onclick="switchTab('settings', this)">&#x2699; USTAWIENIA</button>
 </div>
 
 <div class="main">
@@ -461,13 +460,11 @@
         return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
     }
 
-    // ─── TABS ────────────────────────────────────────────────────
-    function switchTab(id) {
+    function switchTab(id, el) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('tab-' + id).classList.add('visible');
-        event.currentTarget.classList.add('active');
-        if (id === 'local' || id === 'lb' || id === 'settings') renderLocal();
+        if (el) el.classList.add('active');
     }
 
     // ─── FILTER STATE ────────────────────────────────────────────
