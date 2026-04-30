@@ -35,4 +35,28 @@ public class AdminController {
         userRepository.delete(uOpt.get());
         return ResponseEntity.ok(Map.of("success", true));
     }
+
+    @PostMapping("/users/{id}/modify-time")
+    public ResponseEntity<?> modifyUserTime(@PathVariable String id, @RequestBody Map<String, Object> body) {
+        Optional<User> uOpt = userRepository.findById(id);
+        if (uOpt.isEmpty()) return ResponseEntity.notFound().build();
+        User u = uOpt.get();
+
+        String protocol = (String) body.get("protocol");
+        Number deltaMsObj = (Number) body.get("deltaMs");
+        long deltaMs = deltaMsObj != null ? deltaMsObj.longValue() : 0L;
+
+        if ("v1".equalsIgnoreCase(protocol)) {
+            long newTime = Math.max(0, u.getV1TimeMs() + deltaMs);
+            u.setV1TimeMs(newTime);
+        } else if ("v2".equalsIgnoreCase(protocol)) {
+            long newTime = Math.max(0, u.getV2TimeMs() + deltaMs);
+            u.setV2TimeMs(newTime);
+        } else {
+            return ResponseEntity.badRequest().body(Map.of("message", "Invalid protocol"));
+        }
+
+        userRepository.save(u);
+        return ResponseEntity.ok(Map.of("success", true));
+    }
 }

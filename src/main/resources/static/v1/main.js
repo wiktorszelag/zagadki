@@ -647,61 +647,77 @@ document.addEventListener('DOMContentLoaded', () => {
         nextMove();
     });
 
-    // L7 Gravity Maze z wizualną rotacją
-    const L7_MAPS = [
-        { grid:[ [0,0,0,0,0], [0,1,0,1,0], [0,0,0,0,0], [0,1,0,1,0], [0,0,2,0,0] ], start:{x:0,y:0} },
-        { grid:[ [0,0,0,0,0], [0,1,1,0,0], [0,0,0,0,1], [1,0,1,0,0], [0,0,2,0,0] ], start:{x:4,y:0} },
-        { grid:[ [0,0,0,1,0], [0,1,0,0,0], [0,0,0,1,0], [1,0,0,0,0], [0,0,2,0,0] ], start:{x:0,y:4} }
-    ];
-    let l7Grid=[], l7Rot=0, l7Ball={x:0,y:0};
+    // L7 Mastermind (Deszyfracja Klucza)
+    let l7Secret = [];
+    let l7Current = [1, 1, 1, 1];
     
     window.initL7 = function() {
-        l7Rot = 0; 
-        document.getElementById('l7-box').style.transform = `rotate(0deg)`;
-        const mapObj = L7_MAPS[Math.floor(Math.random()*L7_MAPS.length)];
-        l7Grid = mapObj.grid.map(row=>[...row]);
-        l7Ball = {...mapObj.start};
-        renderL7();
+        l7Secret = [
+            Math.floor(Math.random()*6)+1,
+            Math.floor(Math.random()*6)+1,
+            Math.floor(Math.random()*6)+1,
+            Math.floor(Math.random()*6)+1
+        ];
+        l7Current = [1, 1, 1, 1];
+        document.getElementById('l7-history').innerHTML = '';
+        updateL7Display();
+        document.getElementById('l7-status').textContent = '';
     };
-    function renderL7() {
-        const b = document.getElementById('l7-box'); if(!b) return; b.innerHTML='';
-        for(let y=0; y<5; y++) {
-            for(let x=0; x<5; x++) {
-                const c = document.createElement('div'); 
-                c.className='grav-cell ' + (l7Grid[y][x]===1?'grav-wall':l7Grid[y][x]===2?'grav-goal':'');
-                c.style.cssText = 'position:relative;width:100%;height:100%;border-radius:4px;';
-                if(l7Grid[y][x]===1) c.style.background='#0af';
-                if(l7Grid[y][x]===2) c.style.background='#0f5';
-                if(l7Ball.x===x && l7Ball.y===y) {
-                    c.innerHTML = `<div style="width:80%;height:80%;border-radius:50%;background:#0ff;box-shadow:0 0 10px #0ff;position:absolute;top:10%;left:10%;transition:all 0.1s;"></div>`;
-                }
-                b.appendChild(c);
-            }
+
+    window.l7Cycle = function(idx) {
+        l7Current[idx]++;
+        if(l7Current[idx] > 6) l7Current[idx] = 1;
+        updateL7Display();
+    };
+
+    function updateL7Display() {
+        for(let i=0; i<4; i++) {
+            document.getElementById('l7-d'+i).textContent = l7Current[i];
         }
     }
-    window.l7Rotate = function(dir) {
-        l7Rot += dir*90; 
-        document.getElementById('l7-box').style.transform = `rotate(${l7Rot}deg)`;
+
+    window.l7Guess = function() {
+        let exact = 0;
+        let partial = 0;
+        let secCopy = [...l7Secret];
+        let currCopy = [...l7Current];
         
-        let r = ((l7Rot % 360) + 360) % 360;
-        let dx=0, dy=0;
-        // Wektor "Tylko w dół na ekranie" mapowany do obróconej wirtualnej siatki
-        if(r===0)   { dx=0; dy=1; }
-        if(r===90)  { dx=1; dy=0; }
-        if(r===180) { dx=0; dy=-1; }
-        if(r===270) { dx=-1; dy=0; }
-        
-        // Pętla spadania kulki
-        let moved = false;
-        while(true) { 
-            let nx=l7Ball.x+dx; let ny=l7Ball.y+dy; 
-            if(nx>=0 && nx<5 && ny>=0 && ny<5 && l7Grid[ny][nx]!==1) { 
-                l7Ball.x=nx; l7Ball.y=ny; moved=true;
-            } else break; 
+        // Check exacts
+        for(let i=0; i<4; i++) {
+            if(currCopy[i] === secCopy[i]) {
+                exact++;
+                secCopy[i] = null;
+                currCopy[i] = -1;
+            }
         }
         
-        renderL7(); 
-        if(l7Grid[l7Ball.y][l7Ball.x]===2) triggerSuccess('l7-status');
+        // Check partials
+        for(let i=0; i<4; i++) {
+            if(currCopy[i] !== -1) {
+                let idx = secCopy.indexOf(currCopy[i]);
+                if(idx !== -1) {
+                    partial++;
+                    secCopy[idx] = null;
+                }
+            }
+        }
+        
+        const histRow = document.createElement('div');
+        histRow.style.padding = '4px 0';
+        histRow.style.borderBottom = '1px dashed rgba(255,255,255,0.1)';
+        histRow.innerHTML = `Próba: <span style="color:#fff;letter-spacing:4px;">${l7Current.join('')}</span> => <span style="color:var(--neon-green)">${exact} ziel</span> | <span style="color:yellow">${partial} żół</span>`;
+        
+        const histContainer = document.getElementById('l7-history');
+        histContainer.appendChild(histRow);
+        histContainer.scrollTop = histContainer.scrollHeight;
+        
+        if(exact === 4) {
+            triggerSuccess('l7-status');
+        } else {
+            const status = document.getElementById('l7-status');
+            status.textContent = 'BŁĘDNY KOD. SPRÓBUJ PONOWNIE.';
+            status.style.color = 'var(--neon-red)';
+        }
     };
 
 

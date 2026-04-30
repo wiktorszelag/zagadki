@@ -634,10 +634,30 @@
                 <td style="font-family:var(--font-h);color:var(--cyan);">${v1Prog} (${Math.floor(u.v1TimeMs/1000)}s)</td>
                 <td style="font-family:var(--font-h);color:var(--cyan);">${v2Prog} (${Math.floor(u.v2TimeMs/1000)}s)</td>
                 <td>${stat}</td>
-                <td><button class="act-btn act-delete" onclick="deleteDbUser('${u.id}')">✕ USUŃ</button></td>
+                <td>
+                    <button class="act-btn act-time" onclick="askModTime('${u.id}', 'v1')" title="Edytuj czas V1">⏱ V1</button>
+                    <button class="act-btn act-time" onclick="askModTime('${u.id}', 'v2')" title="Edytuj czas V2">⏱ V2</button>
+                    <button class="act-btn act-delete" onclick="deleteDbUser('${u.id}')">✕</button>
+                </td>
             `;
             tbody.appendChild(tr);
         });
+    }
+
+    async function askModTime(id, proto) {
+        const val = prompt(`Podaj o ile SEKUND zmienić czas dla protokołu ${proto.toUpperCase()} (np. 10 doda 10s, -10 odejmie 10s):`);
+        if (!val || isNaN(val)) return;
+        const deltaMs = parseInt(val) * 1000;
+        
+        try {
+            const res = await fetch('/api/admin/users/' + id + '/modify-time', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ protocol: proto, deltaMs: deltaMs })
+            });
+            if (res.ok) fetchDbUsers();
+            else alert('Błąd edycji czasu');
+        } catch (e) {}
     }
 
     async function deleteDbUser(id) {

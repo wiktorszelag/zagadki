@@ -179,20 +179,27 @@
         </div>
     </div>
 
-    <!-- LEVEL 7: GRAWITACYJNY LABIRYNT -->
+    <!-- LEVEL 7: MASTERMIND (DESZYFRACJA KLUCZA) -->
     <div id="level-7" class="screen hidden">
         <div class="level-header">
             <span class="level-badge">POZIOM 7</span>
-            <h3>Fizyka Rotacji</h3>
-            <p>Obracaj sześcianem, by kulka <b style="color:var(--neon-cyan)">spadała w dół</b> i dotarła do zielonego celu!</p>
+            <h3>Deszyfracja Klucza</h3>
+            <p>Złam 4-cyfrowy kod układu (cyfry 1-6). <br><b style="color:var(--neon-green)">Zielony</b>: dobra cyfra i pozycja. <b style="color:yellow">Żółty</b>: dobra cyfra, zła pozycja.</p>
         </div>
-        <div style="position:relative;width:220px;height:220px;margin:14px auto;">
-            <div class="grav-box" id="l7-box" style="width:100%;height:100%;transition:transform .4s cubic-bezier(.2,.8,.2,1);"></div>
+        
+        <div id="l7-history" style="max-height:200px; overflow-y:auto; width:100%; margin-bottom:15px; border:1px solid rgba(136,170,255,0.2); padding:10px; background:rgba(0,0,0,0.5); font-family:var(--font-mono); font-size:0.9rem;">
+            <!-- History rows here -->
         </div>
-        <div style="display:flex;gap:16px;justify-content:center;margin-top:12px;">
-            <button class="rotate-btn" onclick="l7Rotate(-1)">↶</button>
-            <button class="rotate-btn" onclick="l7Rotate(1)">↷</button>
+
+        <div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px;">
+            <button class="mm-btn" id="l7-d0" onclick="l7Cycle(0)">1</button>
+            <button class="mm-btn" id="l7-d1" onclick="l7Cycle(1)">1</button>
+            <button class="mm-btn" id="l7-d2" onclick="l7Cycle(2)">1</button>
+            <button class="mm-btn" id="l7-d3" onclick="l7Cycle(3)">1</button>
         </div>
+
+        <button class="action-btn" onclick="l7Guess()" style="width:100%;">ZATWIERDŹ PRÓBĘ</button>
+
         <div class="level-footer">
             <span class="status-msg error" id="l7-status"></span>
         </div>
