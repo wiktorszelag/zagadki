@@ -174,18 +174,35 @@ public class AuthController {
             if (!u.isV1Completed()) {
                 u.setV1Level(level);
                 u.setV1TimeMs(timeMs);
-                if (isDone) u.setV1Completed(true);
+                if (isDone && level > 10) u.setV1Completed(true);
             }
         } else if ("v2".equalsIgnoreCase(protocol)) {
             if (!u.isV2Completed()) {
                 u.setV2Level(level);
                 u.setV2TimeMs(timeMs);
-                if (isDone) u.setV2Completed(true);
+                if (isDone && level > 10) u.setV2Completed(true);
             }
         }
 
         userRepository.save(u);
         return Map.of("success", true);
+    }
+
+    @GetMapping("/leaderboard/{protocol}")
+    public List<Map<String, Object>> getLeaderboard(@PathVariable String protocol) {
+        List<User> allUsers = userRepository.findAll();
+        List<Map<String, Object>> leaderboard = new ArrayList<>();
+        
+        for (User u : allUsers) {
+            if ("v1".equalsIgnoreCase(protocol) && u.isV1Completed()) {
+                leaderboard.add(Map.of("nick", u.getUsername(), "timeMs", u.getV1TimeMs()));
+            } else if ("v2".equalsIgnoreCase(protocol) && u.isV2Completed()) {
+                leaderboard.add(Map.of("nick", u.getUsername(), "timeMs", u.getV2TimeMs()));
+            }
+        }
+        
+        leaderboard.sort((a, b) -> Long.compare((Long) a.get("timeMs"), (Long) b.get("timeMs")));
+        return leaderboard;
     }
 
     private String generateRandomPassword() {

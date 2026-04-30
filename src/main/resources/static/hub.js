@@ -460,32 +460,35 @@ function initLeaderboard() {
 }
 
 
-function renderLeaderboard() {
+async function renderLeaderboard() {
     let proto = 'v1';
     const sel = document.getElementById('leaderboard-lb-select');
     if (sel) proto = sel.value;
 
     const tbody = document.getElementById('leaderboard-body');
     if (!tbody) return;
-    tbody.innerHTML = '';
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Ładowanie...</td></tr>';
     
-    let entries = [];
-    
-    entries.sort((a,b) => a.timeMs - b.timeMs);
-    
-    if(entries.length < 1) {
-        entries.push({ nick: 'System_AI_1', timeMs: 400000 });
-        entries.push({ nick: 'System_AI_2', timeMs: 450000 });
-        entries.push({ nick: 'System_AI_3', timeMs: 500000 });
-        entries.sort((a,b) => a.timeMs - b.timeMs);
-    }
+    try {
+        const res = await fetch(`/api/auth/leaderboard/${proto}`);
+        let entries = await res.json();
+        
+        tbody.innerHTML = '';
+        
+        if(entries.length < 1) {
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-low);">Brak danych. Bądź pierwszym agentem!</td></tr>';
+            return;
+        }
 
-    entries.forEach((e, i) => {
-        const tr = document.createElement('tr');
-        if (i < 3) tr.className = `rank-${i + 1}`;
-        tr.innerHTML = `<td>${i + 1}</td><td>${e.nick}</td><td style="font-family:var(--font-mono);">${formatMsLocal(e.timeMs)}</td>`;
-        tbody.appendChild(tr);
-    });
+        entries.forEach((e, i) => {
+            const tr = document.createElement('tr');
+            if (i < 3) tr.className = `rank-${i + 1}`;
+            tr.innerHTML = `<td>${i + 1}</td><td>${e.nick}</td><td style="font-family:var(--font-mono);">${formatMsLocal(e.timeMs)}</td>`;
+            tbody.appendChild(tr);
+        });
+    } catch(e) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#ff2a2a;">Błąd połączenia z serwerem.</td></tr>';
+    }
 }
 
 function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
