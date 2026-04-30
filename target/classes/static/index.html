@@ -79,7 +79,10 @@
         <div id="dashboard-view" class="view">
             <div class="header-bar">
                 <div>Zalogowano jako: <span id="user-display" class="highlight">USER</span></div>
-                <button id="logout-btn" class="secondary-btn">WYLOGUJ</button>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <a href="https://buycoffee.to/wsproject.pl" target="_blank" style="color:#d4af37; text-decoration:none; font-family:var(--font-h); font-size:0.85rem; border:1px solid #d4af37; padding:5px 12px; border-radius:4px; transition:0.2s;" onmouseover="this.style.background='rgba(212,175,55,0.15)'" onmouseout="this.style.background='transparent'">☕ POSTAW KAWĘ</a>
+                    <button id="logout-btn" class="secondary-btn">WYLOGUJ</button>
+                </div>
             </div>
 
             <div class="dash-content">
@@ -208,6 +211,7 @@
     
     <div class="footer-links">
         <span style="opacity:0.5; margin-right:15px;">Website by WiktorS</span>
+        <a href="https://buycoffee.to/wsproject.pl" target="_blank" style="color:#d4af37;">☕ Postaw Kawę</a>
         <a onclick="openModal('privacy-modal')">Polityka Prywatności</a>
         <a onclick="openModal('terms-modal')">Regulamin</a>
     </div>
