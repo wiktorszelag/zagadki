@@ -700,41 +700,53 @@
         } catch (e) { alert('Wystąpił błąd'); }
     }
 
-    // ─── FETCH BACKEND PLAYERS ───────────────────────────────────
+    // ─── FETCH BACKEND PLAYERS (z prawdziwej bazy app_users) ─────
     async function fetchPlayers() {
         try {
-            const [rPlayers, rLb] = await Promise.all([
-                fetch('/api/players'),
-                fetch('/api/players/leaderboard')
-            ]);
-            const players    = await rPlayers.json();
-            const leaderboard = await rLb.json();
+            const res = await fetch('/api/admin/users');
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const users = await res.json();
+
+            // Mapujemy userów na format kompatybilny z tabelą monitoringu
+            const players = users.map(u => ({
+                id: u.id,
+                nickname: u.username,
+                completed: u.v1Completed || u.v2Completed,
+                timeStopped: false,
+                currentLevel: u.v1Level,
+                totalTimeMs: u.v1TimeMs,
+                startTime: Date.now() - u.v1TimeMs,
+                levelTimes: {},
+                _raw: u
+            }));
 
             allPlayers = players;
             document.getElementById('sync-time').textContent = new Date().toLocaleTimeString();
-            document.getElementById('s-total').textContent   = players.length;
-            document.getElementById('s-playing').textContent = players.filter(p => !p.completed && !p.timeStopped).length;
-            document.getElementById('s-done').textContent    = players.filter(p => p.completed).length;
-            document.getElementById('s-stopped').textContent = players.filter(p => p.timeStopped).length;
+            document.getElementById('s-total').textContent   = users.length;
+            document.getElementById('s-playing').textContent = users.filter(u => u.v1Level > 1 || u.v2Level > 1).length;
+            document.getElementById('s-done').textContent    = users.filter(u => u.v1Completed || u.v2Completed).length;
+            document.getElementById('s-stopped').textContent = 0;
 
             renderBackendTable(players);
 
-            // Backend leaderboard
+            // Backend leaderboard (V1)
+            const v1Done = users.filter(u => u.v1Completed).sort((a,b) => a.v1TimeMs - b.v1TimeMs);
             const tbLb = document.getElementById('leaderboard-tbody');
             tbLb.innerHTML = '';
-            if (!leaderboard.length) {
+            if (!v1Done.length) {
                 tbLb.innerHTML = '<tr><td colspan="3"><div class="empty-state">Brak ukończonych graczy</div></td></tr>';
             } else {
-                leaderboard.forEach((p, i) => {
+                v1Done.forEach((u, i) => {
                     const tr = document.createElement('tr');
                     tr.className = i < 3 ? `rank-${i+1}` : '';
-                    tr.innerHTML = `<td><strong>#${i+1}</strong></td><td>${p.nickname}</td><td style="font-family:var(--font-h);">${fmt(p.totalTimeMs)}</td>`;
+                    tr.innerHTML = `<td><strong>#${i+1}</strong></td><td>${u.username}</td><td style="font-family:var(--font-h);">${fmt(u.v1TimeMs)}</td>`;
                     tbLb.appendChild(tr);
                 });
             }
         } catch(e) {
+            console.error('fetchPlayers error:', e);
             document.getElementById('admin-tbody').innerHTML =
-                '<tr><td colspan="6"><div class="empty-state" style="color:var(--red);">⚠ Brak połączenia z backendem Spring Boot</div></td></tr>';
+                `<tr><td colspan="6"><div class="empty-state" style="color:var(--red);">⚠ Błąd: ${e.message}</div></td></tr>`;
         }
     }
 
@@ -743,6 +755,6 @@
     fetchDbUsers();
     setInterval(fetchPlayers, 2000);
     setInterval(fetchDbUsers, 5000);
-</script>    <script src="screenshot-guard.js"></script>
+</script>
 </body>
 </html>
