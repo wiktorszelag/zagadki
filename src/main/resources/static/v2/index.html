@@ -702,8 +702,8 @@
     </div>
 
     <!-- VICTORY -->
-    <div id="victory-screen" class="screen hidden scrollable">
-        <div class="victory-content">
+    <div id="victory-screen" class="screen hidden" style="justify-content:center; align-items:center; background:rgba(0,5,15,0.95); backdrop-filter:blur(15px); z-index:2000;">
+        <div class="victory-content" style="width:100%; max-width:90%;">
             <div class="victory-icon">🏆</div>
             <h1 class="neon-text success-glow">ACCESS GRANTED</h1>
             <p class="description">Protokół V2 przełamany!<br>Czas: <span id="my-time-display" class="big-time">--:--</span></p>
@@ -717,7 +717,8 @@
                     <span class="stat-value" id="stat-skipped">0</span>
                 </div>
             </div>
-            <button id="play-again-btn" class="neon-button" style="margin-top:20px;">ZAGRAJ PONOWNIE</button>
+            <button id="play-again-btn" class="neon-button" style="margin-top:30px; width:100%;">ZAGRAJ PONOWNIE</button>
+            <a href="/" style="text-decoration:none; width:100%;"><button class="action-btn" style="width:100%; border-color:#88aaff; color:#88aaff; font-size:0.9rem; padding:14px; background:rgba(136,170,255,0.05); margin-top:15px;">🏠 POWRÓT DO MENU (HUB)</button></a>
         </div>
     </div>
 
