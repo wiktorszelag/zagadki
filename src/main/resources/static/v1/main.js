@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         4: 'Znajdź brakującą liczbę w ciągu liczbowym i wybierz poprawną odpowiedź.',
         5: 'Zapamiętaj sekwencję sygnału i odtwórz ją zgodnie z podanym modyfikatorem.',
         6: 'Zaprogramuj dronową drogę do celu, zbierając pakiety i omijając miny.',
-        7: 'Obracaj modułem, aby kulka spadła grawitacyjnie do zielonego celu.',
+        7: 'Zdeszyfruj klucz, aby odblokować system.',
         8: 'Ułóż zdarzenia historyczne od najstarszego do najnowszego.',
         9: 'Zapamiętaj wzór świetlny i odtwórz go po odliczeniu czasu.',
         10: 'Zlokalizuj ukryte nastąpienie danych na siatce. Cyfra = odległość Manhattan.'
