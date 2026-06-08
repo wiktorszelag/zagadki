@@ -4,34 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio | By WS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
-
         :root {
-            --bg-main: #0f172a;
-            --bg-card: rgba(30, 41, 59, 0.6);
+            --bg-dark: #0a0f1c;
+            --glass-bg: rgba(17, 25, 40, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.125);
+            --accent-1: #6366f1;
+            --accent-2: #8b5cf6;
+            --accent-3: #ec4899;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --accent: #3b82f6;
-            --accent-hover: #2563eb;
-            --transition: all 0.3s ease;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
         }
 
         body {
-            background-color: var(--bg-main);
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            background-image: radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 20%),
-                              radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 20%);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Dynamic Animated Background */
+        .bg-mesh {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.15), transparent 25%),
+                radial-gradient(circle at 50% 80%, rgba(139, 92, 246, 0.15), transparent 25%);
+            animation: mesh-movement 15s ease-in-out infinite alternate;
+        }
+
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            mask-image: radial-gradient(circle at center, black, transparent 80%);
+            -webkit-mask-image: radial-gradient(circle at center, black, transparent 80%);
+        }
+
+        @keyframes mesh-movement {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
         /* Navbar */
@@ -39,174 +76,327 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 2rem 5%;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1.5rem 5%;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 15, 28, 0.6);
         }
 
         .brand {
-            font-size: 1.5rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
             font-weight: 800;
             letter-spacing: -1px;
-            background: linear-gradient(135deg, #fff, #94a3b8);
+            background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-        }
-
-        .contact-info {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            color: var(--text-muted);
+        }
+
+        .brand span {
+            color: var(--accent-1);
+            -webkit-text-fill-color: var(--accent-1);
+        }
+
+        .contact-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #fff;
             font-size: 0.95rem;
+            font-weight: 500;
             text-decoration: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             transition: var(--transition);
         }
 
-        .contact-info:hover {
-            color: var(--text-main);
+        .contact-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
 
         /* Main Container */
         .container {
-            max-width: 1000px;
-            margin: 4rem auto;
+            max-width: 1100px;
+            margin: 3rem auto;
             padding: 0 2rem;
             flex-grow: 1;
         }
 
-        .section-title {
-            font-size: 2.5rem;
-            margin-bottom: 2rem;
+        /* Header Section */
+        .hero-section {
+            text-align: center;
+            margin-bottom: 4rem;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 3.5rem;
             font-weight: 800;
-            letter-spacing: -1px;
+            letter-spacing: -1.5px;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+        }
+
+        .hero-title .gradient-text {
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Section Titles */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .section-line {
+            flex-grow: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.1), transparent);
         }
 
         /* Grid Layout */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 4rem;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 5rem;
         }
 
-        /* Card Style */
+        /* Card Style - Premium Glassmorphism */
         .card {
-            background: var(--bg-card);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 2rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2.5rem;
             text-decoration: none;
             color: inherit;
+            position: relative;
             transition: var(--transition);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
-            backdrop-filter: blur(16px);
+            gap: 1.2rem;
+            z-index: 1;
+        }
+
+        /* Card Hover Glow Effect */
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.08), transparent 60%);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: -1;
         }
 
         .card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(255, 255, 255, 0.3);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 
+                        0 0 40px rgba(99, 102, 241, 0.1);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 0.5rem;
         }
 
         .card h3 {
-            font-size: 1.5rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.6rem;
             color: #fff;
+            letter-spacing: -0.5px;
         }
 
         .card p {
             color: var(--text-muted);
             line-height: 1.6;
             font-size: 0.95rem;
+            flex-grow: 1;
         }
 
         .card .badge {
             align-self: flex-start;
-            background: rgba(59, 130, 246, 0.2);
-            color: #60a5fa;
-            padding: 0.3rem 0.8rem;
+            background: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+            padding: 0.4rem 1rem;
             border-radius: 20px;
             font-size: 0.8rem;
             font-weight: 600;
-            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
         }
 
-        .card-external::after {
-            content: '↗';
+        .badge.green {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+
+        /* Arrow animation */
+        .card-arrow {
             position: absolute;
-            top: 2rem;
-            right: 2rem;
-            opacity: 0.5;
+            bottom: 2.5rem;
+            right: 2.5rem;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255,255,255,0.1);
             transition: var(--transition);
+            color: #fff;
         }
 
-        .card:hover.card-external::after {
-            opacity: 1;
-            transform: translate(2px, -2px);
+        .card:hover .card-arrow {
+            background: #fff;
+            color: #000;
+            transform: translate(5px, -5px) rotate(45deg);
         }
 
         /* Footer */
         footer {
             text-align: center;
-            padding: 2rem;
+            padding: 3rem 2rem;
             color: var(--text-muted);
             font-size: 0.9rem;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(10, 15, 28, 0.8);
+            backdrop-filter: blur(10px);
+            margin-top: auto;
         }
 
         @media (max-width: 768px) {
-            nav {
-                flex-direction: column;
-                gap: 1rem;
+            .hero-title {
+                font-size: 2.5rem;
             }
-            .section-title {
-                font-size: 2rem;
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .card {
+                padding: 2rem;
             }
         }
     </style>
 </head>
 <body>
 
+    <div class="bg-mesh"></div>
+    <div class="bg-grid"></div>
+
     <nav>
-        <div class="brand">Portfolio By WS</div>
-        <a href="mailto:wiktor.szelag12@gmail.com" class="contact-info">
-            ✉ wiktor.szelag12@gmail.com
+        <div class="brand">Portfolio <span>By WS</span></div>
+        <a href="mailto:wiktor.szelag12@gmail.com" class="contact-btn">
+            Napisz do mnie
         </a>
     </nav>
 
     <div class="container">
-        <h1 class="section-title">Aplikacje i Serwisy</h1>
+        
+        <header class="hero-section">
+            <h1 class="hero-title">Nowoczesne projekty<br><span class="gradient-text">w jednym miejscu.</span></h1>
+            <p class="hero-subtitle">Wybierz jeden z poniższych kafelków, aby przejść do wybranej aplikacji, serwisu społecznościowego lub wizytówki biznesowej.</p>
+        </header>
+
+        <div class="section-header">
+            <h2 class="section-title">Główne Serwisy</h2>
+            <div class="section-line"></div>
+        </div>
+
         <div class="grid">
             <!-- Onthespotted -->
-            <a href="https://onthespotted.pl" target="_blank" class="card card-external">
-                <span class="badge">Web App</span>
+            <a href="https://onthespotted.pl" target="_blank" class="card">
+                <span class="badge">Web App / Społeczność</span>
+                <div class="card-icon">🌍</div>
                 <h3>Onthespotted.pl</h3>
-                <p>To jest moja główna strona, tworzona wspólnie z 3 innymi osobami. Nowoczesny serwis łączący społeczność.</p>
+                <p>Moja główna aplikacja, nad którą pracowałem w zespole 4-osobowym. Nowoczesna platforma łącząca społeczność, napisana zgodnie z najnowszymi standardami programistycznymi.</p>
+                <div class="card-arrow">↗</div>
             </a>
 
             <!-- Gra Zagadkowa -->
             <a href="gra.html" class="card">
-                <span class="badge">Aplikacja / Gra</span>
-                <h3>Gra Zagadkowa (Enigma)</h3>
-                <p>Złożony protokół i interaktywna gra wciągająca w rozwiązywanie zagadek. Wejdź i spróbuj swoich sił.</p>
+                <span class="badge">Gra / Java Spring</span>
+                <div class="card-icon">🔐</div>
+                <h3>Enigma Protocol</h3>
+                <p>Złożona aplikacja z autorskim systemem uwierzytelniania. Logiczna gra wciągająca w rozwiązywanie zagadek z globalnym rankingiem i wieloma etapami trudności.</p>
+                <div class="card-arrow">→</div>
             </a>
         </div>
 
-        <h2 class="section-title" style="font-size: 2rem; margin-top: 1rem;">Lokalne Projekty (Wizytówki)</h2>
+        <div class="section-header">
+            <h2 class="section-title">Lokalne Wizytówki</h2>
+            <div class="section-line"></div>
+        </div>
+
         <div class="grid">
             <!-- Strona Kostka -->
-            <a href="file:///c:/Users/wikto/Desktop/stronakostka/index.html" target="_blank" class="card card-external">
-                <span class="badge">Landing Page</span>
+            <a href="kostka/index.html" class="card">
+                <span class="badge green">Landing Page / Biznes</span>
+                <div class="card-icon">🏗️</div>
                 <h3>ProfiBud - Kostka Brukowa</h3>
-                <p>Profesjonalna wizytówka dla firmy zajmującej się układaniem kostki brukowej. Nowoczesny design, szklane efekty (glassmorphism) i animacje przy przewijaniu.</p>
+                <p>Przykład wdrożenia profesjonalnej i nowoczesnej wizytówki dla lokalnej firmy budowlanej. Zoptymalizowana pod SEO, oparta o responsywny design ze szklistymi elementami.</p>
+                <div class="card-arrow">→</div>
             </a>
         </div>
     </div>
 
     <footer>
-        &copy; 2026 Projekt i wykonanie: Wiktor Szeląg
+        &copy; 2026 Zbudowane z pasją | Projekt i wykonanie: Wiktor Szeląg
     </footer>
 
 </body>
