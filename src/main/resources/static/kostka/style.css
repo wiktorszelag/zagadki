@@ -696,6 +696,17 @@ section {
     .contact-details-centered {
         gap: 1.5rem;
     }
+    
+    /* Zmniejszony pływający przycisk dla telefonów */
+    .floating-btn {
+        width: 50px;
+        height: 50px;
+        bottom: 20px;
+        right: 20px;
+    }
+    .floating-icon {
+        font-size: 1.5rem;
+    }
 }
 
 /* Pływający przycisk (Floating Button) */
