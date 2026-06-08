@@ -2,261 +2,212 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Enigma Protocol - Portal Główny</title>
-    <link rel="stylesheet" href="hub_v3.css?v=4">
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio | By WS</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+
+        :root {
+            --bg-main: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.6);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 20%),
+                              radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 20%);
+        }
+
+        /* Navbar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 5%;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .brand {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .contact-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .contact-info:hover {
+            color: var(--text-main);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1000px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+            flex-grow: 1;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+        }
+
+        /* Card Style */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            backdrop-filter: blur(16px);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            color: #fff;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .card .badge {
+            align-self: flex-start;
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-external::after {
+            content: '↗';
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            opacity: 0.5;
+            transition: var(--transition);
+        }
+
+        .card:hover.card-external::after {
+            opacity: 1;
+            transform: translate(2px, -2px);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- PROLOGUE BOOT SEQUENCE -->
-    <div id="prologue-overlay" class="prologue-overlay">
-        <div class="prologue-content" id="prologue-text"></div>
-        <button id="skip-prologue-btn" class="skip-btn hidden">POMIŃ [ > ]</button>
-    </div>
 
-    <div id="particle-canvas-wrapper"><canvas id="bg-canvas"></canvas></div>
-    <div class="cyber-grid"></div>
+    <nav>
+        <div class="brand">Portfolio By WS</div>
+        <a href="mailto:wiktor.szelag12@gmail.com" class="contact-info">
+            ✉ wiktor.szelag12@gmail.com
+        </a>
+    </nav>
 
-    <div class="hub-container" id="hub-container" style="display:none;">
-        <!-- AUTHENTICATION VIEW -->
-        <div id="auth-view" class="view visible">
-            <div class="box-shadow-wrap float-anim">
-                <h1 class="glitch-title" data-text="ENIGMA HUB">ENIGMA HUB</h1>
-                <p class="subtitle typing-anim">WYMAGANA AUTORYZACJA</p>
-                
-                <div class="site-description">
-                    Witaj w <strong>Enigma Protocol</strong> – zaawansowanej platformie testów kognitywnych i logicznych. Podejmij wyzwanie w symulacjach V1 oraz V2, łam zaszyfrowane kody i rywalizuj z najlepszymi agentami w globalnym rankingu. System wymaga autoryzacji przed dostępem do baz danych misji.
-                </div>
+    <div class="container">
+        <h1 class="section-title">Aplikacje i Serwisy</h1>
+        <div class="grid">
+            <!-- Onthespotted -->
+            <a href="https://onthespotted.pl" target="_blank" class="card card-external">
+                <span class="badge">Web App</span>
+                <h3>Onthespotted.pl</h3>
+                <p>To jest moja główna strona, tworzona wspólnie z 3 innymi osobami. Nowoczesny serwis łączący społeczność.</p>
+            </a>
 
-                <div class="tabs">
-                    <div class="tab active" id="tab-login">LOGOWANIE</div>
-                    <div class="tab" id="tab-register">REJESTRACJA</div>
-                </div>
-
-                <!-- LOGIN FORM -->
-                <form id="login-form" class="auth-form visible">
-                    <div class="input-group">
-                        <label>NICK (LOGIN)</label>
-                        <input type="text" id="log-email" required placeholder="Twoja nazwa użytkownika">
-                    </div>
-                    <div class="input-group">
-                        <label>HASŁO SZYFROWE</label>
-                        <input type="password" id="log-pass" required placeholder="********">
-                    </div>
-                    <a class="forgot-password-link" onclick="openModal('reset-modal')">Zapomniałeś hasła?</a>
-                    <button type="submit" class="cyber-btn">ZALOGUJ DO SYSTEMU</button>
-                    <div class="msg-box" id="log-msg"></div>
-                </form>
-
-                <!-- REGISTER FORM -->
-                <form id="register-form" class="auth-form">
-                    <div class="input-group">
-                        <label>PSEUDONIM (NICK / LOGIN)</label>
-                        <input type="text" id="reg-nick" required placeholder="Twój alias">
-                    </div>
-                    <div class="input-group">
-                        <label>ADRES E-MAIL</label>
-                        <input type="email" id="reg-email" required placeholder="agent@enigma.com">
-                    </div>
-                    <div class="input-group">
-                        <label>NOWE HASŁO</label>
-                        <input type="password" id="reg-pass" required placeholder="********">
-                        <div style="font-size: 0.65rem; color: var(--text-low); margin-top: 5px; font-family: var(--font-mono);">
-                            Min. 8 znaków, 1 duża litera, 1 mała litera, 1 cyfra, 1 znak specjalny.
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label>POWTÓRZ HASŁO</label>
-                        <input type="password" id="reg-pass2" required placeholder="********">
-                    </div>
-                    <button type="submit" class="cyber-btn">UTWÓRZ KONTO</button>
-                    <div class="msg-box" id="reg-msg"></div>
-                </form>
-            </div>
+            <!-- Gra Zagadkowa -->
+            <a href="gra.html" class="card">
+                <span class="badge">Aplikacja / Gra</span>
+                <h3>Gra Zagadkowa (Enigma)</h3>
+                <p>Złożony protokół i interaktywna gra wciągająca w rozwiązywanie zagadek. Wejdź i spróbuj swoich sił.</p>
+            </a>
         </div>
 
-        <!-- PROFILE / LEVEL SELECT VIEW -->
-        <div id="dashboard-view" class="view">
-            <div class="header-bar">
-                <div>Zalogowano jako: <span id="user-display" class="highlight">USER</span></div>
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <a href="https://buycoffee.to/wsproject.pl" target="_blank" style="color:#d4af37; text-decoration:none; font-family:var(--font-h); font-size:0.85rem; border:1px solid #d4af37; padding:5px 12px; border-radius:4px; transition:0.2s;" onmouseover="this.style.background='rgba(212,175,55,0.15)'" onmouseout="this.style.background='transparent'">☕ POSTAW KAWĘ</a>
-                    <button id="logout-btn" class="secondary-btn">WYLOGUJ</button>
-                </div>
-            </div>
-
-            <div class="dash-content">
-                <div class="protocol-cards">
-                    <!-- V1 CARD -->
-                    <div id="card-v1" class="protocol-card" onclick="window.location.href='v1/index.html'">
-                        <div class="card-glow"></div>
-                        <div class="card-header">
-                            <span class="card-v">V1</span>
-                            <div class="card-badges">
-                                <span class="card-status status-active">ONLINE</span>
-                                <span id="badge-v1-done" class="card-status hidden"></span>
-                            </div>
-                        </div>
-                        <h3>Enigma Protocol: Alpha</h3>
-                        <p>Klasyczna symulacja operacyjna. Obejmuje zadania z wiedzy świata, logikę dedukcyjną i łamanie haseł.</p>
-                        <div class="card-best" id="card-v1-best" style="display:none;">Twój rek.: <span id="card-v1-best-time"></span></div>
-                        <button class="cyber-btn sm">URUCHOM SYMULACJĘ</button>
-                    </div>
-
-                    <!-- V2 CARD -->
-                    <div id="card-v2" class="protocol-card" onclick="window.location.href='v2/index.html'">
-                        <div class="card-glow"></div>
-                        <div class="card-header">
-                            <span class="card-v new">V2</span>
-                            <div class="card-badges">
-                                <span class="card-status status-active">ONLINE</span>
-                                <span id="badge-v2-done" class="card-status hidden"></span>
-                            </div>
-                        </div>
-                        <h3>Enigma Protocol: Evolution</h3>
-                        <p>Nowoczesne testy predyspozycji. Zoptymalizowane pod telefony wyzwania pamięciowe, gry zręcznościowe (szybkie cele) oraz operowanie wytrychem.</p>
-                        <div class="card-best" id="card-v2-best" style="display:none;">Twój rek.: <span id="card-v2-best-time"></span></div>
-                        <button class="cyber-btn sm">URUCHOM SYMULACJĘ</button>
-                    </div>
-
-                    <!-- V3 CARD -->
-                    <div class="protocol-card offline">
-                        <div class="card-header">
-                            <span class="card-v lock">V3</span>
-                            <div class="card-badges">
-                                <span class="card-status status-offline">OFFLINE</span>
-                            </div>
-                        </div>
-                        <h3>Enigma Protocol: Omega</h3>
-                        <p>STATUS: WKRÓTCE DOSTĘPNE... Przygotuj się na wyzwania sieciowe i deszyfrowanie częstotliwości radiowych.</p>
-                        <div class="progress-bar-wrap">
-                            <div class="progress-fill" style="width: 40%"></div>
-                        </div>
-                        <span class="progress-text">PRACE W TOKU: 40%</span>
-                    </div>
-
-                    <!-- DAILY TASK CARD -->
-                    <div class="protocol-card offline daily-card">
-                        <div class="card-header">
-                            <span class="card-v lock">NEW</span>
-                            <div class="card-badges">
-                                <span class="card-status status-offline">WKRÓTCE</span>
-                            </div>
-                        </div>
-                        <h3>Zadanie Dnia</h3>
-                        <p>Codziennie nowa, unikalna zagadka logiczna dostępna tylko przez 24 godziny. Zdobądź unikalne odznaki i punkty do rankingu dnia.</p>
-                        <div class="progress-bar-wrap">
-                            <div class="progress-fill" style="width: 15%"></div>
-                        </div>
-                        <span class="progress-text">STATUS: IMPLEMENTACJA</span>
-                    </div>
-                </div>
-
-                <div class="dashboard-stats box-shadow-wrap">
-                    <h2>TWÓJ PROFIL OPERACYJNY</h2>
-                    <div class="overview-grid">
-                        <div class="stat-box">
-                            <span class="stat-num" id="stat-v1-best">--:--</span>
-                            <span class="stat-label">Najlepszy V1</span>
-                        </div>
-                        <div class="stat-box">
-                            <span class="stat-num" id="stat-missions">0</span>
-                            <span class="stat-label">Razem misji</span>
-                        </div>
-                        <div class="stat-box">
-                            <span class="stat-num" id="stat-v2-best">--:--</span>
-                            <span class="stat-label">Najlepszy V2</span>
-                        </div>
-                    </div>
-
-                    <div class="leaderboards-container">
-                        <div class="lb-section">
-                            <h2 style="display:flex; justify-content:space-between; align-items:center;">
-                                <span>RANKING GŁÓWNY</span>
-                                <select id="leaderboard-lb-select" style="background:rgba(0,0,0,0.5); color:hsl(188, 100%, 65%); border:1px solid hsla(188, 100%, 50%, 0.3); font-family:var(--font-mono); padding:6px 12px; border-radius:8px; outline:none; cursor:pointer;">
-                                    <option value="v1">PROTOKÓŁ V1</option>
-                                    <option value="v2">PROTOKÓŁ V2</option>
-                                </select>
-                            </h2>
-                            <div class="lb-table-wrapper">
-                                <table class="leaderboard-table">
-                                    <thead>
-                                        <tr><th>#</th><th>AGENT</th><th>CZAS</th></tr>
-                                    </thead>
-                                    <tbody id="leaderboard-body">
-                                        <!-- Populated by JS -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <div class="lb-section">
-                            <h2>🏆 RANKING DNIA</h2>
-                            <div class="lb-table-wrapper">
-                                <div class="lb-placeholder">
-                                    <div class="placeholder-icon">🔒</div>
-                                    <h3>SYSTEM OFFLINE</h3>
-                                    <p>Ranking zostanie aktywowany wraz z uruchomieniem pierwszej operacji dziennej. Przygotuj się na wyzwania ograniczone czasowo.</p>
-                                    <span class="badge-soon">WKRÓTCE DOSTĘPNE</span>
-                                </div>
-                            </div>
-                            <div class="status-info">RANKING DNIA RESETUJE SIĘ O 00:00</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script src="hub.js?v=4"></script>
-    
-    <div class="footer-links">
-        <span style="opacity:0.5; margin-right:15px;">Website by WiktorS</span>
-        <a href="https://buycoffee.to/wsproject.pl" target="_blank" style="color:#d4af37;">☕ Postaw Kawę</a>
-        <a onclick="openModal('privacy-modal')">Polityka Prywatności</a>
-        <a onclick="openModal('terms-modal')">Regulamin</a>
-    </div>
-
-    <!-- Modals -->
-    <div id="privacy-modal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <button class="close-modal-btn" onclick="closeModal('privacy-modal')">&times;</button>
-            <h2>Polityka Prywatności</h2>
-            <p>1. <strong>Gromadzenie Danych:</strong> Zbieramy podstawowe dane niezbędne do logowania (pseudonim/login oraz zaszyfrowane hasło). Żadne dane osobowe nie są udostępniane podmiotom trzecim.</p>
-            <p>2. <strong>Ciasteczka i Sesje:</strong> System Enigma Protocol wykorzystuje pliki cookie oraz lokalną pamięć przeglądarki (Local Storage) w celu podtrzymania sesji użytkownika i zapisu progresu lokalnego.</p>
-            <p>3. <strong>Analiza Logiki:</strong> Twoje wyniki z symulacji kognitywnych (V1/V2) są zapisywane anonimowo na tablicy wyników, chyba że zażądasz ich usunięcia u Administratora Systemu.</p>
-            <p>W przypadku pytań skontaktuj się z obsługą projektu.</p>
+        <h2 class="section-title" style="font-size: 2rem; margin-top: 1rem;">Lokalne Projekty (Wizytówki)</h2>
+        <div class="grid">
+            <!-- Strona Kostka -->
+            <a href="file:///c:/Users/wikto/Desktop/stronakostka/index.html" target="_blank" class="card card-external">
+                <span class="badge">Landing Page</span>
+                <h3>ProfiBud - Kostka Brukowa</h3>
+                <p>Profesjonalna wizytówka dla firmy zajmującej się układaniem kostki brukowej. Nowoczesny design, szklane efekty (glassmorphism) i animacje przy przewijaniu.</p>
+            </a>
         </div>
     </div>
 
-    <div id="terms-modal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <button class="close-modal-btn" onclick="closeModal('terms-modal')">&times;</button>
-            <h2>Regulamin</h2>
-            <p>Korzystanie z Enigma Protocol oznacza akceptację niniejszych zasad:</p>
-            <p>1. Narzędzie przeznaczone jest do celów testów kognitywnych i edukacyjno-rozrywkowych.</p>
-            <p>2. Zabrania się wykorzystywania automatycznych skryptów, botów oraz innych form wspomagania oprogramowania w celu zakłócania tablicy wyników ("Global Ranking").</p>
-            <p>3. Administrator zastrzega sobie prawo do usunięcia dowolnego konta bez podania przyczyny w przypadku naruszenia integralności systemu.</p>
-        </div>
-    </div>
+    <footer>
+        &copy; 2026 Projekt i wykonanie: Wiktor Szeląg
+    </footer>
 
-    <div id="reset-modal" class="modal-overlay hidden">
-        <div class="modal-content" style="text-align:center;">
-            <button class="close-modal-btn" onclick="closeModal('reset-modal')">&times;</button>
-            <h2 style="color:var(--neon-cyan); font-size:2rem; margin-bottom:20px;">SYSTEM AWARYJNY</h2>
-            <p style="font-size:1.1rem; margin-bottom: 15px;">Wykryto zapytanie o zresetowanie klucza dostępu.</p>
-            <p style="color:var(--text-low); margin-bottom:20px;">Podaj adres e-mail użyty podczas rejestracji. Jeśli figuruje w bazie, wyślemy na niego tajny link służący do odzyskania dostępu.</p>
-            
-            <div style="display:flex; flex-direction:column; gap:15px; align-items:center; max-width:300px; margin:0 auto;">
-                <input type="email" id="reset-email" placeholder="agent@enigma.com" style="width:100%; background:rgba(0,0,0,0.5); color:#fff; border:1px solid rgba(0,245,255,0.3); padding:10px; font-family:var(--font-mono); outline:none; text-align:center;">
-                <button class="cyber-btn" onclick="sendResetLink()" style="width:100%; padding:10px;">WYŚLIJ LINK</button>
-                <div id="reset-msg" style="font-size:0.85rem; margin-top:10px;"></div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-    </script>
 </body>
 </html>

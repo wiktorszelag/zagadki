@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#070a0f">
+    <title>Enigma Protocol V3</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="particles-bg"></div>
+<div id="dev-bar" style="display:none;">
+    <span id="dev-label">&#x1F6E0; TRYB TESTOWY</span>
+    <button id="skip-btn">&#x23ED; POMIŃ</button>
+    <button id="restart-btn">&#x1F504; RESTART</button>
+</div>
+
+<div id="app">
+
+<!-- LEVEL START -->
+<div id="level-start-screen" class="screen hidden">
+    <div style="background:rgba(7,10,15,0.95);border:1px solid rgba(245,197,24,0.3);padding:28px;border-radius:14px;max-width:92%;text-align:center;width:100%;">
+        <div class="ls-badge" id="ls-level-num">POZIOM 1</div>
+        <div class="ls-name" id="ls-level-name">Tytuł</div>
+        <div class="ls-desc" id="ls-level-desc">Opis...</div>
+        <div style="font-size:0.78rem;color:rgba(245,197,24,0.6);margin-bottom:18px;font-family:var(--font-mono);border:1px dashed rgba(245,197,24,0.25);padding:8px;border-radius:6px;">
+            ⏱ Timer startuje po kliknięciu ROZPOCZNIJ
+        </div>
+        <button id="ls-start-btn" style="width:100%;margin-bottom:10px;">&#x25B6; ROZPOCZNIJ RUNDĘ</button>
+        <button id="ls-end-btn" class="action-btn" style="width:100%;border-color:var(--red);color:var(--red);font-size:.75rem;padding:10px;margin-top:0;">&#x23F9; ZAKOŃCZ GRĘ</button>
+    </div>
+</div>
+
+<!-- INTERMISSION -->
+<div id="intermission-screen" class="screen hidden" style="justify-content:center;align-items:center;background:rgba(7,10,15,0.97);backdrop-filter:blur(10px);z-index:2000;">
+    <div style="background:rgba(10,14,24,0.95);border:1px solid rgba(245,197,24,0.4);padding:40px 25px;border-radius:16px;max-width:90%;text-align:center;width:100%;box-shadow:0 0 40px rgba(245,197,24,0.1);">
+        <div style="font-size:2rem;color:var(--gold);margin-bottom:12px;font-family:var(--font-h);letter-spacing:2px;">POZIOM ZALICZONY ✓</div>
+        <p style="color:#c8b88a;margin-bottom:30px;">Co chcesz zrobić teraz?</p>
+        <button id="int-next-btn" class="neon-button" style="width:100%;margin-bottom:14px;padding:18px;position:static;">&#x25B6; KOLEJNY POZIOM</button>
+        <a href="/" style="text-decoration:none;width:100%;"><button class="action-btn" style="width:100%;border-color:#88aaff;color:#88aaff;font-size:0.9rem;padding:14px;">&#x1F3E0; POWRÓT DO MENU</button></a>
+    </div>
+</div>
+
+<!-- START SCREEN -->
+<div id="start-screen" class="screen active">
+    <div class="hero-section">
+        <div class="logo-wrap">
+            <h1 class="glitch" data-text="ENIGMA">ENIGMA</h1>
+            <h2 class="subtitle">PROTOCOL <span class="version-badge">V3</span></h2>
+        </div>
+        <p class="description">Protokół Złoty — logika i intuicja.<br>Dla każdego, kto myśli.</p>
+        <div class="nick-wrap">
+            <input type="text" id="player-nick" class="player-nick-input" placeholder="WPISZ SWÓJ NICK" autocomplete="off">
+        </div>
+        <button id="start-btn" class="neon-button">&#x25B6; INICJUJ PROTOKÓŁ V3</button>
+    </div>
+</div>
+
+<!-- L1: SKOJARZENIA -->
+<div id="level-1" class="screen hidden">
+    <div class="level-header">
+        <span class="level-badge">POZIOM 1</span>
+        <h3>Skojarzenia</h3>
+        <p>Znajdź jedno słowo, które łączy się ze wszystkimi trzema podanymi słowami.</p>
+    </div>
+    <div id="l1-words" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:16px 0;"></div>
+    <div style="font-size:0.8rem;color:rgba(245,197,24,0.5);text-align:center;font-family:var(--font-mono);margin-bottom:12px;">WYBIERZ WSPÓLNE SŁOWO:</div>
+    <div id="l1-choices" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;"></div>
+    <div class="level-footer"><span class="status-msg error" id="l1-status"></span></div>
+</div>
+
+<!-- L2: SZYFR EMOJI -->
+<div id="level-2" class="screen hidden">
+    <div class="level-header">
+        <span class="level-badge">POZIOM 2</span>
+        <h3>Szyfr Obrazkowy</h3>
+        <p>Każdy obrazek reprezentuje jedną literę. Odczytaj ukryte słowo.</p>
+    </div>
+    <div id="l2-code" style="font-size:2rem;text-align:center;margin:14px 0;letter-spacing:6px;"></div>
+    <div id="l2-key-table" style="font-size:0.75rem;color:rgba(245,197,24,0.5);font-family:var(--font-mono);text-align:center;margin-bottom:12px;"></div>
+    <div id="l2-choices" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;"></div>
+    <div class="level-footer"><span class="status-msg error" id="l2-status"></span></div>
+</div>
+
+<!-- L3: PRAWDA / FAŁSZ -->
+<div id="level-3" class="screen hidden">
+    <div class="level-header">
+        <span class="level-badge">POZIOM 3</span>
+        <h3>Prawda czy Fałsz?</h3>
+        <p>Oceń każde stwierdzenie. Wszystkie muszą być poprawne.</p>
+    </div>
+    <div id="l3-statements" style="display:flex;flex-direction:column;gap:10px;margin:10px 0;"></div>
+    <div class="level-footer">
+        <span class="status-msg error" id="l3-status"></span>
+        <button id="verify-l3-btn" class="action-btn" style="margin-top:10px;">ZATWIERDŹ ODPOWIEDZI</button>
+    </div>
+</div>
+
+<!-- L4: UKRYTA LICZBA -->
+<div id="level-4" class="screen hidden">
+    <div class="level-header">
+        <span class="level-badge">POZIOM 4</span>
+        <h3>Ukryta Liczba</h3>
+        <p>Znajdź liczbę pasującą do WSZYSTKICH wskazówek.</p>
+    </div>
+    <div id="l4-clues" style="display:flex;flex-direction:column;gap:8px;margin:12px 0;"></div>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:12px;" id="l4-choices"></div>
+    <div class="level-footer"><span class="status-msg error" id="l4-status"></span></div>
+</div>
+
+<!-- L5: SEKWENCJA -->
+<div id="level-5" class="screen hidden">
+    <div class="level-header">
+        <span class="level-badge">POZIOM 5</span>
+        <h3>Dokończ Sekwencję</h3>
+        <p>Znajdź wzorzec i wybierz brakujący element.</p>
+    </div>
+    <div id="l5-sequence" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:16px 0;align-items:center;"></div>
+    <div style="font-size:0.8rem;color:rgba(245,197,24,0.5);text-align:center;font-family:var(--font-mono);margin-bottom:12px;">? = ?</div>
+    <div id="l5-choices" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;"></div>
+    <div class="level-footer"><span class="status-msg error" id="l5-status"></span></div>
+</div>
+
+<!-- L6: KOLEJNOŚĆ HISTORYCZNA -->
+<div id="level-6" class="screen hidden">
+    <div class="level-header">
+        <span class="level-badge">POZIOM 6</span>
+        <h3>Oś Czasu</h3>
+        <p>Ułóż wydarzenia od NAJDAWNIEJSZEGO do NAJNOWSZEGO. Użyj strzałek ▲▼.</p>
+    </div>
+    <div id="l6-slots" style="margin:10px 0;"></div>
+    <div class="level-footer">
+        <span class="status-msg error" id="l6-status"></span>
+        <button id="verify-l6-btn" class="action-btn" style="margin-top:10px;">ZATWIERDŹ KOLEJNOŚĆ</button>
+    </div>
+</div>
+
+<!-- L7: ZAGADKA SŁOWNA -->
+<div id="level-7" class="screen hidden">
+    <div class="level-header">
+        <span class="level-badge">POZIOM 7</span>
+        <h3>Szarada</h3>
+        <p>Rozwiąż klasyczną zagadkę słowną.</p>
+    </div>
+    <div id="l7-riddle" style="font-size:1.05rem;color:var(--gold);text-align:center;margin:14px 0;padding:20px;background:rgba(0,0,20,.6);border:1px solid var(--glass-bdr);border-radius:12px;line-height:1.9;font-family:var(--font-b);"></div>
+    <div id="l7-choices" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:12px;"></div>
+    <div class="level-footer"><span class="status-msg error" id="l7-status"></span></div>
+</div>
+
+<!-- L8: UKRYTE SŁOWO -->
+<div id="level-8" class="screen hidden">
+    <div class="level-header">
+        <span class="level-badge">POZIOM 8</span>
+        <h3>Ukryte Słowo</h3>
+        <p>W zdaniu ukryto słowo. Znajdź je i wybierz poprawną odpowiedź.</p>
+    </div>
+    <div id="l8-sentence" style="font-size:1.1rem;color:var(--gold);text-align:center;margin:14px 0;padding:20px;background:rgba(0,0,20,.6);border:1px solid var(--glass-bdr);border-radius:12px;line-height:1.9;font-family:var(--font-b);"></div>
+    <div style="font-size:0.78rem;color:rgba(245,197,24,0.5);text-align:center;font-family:var(--font-mono);margin-bottom:12px;">KTÓRE SŁOWO SIĘ UKRYWA?</div>
+    <div id="l8-choices" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;"></div>
+    <div class="level-footer"><span class="status-msg error" id="l8-status"></span></div>
+</div>
+
+<!-- L9: ANALOGIA -->
+<div id="level-9" class="screen hidden">
+    <div class="level-header">
+        <span class="level-badge">POZIOM 9</span>
+        <h3>Analogia</h3>
+        <p>Dokończ analogię. Znajdź słowo pasujące do wzoru.</p>
+    </div>
+    <div id="l9-analogy" style="font-family:var(--font-h);font-size:1.4rem;color:var(--amber);text-align:center;margin:18px 0;letter-spacing:2px;text-shadow:0 0 10px rgba(255,152,0,0.4);"></div>
+    <div id="l9-choices" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:12px;"></div>
+    <div class="level-footer"><span class="status-msg error" id="l9-status"></span></div>
+</div>
+
+<!-- L10: DEDUKCJA -->
+<div id="level-10" class="screen hidden">
+    <div class="level-header">
+        <span class="level-badge">POZIOM 10</span>
+        <h3>Dedukcja</h3>
+        <p>Przeczytaj wskazówki i wyciągnij jedyną możliwą odpowiedź.</p>
+    </div>
+    <div id="l10-clues" style="display:flex;flex-direction:column;gap:8px;margin:12px 0;"></div>
+    <div id="l10-question" style="font-size:1rem;color:var(--amber);text-align:center;margin:14px 0;font-family:var(--font-h);font-size:0.9rem;"></div>
+    <div id="l10-choices" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;"></div>
+    <div class="level-footer"><span class="status-msg error" id="l10-status"></span></div>
+</div>
+
+<!-- VICTORY -->
+<div id="victory-screen" class="screen hidden" style="justify-content:center;align-items:center;background:rgba(7,10,15,0.97);backdrop-filter:blur(15px);z-index:2000;">
+    <div class="victory-content" style="width:100%;max-width:90%;">
+        <div class="victory-icon">🏆</div>
+        <h1 class="neon-text success-glow">PROTOKÓŁ ZŁAMANY</h1>
+        <p class="description" style="margin-bottom:25px;">Poziom Złoty ukończony. Brawo!</p>
+        <div class="stats-panel">
+            <div class="stat-item">
+                <span class="stat-label">CZAS PRZEJŚCIA</span>
+                <span class="stat-value big-time" id="my-time-display">--:--</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Pominięte (dev)</span>
+                <span class="stat-value" id="stat-skipped">0</span>
+            </div>
+        </div>
+        <button id="play-again-btn" class="neon-button" style="margin-top:30px;width:100%;position:static;">ZAGRAJ PONOWNIE</button>
+        <a href="/" style="text-decoration:none;width:100%;"><button class="action-btn" style="width:100%;border-color:#88aaff;color:#88aaff;font-size:0.9rem;padding:14px;margin-top:15px;">&#x1F3E0; POWRÓT DO MENU</button></a>
+    </div>
+</div>
+
+</div>
+<script src="../anticheat.js"></script>
+<script src="../screenshot-guard.js"></script>
+<script src="main.js"></script>
+</body>
+</html>
