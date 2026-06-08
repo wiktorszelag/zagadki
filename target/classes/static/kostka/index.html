@@ -156,11 +156,21 @@
                 <h2>Przykłady naszej pracy</h2>
             </div>
             <div class="gallery-grid">
-                <div class="gallery-item reveal">
+                <div class="gallery-item reveal" onclick="openLightbox(this.querySelector('img').src)">
                     <img src="assets/images/gallery_paving_1_1780916848038.png" alt="Układanie kostki w trakcie pracy">
+                    <div class="gallery-overlay"><span>🔍 Powiększ</span></div>
                 </div>
-                <div class="gallery-item reveal">
+                <div class="gallery-item reveal" onclick="openLightbox(this.querySelector('img').src)">
                     <img src="assets/images/gallery_paving_2_1780916858523.png" alt="Gotowy taras z nowoczesnej kostki">
+                    <div class="gallery-overlay"><span>🔍 Powiększ</span></div>
+                </div>
+                <div class="gallery-item reveal" onclick="openLightbox(this.querySelector('img').src)">
+                    <img src="assets/images/gallery_paving_1_1780916848038.png" alt="Przygotowanie terenu">
+                    <div class="gallery-overlay"><span>🔍 Powiększ</span></div>
+                </div>
+                <div class="gallery-item reveal" onclick="openLightbox(this.querySelector('img').src)">
+                    <img src="assets/images/gallery_paving_2_1780916858523.png" alt="Odwodnienia i podjazdy">
+                    <div class="gallery-overlay"><span>🔍 Powiększ</span></div>
                 </div>
             </div>
         </div>
@@ -204,6 +214,17 @@
             </div>
         </div>
     </footer>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <span class="lightbox-close">&times;</span>
+        <img class="lightbox-content" id="lightbox-img">
+    </div>
+
+    <!-- Pływający Przycisk -->
+    <a href="tel:+48512622978" class="floating-btn">
+        <span class="floating-icon">📞</span>
+    </a>
 
     <script src="script.js"></script>
 </body>
