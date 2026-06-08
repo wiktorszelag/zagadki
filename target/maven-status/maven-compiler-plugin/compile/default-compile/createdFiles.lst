@@ -1,0 +1,12 @@
+com\enigma\protocol\EmailService.class
+com\enigma\protocol\AdminController.class
+com\enigma\protocol\PlayerRepository.class
+com\enigma\protocol\PlayerController.class
+com\enigma\protocol\AdminLoginController.class
+com\enigma\protocol\EnigmaProtocolApplication.class
+com\enigma\protocol\User.class
+com\enigma\protocol\AdminAuthFilter.class
+com\enigma\protocol\UserRepository.class
+com\enigma\protocol\AuthController.class
+com\enigma\protocol\DataInitializer.class
+com\enigma\protocol\Player.class
