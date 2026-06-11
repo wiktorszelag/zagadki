@@ -8,15 +8,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #1e2024; /* Szary/Grafitowy kolor tła */
-            --surface: #272a30; /* Jaśniejszy szary dla kafelków */
+            --bg: #1e2024;
+            --surface: #272a30;
             --surface-hover: #30333b;
             --border: rgba(255, 255, 255, 0.08);
             --border-hover: rgba(255, 255, 255, 0.15);
-            --glow: rgba(59, 130, 246, 0.15); /* Delikatny glow */
+            --glow: rgba(59, 130, 246, 0.15);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --accent: #60a5fa; /* Niebieski akcent */
+            --accent: #60a5fa;
             --radius: 28px;
             --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -28,42 +28,33 @@
             color: var(--text-main);
             font-family: 'Inter', sans-serif;
             min-height: 100vh;
-            padding-bottom: 80px; /* Miejsce na menu */
+            padding-bottom: 100px;
         }
 
-        /* Ambient Glow in background */
         .ambient-light {
-            position: fixed;
-            width: 50vw; height: 50vw;
-            border-radius: 50%;
+            position: fixed; width: 50vw; height: 50vw; border-radius: 50%;
             background: radial-gradient(circle, rgba(96,165,250,0.05) 0%, transparent 70%);
-            top: -20vh; right: -20vw;
-            z-index: -1;
-            pointer-events: none;
+            top: -20vh; right: -20vw; z-index: -1; pointer-events: none;
         }
         .ambient-light-2 {
-            position: fixed;
-            width: 40vw; height: 40vw;
-            border-radius: 50%;
+            position: fixed; width: 40vw; height: 40vw; border-radius: 50%;
             background: radial-gradient(circle, rgba(167,139,250,0.05) 0%, transparent 70%);
-            bottom: -10vh; left: -10vw;
-            z-index: -1;
-            pointer-events: none;
+            bottom: -10vh; left: -10vw; z-index: -1; pointer-events: none;
         }
 
         .container {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 4rem auto;
             padding: 0 1.5rem;
         }
 
         h1, h2, h3 { font-family: 'Outfit', sans-serif; }
 
-        /* Compact Bento Grid */
+        /* PERFECT BENTO GRID */
         .bento-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            grid-auto-rows: 220px;
+            grid-auto-rows: minmax(220px, auto);
             gap: 1.5rem;
         }
 
@@ -88,87 +79,75 @@
             background: var(--surface-hover);
         }
 
-        /* Grid Spans */
         .col-span-1 { grid-column: span 1; }
         .col-span-2 { grid-column: span 2; }
-        .col-span-3 { grid-column: span 3; }
         .col-span-4 { grid-column: span 4; }
         .row-span-1 { grid-row: span 1; }
         .row-span-2 { grid-row: span 2; }
 
-        /* Card Content */
+        /* ABOUT CARD */
         .card-about {
             justify-content: center;
+            background: linear-gradient(135deg, rgba(39,42,48,0.8), rgba(30,32,36,0.8));
         }
         .card-about h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
+            font-size: 3.2rem;
+            margin-bottom: 1.5rem;
             line-height: 1.1;
+            letter-spacing: -1px;
         }
         .card-about p {
             color: var(--text-muted);
-            font-size: 1.05rem;
-            line-height: 1.5;
-        }
-
-        /* Photo Area */
-        .card-photo {
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #272a30, #1e2024);
-            color: var(--text-muted);
-            text-align: center;
-        }
-
-        /* Skills Layout */
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
-            height: 100%;
-        }
-        .skill-col h3 {
-            font-size: 1.1rem;
+            font-size: 1.15rem;
+            line-height: 1.6;
             margin-bottom: 1rem;
+        }
+
+        /* SKILL CARDS */
+        .card-skill {
+            padding: 2rem;
+        }
+        .card-skill h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1.2rem;
             color: var(--accent);
             display: flex; align-items: center; gap: 0.5rem;
         }
-        .skill-col ul {
+        .card-skill ul {
             list-style: none;
+            display: flex; flex-direction: column; gap: 0.8rem;
         }
-        .skill-col li {
+        .card-skill li {
             color: var(--text-muted);
-            margin-bottom: 0.5rem;
             font-size: 0.95rem;
-            display: flex; align-items: center; gap: 0.4rem;
+            display: flex; align-items: center; gap: 0.5rem;
         }
 
-        /* Project Cards */
+        /* PROJECT CARDS */
         .card-project {
             justify-content: space-between;
         }
         .project-icon {
-            width: 44px; height: 44px;
+            width: 48px; height: 48px;
             background: rgba(255,255,255,0.05);
-            border-radius: 12px;
+            border-radius: 14px;
             display: flex; align-items: center; justify-content: center;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             border: 1px solid var(--border);
             transition: var(--transition);
         }
         .card-project:hover .project-icon {
             background: var(--text-main);
             color: var(--bg);
+            transform: rotate(10deg) scale(1.1);
         }
         .card-project h3 {
-            font-size: 1.4rem;
-            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
         }
         .card-project p {
             color: var(--text-muted);
-            font-size: 0.95rem;
+            font-size: 1rem;
             line-height: 1.5;
         }
         .tag-wrap {
@@ -177,82 +156,51 @@
         }
         .tag {
             background: rgba(255,255,255,0.05);
-            padding: 0.3rem 0.8rem;
+            padding: 0.4rem 1rem;
             border-radius: 20px;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
+            font-weight: 500;
         }
 
-        /* Glass Floating Menu */
+        /* GLASS NAV */
         .glass-nav {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(39, 42, 48, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border);
-            padding: 0.8rem 1.5rem;
-            border-radius: 100px;
-            display: flex;
-            gap: 2rem;
-            z-index: 1000;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: rgba(39, 42, 48, 0.8);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 0.8rem 1.5rem; border-radius: 100px;
+            display: flex; gap: 2.5rem; z-index: 1000;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
         .nav-item {
-            color: var(--text-muted);
-            text-decoration: none;
-            display: flex; flex-direction: column; align-items: center;
-            gap: 0.3rem;
-            transition: var(--transition);
-            position: relative;
+            color: var(--text-muted); text-decoration: none;
+            display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+            transition: var(--transition); position: relative;
         }
-        .nav-item:hover {
-            color: var(--text-main);
-            transform: translateY(-3px);
-        }
+        .nav-item:hover { color: var(--text-main); transform: translateY(-4px); }
         .nav-item span {
-            font-size: 0.7rem; font-weight: 600;
-            position: absolute; top: -25px;
+            font-size: 0.75rem; font-weight: 600; position: absolute; top: -30px;
             background: var(--text-main); color: var(--bg);
-            padding: 0.2rem 0.6rem; border-radius: 12px;
+            padding: 0.3rem 0.8rem; border-radius: 12px;
             opacity: 0; transform: translateY(5px); transition: var(--transition);
             pointer-events: none; white-space: nowrap;
         }
-        .nav-item:hover span {
-            opacity: 1; transform: translateY(0);
-        }
+        .nav-item:hover span { opacity: 1; transform: translateY(0); }
 
-        /* Section Titles */
-        .section-label {
-            grid-column: span 4;
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-top: 2rem;
-            margin-bottom: -0.5rem;
-            color: var(--text-main);
-            display: flex; align-items: center; gap: 0.5rem;
-        }
-
-        /* Responsive */
+        /* RESPONSIVE */
         @media (max-width: 1024px) {
             .bento-grid { grid-template-columns: repeat(2, 1fr); }
-            .section-label { grid-column: span 2; }
-            .col-span-3, .col-span-4 { grid-column: span 2; }
-            .skills-grid { grid-template-columns: repeat(2, 1fr); }
-            .card-skills { grid-row: span 2; }
+            .col-span-2 { grid-column: span 2; }
+            .col-span-1 { grid-column: span 1; }
         }
 
         @media (max-width: 768px) {
-            .bento-grid { grid-template-columns: 1fr; grid-auto-rows: auto; }
-            .section-label { grid-column: span 1; margin-top: 1rem; }
+            .bento-grid { grid-template-columns: 1fr; }
             .col-span-2 { grid-column: span 1; }
+            .col-span-1 { grid-column: span 1; }
             .row-span-2 { grid-row: span 1; }
-            .card { padding: 1.8rem; }
-            .skills-grid { grid-template-columns: 1fr; }
-            .card-skills { grid-row: span 1; }
-            .card-photo { padding: 4rem 2rem; }
+            .card-about h1 { font-size: 2.5rem; }
             .glass-nav { bottom: 20px; gap: 1.5rem; padding: 0.8rem 1.2rem; }
         }
     </style>
@@ -263,108 +211,100 @@
     <div class="ambient-light-2"></div>
 
     <nav class="glass-nav">
-        <a href="#about" class="nav-item">
-            <i data-lucide="user"></i>
-            <span>O mnie</span>
-        </a>
-        <a href="#skills" class="nav-item">
-            <i data-lucide="cpu"></i>
-            <span>Narzędzia</span>
-        </a>
-        <a href="#projects" class="nav-item">
-            <i data-lucide="folder-open"></i>
-            <span>Projekty</span>
-        </a>
+        <a href="#about" class="nav-item"><i data-lucide="user"></i><span>O mnie</span></a>
+        <a href="#skills" class="nav-item"><i data-lucide="cpu"></i><span>Narzędzia</span></a>
+        <a href="#projects" class="nav-item"><i data-lucide="folder-open"></i><span>Projekty</span></a>
     </nav>
 
     <div class="container">
+        <!-- THE BENTO GRID -->
         <div class="bento-grid">
             
-            <!-- Hero / About -->
-            <div id="about" class="card card-about col-span-4 row-span-2">
+            <!-- ROW 1 & 2 -->
+            <!-- ABOUT (2x2) -->
+            <div id="about" class="card card-about col-span-2 row-span-2">
                 <h1>Cześć, jestem Wiktor!</h1>
-                <p style="margin-bottom: 1rem;">
+                <p>
                     Specjalizuję się w tworzeniu nowoczesnych aplikacji internetowych oraz kompleksowych rozwiązań backendowych. Programowanie to dla mnie nie tylko czysty kod, ale sztuka rozwiązywania realnych problemów.
                 </p>
                 <p>
-                    Mam za sobą zarówno pracę w zespole (m.in. platforma Onthespotted.pl), jak i realizację wizytówek biznesowych. Skupiam się na wydajności, SEO i świetnym designie.
+                    Mam za sobą zarówno pracę w zespole (Onthespotted.pl), jak i realizację wizytówek biznesowych. Skupiam się na wydajności, SEO i nienagannym designie.
                 </p>
             </div>
 
-            <div id="skills" class="section-label">Narzędzia i Technologie</div>
-
-            <!-- Skills -->
-            <div class="card col-span-4 card-skills">
-                <div class="skills-grid">
-                    <div class="skill-col">
-                        <h3><i data-lucide="server"></i> Backend</h3>
-                        <ul>
-                            <li><i data-lucide="check" size="14"></i> Java</li>
-                            <li><i data-lucide="check" size="14"></i> Spring Boot</li>
-                            <li><i data-lucide="check" size="14"></i> PostgreSQL</li>
-                            <li><i data-lucide="check" size="14"></i> REST API</li>
-                        </ul>
-                    </div>
-                    <div class="skill-col">
-                        <h3><i data-lucide="monitor"></i> Frontend</h3>
-                        <ul>
-                            <li><i data-lucide="check" size="14"></i> React + Vite</li>
-                            <li><i data-lucide="check" size="14"></i> HTML5 / CSS3</li>
-                            <li><i data-lucide="check" size="14"></i> JavaScript</li>
-                            <li><i data-lucide="check" size="14"></i> Responsive UI</li>
-                        </ul>
-                    </div>
-                    <div class="skill-col">
-                        <h3><i data-lucide="terminal"></i> DevOps</h3>
-                        <ul>
-                            <li><i data-lucide="check" size="14"></i> Docker</li>
-                            <li><i data-lucide="check" size="14"></i> Git / GitHub</li>
-                            <li><i data-lucide="check" size="14"></i> Linux (VPS)</li>
-                            <li><i data-lucide="check" size="14"></i> Automatyzacja</li>
-                        </ul>
-                    </div>
-                    <div class="skill-col">
-                        <h3><i data-lucide="trending-up"></i> Analityka & SEO</h3>
-                        <ul>
-                            <li><i data-lucide="check" size="14"></i> Google Analytics</li>
-                            <li><i data-lucide="check" size="14"></i> Tagowanie</li>
-                            <li><i data-lucide="check" size="14"></i> On-Page SEO</li>
-                            <li><i data-lucide="check" size="14"></i> Optymalizacja</li>
-                        </ul>
-                    </div>
-                </div>
+            <!-- SKILL 1 (1x1) -->
+            <div id="skills" class="card card-skill col-span-1 row-span-1">
+                <h3><i data-lucide="server"></i> Backend</h3>
+                <ul>
+                    <li><i data-lucide="check-circle-2" size="16"></i> Java</li>
+                    <li><i data-lucide="check-circle-2" size="16"></i> Spring Boot</li>
+                    <li><i data-lucide="check-circle-2" size="16"></i> PostgreSQL</li>
+                    <li><i data-lucide="check-circle-2" size="16"></i> REST API</li>
+                </ul>
             </div>
 
-            <div id="projects" class="section-label">Wybrane Projekty</div>
+            <!-- SKILL 2 (1x1) -->
+            <div class="card card-skill col-span-1 row-span-1">
+                <h3><i data-lucide="monitor"></i> Frontend</h3>
+                <ul>
+                    <li><i data-lucide="check-circle-2" size="16"></i> React + Vite</li>
+                    <li><i data-lucide="check-circle-2" size="16"></i> HTML5 / CSS3</li>
+                    <li><i data-lucide="check-circle-2" size="16"></i> JavaScript</li>
+                    <li><i data-lucide="check-circle-2" size="16"></i> Tailwind CSS</li>
+                </ul>
+            </div>
 
-            <!-- Project 1 -->
-            <a href="https://onthespotted.pl" target="_blank" class="card card-project col-span-2 row-span-1">
+            <!-- SKILL 3 (1x1) -->
+            <div class="card card-skill col-span-1 row-span-1">
+                <h3><i data-lucide="terminal-square"></i> DevOps</h3>
+                <ul>
+                    <li><i data-lucide="check-circle-2" size="16"></i> Docker</li>
+                    <li><i data-lucide="check-circle-2" size="16"></i> Git / GitHub</li>
+                    <li><i data-lucide="check-circle-2" size="16"></i> Linux (VPS)</li>
+                    <li><i data-lucide="check-circle-2" size="16"></i> Automatyzacja</li>
+                </ul>
+            </div>
+
+            <!-- SKILL 4 (1x1) -->
+            <div class="card card-skill col-span-1 row-span-1">
+                <h3><i data-lucide="bar-chart-3"></i> SEO</h3>
+                <ul>
+                    <li><i data-lucide="check-circle-2" size="16"></i> G. Analytics</li>
+                    <li><i data-lucide="check-circle-2" size="16"></i> Tagowanie</li>
+                    <li><i data-lucide="check-circle-2" size="16"></i> On-Page SEO</li>
+                    <li><i data-lucide="check-circle-2" size="16"></i> Optymalizacja</li>
+                </ul>
+            </div>
+
+            <!-- ROW 3 -->
+            <!-- PROJECT 1 (2x1) -->
+            <a href="https://onthespotted.pl" target="_blank" id="projects" class="card card-project col-span-2 row-span-1">
                 <div>
                     <div class="project-icon"><i data-lucide="users"></i></div>
                     <h3>Onthespotted.pl</h3>
-                    <p>Platforma społecznościowa tworzona w zespole. Nowoczesne standardy i skalowalność.</p>
+                    <p>Platforma społecznościowa tworzona w zespole. Nowoczesne standardy i wysoka skalowalność infrastruktury.</p>
                 </div>
                 <div class="tag-wrap"><span class="tag">Web App</span></div>
             </a>
 
-            <!-- Project 2 -->
+            <!-- PROJECT 2 (1x1) -->
             <a href="gra.html" class="card card-project col-span-1 row-span-1">
                 <div>
                     <div class="project-icon"><i data-lucide="gamepad-2"></i></div>
                     <h3>Enigma Protocol</h3>
-                    <p>Zaawansowana gra logiczna z rankingiem.</p>
+                    <p>Gra logiczna z weryfikacją graczy i rankingiem.</p>
                 </div>
                 <div class="tag-wrap"><span class="tag">Java Spring</span></div>
             </a>
 
-            <!-- Project 3 -->
+            <!-- PROJECT 3 (1x1) -->
             <a href="kostka/index.html" class="card card-project col-span-1 row-span-1">
                 <div>
                     <div class="project-icon"><i data-lucide="hard-hat"></i></div>
                     <h3>ProfiBud</h3>
-                    <p>Wizytówka biznesowa zoptymalizowana pod SEO.</p>
+                    <p>Wizytówka biznesowa ekstremalnie zoptymalizowana pod SEO.</p>
                 </div>
-                <div class="tag-wrap"><span class="tag">Biznes</span></div>
+                <div class="tag-wrap"><span class="tag">Business SEO</span></div>
             </a>
 
         </div>
