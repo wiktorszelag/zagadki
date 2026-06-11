@@ -3,401 +3,361 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio | By WS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <title>Wiktor Szeląg | Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --bg-dark: #0a0f1c;
-            --glass-bg: rgba(17, 25, 40, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.125);
-            --accent-1: #6366f1;
-            --accent-2: #8b5cf6;
-            --accent-3: #ec4899;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            --bg: #0b0f19;
+            --surface: #151b2b;
+            --surface-hover: #1e2638;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 255, 255, 0.2);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.4);
+            --radius: 24px;
+            --transition: all 0.3s ease;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
+            background-color: var(--bg);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 2rem;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        /* Dynamic Animated Background */
-        .bg-mesh {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
-            background: 
-                radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15), transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.15), transparent 25%),
-                radial-gradient(circle at 50% 80%, rgba(139, 92, 246, 0.15), transparent 25%);
-            animation: mesh-movement 15s ease-in-out infinite alternate;
-        }
-
-        .bg-grid {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
-            background-image: 
-                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
-            mask-image: radial-gradient(circle at center, black, transparent 80%);
-            -webkit-mask-image: radial-gradient(circle at center, black, transparent 80%);
-        }
-
-        @keyframes mesh-movement {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        /* Navbar */
-        nav {
-            display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            padding: 1.5rem 5%;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--glass-border);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: rgba(10, 15, 28, 0.6);
         }
 
-        .brand {
+        h1, h2, h3 {
             font-family: 'Outfit', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 800;
-            letter-spacing: -1px;
-            background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            margin: 0 0 1rem 0;
         }
 
-        .brand span {
-            color: var(--accent-1);
-            -webkit-text-fill-color: var(--accent-1);
+        p {
+            line-height: 1.6;
+            margin: 0;
+            color: var(--text-secondary);
         }
 
-        .contact-btn {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #fff;
-            font-size: 0.95rem;
-            font-weight: 500;
-            text-decoration: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: 30px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: var(--transition);
-        }
-
-        .contact-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
-        /* Main Container */
         .container {
-            max-width: 1100px;
-            margin: 3rem auto;
-            padding: 0 2rem;
-            flex-grow: 1;
-        }
-
-        /* Header Section */
-        .hero-section {
-            text-align: center;
-            margin-bottom: 4rem;
-            animation: fadeIn 1s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .hero-title {
-            font-family: 'Outfit', sans-serif;
-            font-size: 3.5rem;
-            font-weight: 800;
-            letter-spacing: -1.5px;
-            margin-bottom: 1rem;
-            line-height: 1.1;
-        }
-
-        .hero-title .gradient-text {
-            background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .hero-subtitle {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            max-width: 600px;
+            max-width: 1200px;
+            width: 100%;
             margin: 0 auto;
         }
 
-        /* Section Titles */
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .section-title {
-            font-family: 'Outfit', sans-serif;
-            font-size: 2rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-        }
-
-        .section-line {
-            flex-grow: 1;
-            height: 1px;
-            background: linear-gradient(90deg, rgba(255,255,255,0.1), transparent);
-        }
-
-        /* Grid Layout */
-        .grid {
+        /* Bento Grid */
+        .bento-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2rem;
-            margin-bottom: 5rem;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            grid-auto-rows: minmax(200px, auto);
         }
 
-        /* Card Style - Premium Glassmorphism */
-        .card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
+        .bento-card {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
             padding: 2.5rem;
-            text-decoration: none;
-            color: inherit;
-            position: relative;
             transition: var(--transition);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            overflow: hidden;
             display: flex;
             flex-direction: column;
-            gap: 1.2rem;
-            z-index: 1;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
         }
 
-        /* Card Hover Glow Effect */
-        .card::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
+        .bento-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--border-hover);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            background-color: var(--surface-hover);
+        }
+
+        /* Spans */
+        .col-span-2 { grid-column: span 2; }
+        .col-span-3 { grid-column: span 3; }
+        .col-span-4 { grid-column: span 4; }
+        .row-span-2 { grid-row: span 2; }
+
+        /* Specific Cards */
+        .card-about {
+            justify-content: center;
+        }
+        
+        .card-about h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+        }
+
+        .card-photo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+        
+        .photo-placeholder {
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.08), transparent 60%);
-            opacity: 0;
-            transition: var(--transition);
-            z-index: -1;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 2rem;
+            border-radius: calc(var(--radius) - 2px);
         }
 
-        .card:hover {
-            transform: translateY(-8px) scale(1.02);
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 
-                        0 0 40px rgba(99, 102, 241, 0.1);
+        .photo-placeholder i {
+            margin-bottom: 1rem;
+            color: var(--border-hover);
         }
 
-        .card:hover::before {
-            opacity: 1;
+        .card-skills {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            padding: 2rem;
         }
 
-        .card-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 14px;
-            background: rgba(255, 255, 255, 0.05);
+        .skill-group h3 {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .skill-group h3 i {
+            color: var(--accent);
+        }
+
+        .skill-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .skill-list li {
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-project {
+            justify-content: space-between;
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .project-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 0.5rem;
+            color: var(--text-primary);
         }
 
-        .card h3 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.6rem;
-            color: #fff;
-            letter-spacing: -0.5px;
+        .project-link-icon {
+            color: var(--text-secondary);
+            transition: var(--transition);
         }
 
-        .card p {
-            color: var(--text-muted);
-            line-height: 1.6;
-            font-size: 0.95rem;
-            flex-grow: 1;
+        .bento-card:hover .project-link-icon {
+            color: var(--text-primary);
+            transform: translate(3px, -3px);
         }
 
-        .card .badge {
-            align-self: flex-start;
-            background: rgba(99, 102, 241, 0.15);
-            color: #818cf8;
-            padding: 0.4rem 1rem;
+        .project-tags {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.3rem 0.8rem;
             border-radius: 20px;
             font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border: 1px solid rgba(99, 102, 241, 0.2);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
         }
 
-        .badge.green {
-            background: rgba(16, 185, 129, 0.15);
-            color: #34d399;
-            border-color: rgba(16, 185, 129, 0.2);
-        }
-
-        /* Arrow animation */
-        .card-arrow {
-            position: absolute;
-            bottom: 2.5rem;
-            right: 2.5rem;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.05);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: var(--transition);
-            color: #fff;
-        }
-
-        .card:hover .card-arrow {
-            background: #fff;
-            color: #000;
-            transform: translate(5px, -5px) rotate(45deg);
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 3rem 2rem;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            background: rgba(10, 15, 28, 0.8);
-            backdrop-filter: blur(10px);
-            margin-top: auto;
+        @media (max-width: 1024px) {
+            .bento-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .card-skills {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .col-span-3 { grid-column: span 2; }
+            .col-span-4 { grid-column: span 2; }
         }
 
         @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2.5rem;
-            }
-            .grid {
+            .bento-grid {
                 grid-template-columns: 1fr;
             }
-            .card {
-                padding: 2rem;
+            .col-span-2, .col-span-3, .col-span-4 {
+                grid-column: span 1;
+            }
+            .row-span-2 {
+                grid-row: span 1;
+            }
+            .card-skills {
+                grid-template-columns: 1fr;
+            }
+            body {
+                padding: 1rem;
+            }
+            .bento-card {
+                padding: 1.5rem;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="bg-mesh"></div>
-    <div class="bg-grid"></div>
-
-    <nav>
-        <div class="brand">Portfolio <span>By WS</span></div>
-        <a href="mailto:wiktor.szelag12@gmail.com" class="contact-btn">
-            Napisz do mnie
-        </a>
-    </nav>
-
     <div class="container">
-        
-        <header class="hero-section">
-            <h1 class="hero-title">Nowoczesne projekty<br><span class="gradient-text">w jednym miejscu.</span></h1>
-            <p class="hero-subtitle">Wybierz jeden z poniższych kafelków, aby przejść do wybranej aplikacji, serwisu społecznościowego lub wizytówki biznesowej.</p>
-        </header>
+        <div class="bento-grid">
+            
+            <!-- Hero / About -->
+            <div class="bento-card card-about col-span-3 row-span-2">
+                <h1>Cześć, jestem Wiktor! 👋</h1>
+                <p style="font-size: 1.1rem; margin-bottom: 1rem;">
+                    Specjalizuję się w tworzeniu nowoczesnych aplikacji internetowych oraz kompleksowych rozwiązań backendowych. Programowanie to dla mnie nie tylko czysty kod, ale przede wszystkim rozwiązywanie realnych problemów i dostarczanie produktów, z których ludzie chcą korzystać.
+                </p>
+                <p style="font-size: 1.1rem;">
+                    Mam za sobą zarówno pracę w zespole (m.in. współtworzenie platformy społecznościowej Onthespotted.pl), jak i realizację komercyjnych wizytówek dla biznesu. Skupiam się na wydajności, bezpieczeństwie i świetnym designie.
+                </p>
+            </div>
 
-        <div class="section-header">
-            <h2 class="section-title">Główne Serwisy</h2>
-            <div class="section-line"></div>
-        </div>
+            <!-- Photo Placeholder -->
+            <div class="bento-card card-photo row-span-2">
+                <div class="photo-placeholder">
+                    <i data-lucide="image" style="width: 48px; height: 48px;"></i>
+                    <span>Zmień zdjęcie w kodzie HTML<br>(dodaj tag img i ścieżkę do zdjęcia)</span>
+                </div>
+            </div>
 
-        <div class="grid">
-            <!-- Onthespotted -->
-            <a href="https://onthespotted.pl" target="_blank" class="card">
-                <span class="badge">Web App / Społeczność</span>
-                <div class="card-icon">🌍</div>
+            <!-- Skills -->
+            <div class="bento-card col-span-4">
+                <div class="card-skills">
+                    <div class="skill-group">
+                        <h3><i data-lucide="server"></i> Backend</h3>
+                        <ul class="skill-list">
+                            <li><i data-lucide="check" size="16"></i> Java</li>
+                            <li><i data-lucide="check" size="16"></i> Spring Boot</li>
+                            <li><i data-lucide="check" size="16"></i> PostgreSQL</li>
+                            <li><i data-lucide="check" size="16"></i> REST API</li>
+                        </ul>
+                    </div>
+                    <div class="skill-group">
+                        <h3><i data-lucide="monitor"></i> Frontend</h3>
+                        <ul class="skill-list">
+                            <li><i data-lucide="check" size="16"></i> React + Vite</li>
+                            <li><i data-lucide="check" size="16"></i> HTML5 / CSS3</li>
+                            <li><i data-lucide="check" size="16"></i> JavaScript (ES6+)</li>
+                            <li><i data-lucide="check" size="16"></i> Responsive Design</li>
+                        </ul>
+                    </div>
+                    <div class="skill-group">
+                        <h3><i data-lucide="terminal"></i> DevOps</h3>
+                        <ul class="skill-list">
+                            <li><i data-lucide="check" size="16"></i> Docker</li>
+                            <li><i data-lucide="check" size="16"></i> Git / GitHub</li>
+                            <li><i data-lucide="check" size="16"></i> Linux (VPS)</li>
+                            <li><i data-lucide="check" size="16"></i> Automatyzacja wdrożeń</li>
+                        </ul>
+                    </div>
+                    <div class="skill-group">
+                        <h3><i data-lucide="trending-up"></i> SEO & Analityka</h3>
+                        <ul class="skill-list">
+                            <li><i data-lucide="check" size="16"></i> Google Analytics</li>
+                            <li><i data-lucide="check" size="16"></i> Tagowanie (Schema, OG)</li>
+                            <li><i data-lucide="check" size="16"></i> On-Page SEO</li>
+                            <li><i data-lucide="check" size="16"></i> Optymalizacja wydajności</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project 1 -->
+            <a href="https://onthespotted.pl" target="_blank" class="bento-card card-project">
+                <div class="project-header">
+                    <div class="project-icon">
+                        <i data-lucide="users"></i>
+                    </div>
+                    <i data-lucide="arrow-up-right" class="project-link-icon"></i>
+                </div>
                 <h3>Onthespotted.pl</h3>
-                <p>Moja główna aplikacja, nad którą pracowałem w zespole 4-osobowym. Nowoczesna platforma łącząca społeczność, napisana zgodnie z najnowszymi standardami programistycznymi.</p>
-                <div class="card-arrow">↗</div>
+                <p>Platforma społecznościowa tworzona w zespole. Nowoczesne standardy i skalowalność.</p>
+                <div class="project-tags">
+                    <span class="tag">Web App</span>
+                    <span class="tag">Społeczność</span>
+                </div>
             </a>
 
-            <!-- Gra Zagadkowa -->
-            <a href="gra.html" class="card">
-                <span class="badge">Gra / Java Spring</span>
-                <div class="card-icon">🔐</div>
+            <!-- Project 2 -->
+            <a href="gra.html" class="bento-card card-project">
+                <div class="project-header">
+                    <div class="project-icon">
+                        <i data-lucide="gamepad-2"></i>
+                    </div>
+                    <i data-lucide="arrow-right" class="project-link-icon"></i>
+                </div>
                 <h3>Enigma Protocol</h3>
-                <p>Złożona aplikacja z autorskim systemem uwierzytelniania. Logiczna gra wciągająca w rozwiązywanie zagadek z globalnym rankingiem i wieloma etapami trudności.</p>
-                <div class="card-arrow">→</div>
+                <p>Logiczna gra przeglądarkowa z systemem autoryzacji i globalnym rankingiem graczy.</p>
+                <div class="project-tags">
+                    <span class="tag">Java Spring</span>
+                    <span class="tag">Rozrywka</span>
+                </div>
             </a>
-        </div>
 
-        <div class="section-header">
-            <h2 class="section-title">Lokalne Wizytówki</h2>
-            <div class="section-line"></div>
-        </div>
-
-        <div class="grid">
-            <!-- Strona Kostka -->
-            <a href="kostka/index.html" class="card">
-                <span class="badge green">Landing Page / Biznes</span>
-                <div class="card-icon">🏗️</div>
-                <h3>ProfiBud - Kostka Brukowa</h3>
-                <p>Przykład wdrożenia profesjonalnej i nowoczesnej wizytówki dla lokalnej firmy budowlanej. Zoptymalizowana pod SEO, oparta o responsywny design ze szklistymi elementami.</p>
-                <div class="card-arrow">→</div>
+            <!-- Project 3 -->
+            <a href="kostka/index.html" class="bento-card card-project">
+                <div class="project-header">
+                    <div class="project-icon">
+                        <i data-lucide="hard-hat"></i>
+                    </div>
+                    <i data-lucide="arrow-right" class="project-link-icon"></i>
+                </div>
+                <h3>ProfiBud - Brukarstwo</h3>
+                <p>Nowoczesna wizytówka lokalnego biznesu. Zoptymalizowana pod SEO i konwersję.</p>
+                <div class="project-tags">
+                    <span class="tag">Biznes</span>
+                    <span class="tag">SEO</span>
+                </div>
             </a>
+
         </div>
     </div>
 
-    <footer>
-        &copy; 2026 Zbudowane z pasją | Projekt i wykonanie: Wiktor Szeląg
-    </footer>
-
+    <!-- Inicjalizacja ikon Lucide -->
+    <script>
+      lucide.createIcons();
+    </script>
 </body>
 </html>
