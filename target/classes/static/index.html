@@ -1,363 +1,446 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="pl" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wiktor Szeląg | Portfolio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>Wiktor Szeląg | Creative Developer</title>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0b0f19;
-            --surface: #151b2b;
-            --surface-hover: #1e2638;
-            --border: rgba(255, 255, 255, 0.08);
-            --border-hover: rgba(255, 255, 255, 0.2);
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --accent: #3b82f6;
-            --accent-glow: rgba(59, 130, 246, 0.4);
-            --radius: 24px;
-            --transition: all 0.3s ease;
+            --bg: #030712;
+            --surface: rgba(17, 24, 39, 0.4);
+            --border: rgba(255,255,255,0.05);
+            --glow-blue: rgba(59, 130, 246, 0.3);
+            --glow-purple: rgba(147, 51, 234, 0.3);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+        }
+
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
             background-color: var(--bg);
-            color: var(--text-primary);
-            margin: 0;
-            padding: 2rem;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        h1, h2, h3 {
-            font-family: 'Outfit', sans-serif;
-            margin: 0 0 1rem 0;
-        }
-
-        p {
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
             line-height: 1.6;
-            margin: 0;
-            color: var(--text-secondary);
         }
 
+        /* Animated Glowing Orbs Background */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: -1;
+            opacity: 0.5;
+            animation: float 20s infinite ease-in-out alternate;
+        }
+        .orb-1 {
+            width: 40vw; height: 40vw;
+            background: #1d4ed8;
+            top: -10vw; left: -10vw;
+        }
+        .orb-2 {
+            width: 30vw; height: 30vw;
+            background: #7e22ce;
+            bottom: 10vw; right: -5vw;
+            animation-delay: -5s;
+        }
+        .orb-3 {
+            width: 25vw; height: 25vw;
+            background: #0ea5e9;
+            top: 40vh; left: 30vw;
+            animation-delay: -10s;
+            opacity: 0.3;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 100px) scale(1.2); }
+        }
+
+        /* Container */
         .container {
             max-width: 1200px;
-            width: 100%;
             margin: 0 auto;
+            padding: 0 2rem;
         }
 
-        /* Bento Grid */
-        .bento-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
-            grid-auto-rows: minmax(200px, auto);
-        }
-
-        .bento-card {
-            background-color: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 2.5rem;
-            transition: var(--transition);
+        /* Typography */
+        h1, h2, h3 { font-family: 'Inter', sans-serif; }
+        
+        /* Hero Section */
+        .hero {
+            height: 100vh;
             display: flex;
             flex-direction: column;
+            justify-content: center;
             position: relative;
-            overflow: hidden;
+        }
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: -2px;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-subtitle {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: var(--accent);
+            font-weight: 500;
+            margin-bottom: 2rem;
+            max-width: 600px;
+        }
+        .hero-desc {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 500px;
+        }
+
+        /* Scroll Reveal Utility */
+        .reveal {
+            opacity: 0;
+            transform: translateY(60px);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Sections */
+        section {
+            padding: 8rem 0;
+        }
+        .section-title {
+            font-size: 3rem;
+            margin-bottom: 4rem;
+            font-weight: 600;
+        }
+
+        /* Skills Pills */
+        .skills-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .skill-pill {
+            padding: 1rem 2rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 1.1rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .skill-pill:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px var(--glow-blue);
+            transform: translateY(-3px);
+            color: #fff;
+        }
+
+        /* Asymmetric Projects Grid */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 6rem;
+        }
+
+        @media (min-width: 1024px) {
+            .projects-grid {
+                grid-template-columns: repeat(12, 1fr);
+            }
+            .project-card:nth-child(1) { grid-column: 1 / 8; }
+            .project-card:nth-child(2) { grid-column: 5 / 13; margin-top: 10rem; }
+            .project-card:nth-child(3) { grid-column: 2 / 10; margin-top: 5rem; }
+        }
+
+        .project-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 4rem;
+            backdrop-filter: blur(10px);
             text-decoration: none;
             color: inherit;
-        }
-
-        .bento-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--border-hover);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            background-color: var(--surface-hover);
-        }
-
-        /* Spans */
-        .col-span-2 { grid-column: span 2; }
-        .col-span-3 { grid-column: span 3; }
-        .col-span-4 { grid-column: span 4; }
-        .row-span-2 { grid-row: span 2; }
-
-        /* Specific Cards */
-        .card-about {
-            justify-content: center;
+            transition: all 0.5s;
+            position: relative;
+            overflow: hidden;
+            display: block;
         }
         
-        .card-about h1 {
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.05), transparent 70%);
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(255,255,255,0.2);
+            box-shadow: 0 30px 60px -15px var(--glow-blue);
+        }
+        .project-card:hover::before { opacity: 1; }
+
+        .project-card-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .project-title {
             font-size: 2.5rem;
-            font-weight: 800;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .project-desc {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+        .project-icon {
+            width: 60px; height: 60px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        .project-card:hover .project-icon {
+            background: var(--text-main);
+            color: #000;
+            transform: rotate(45deg);
         }
 
-        .card-photo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
+        /* Floating Dock Menu */
+        .dock-wrapper {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
         }
-        
-        .photo-placeholder {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #1e293b, #0f172a);
+        .dock {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 100px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1);
+        }
+        .dock-item {
+            color: var(--text-muted);
+            text-decoration: none;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            text-align: center;
-            padding: 2rem;
-            border-radius: calc(var(--radius) - 2px);
+            gap: 0.3rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
         }
-
-        .photo-placeholder i {
-            margin-bottom: 1rem;
-            color: var(--border-hover);
-        }
-
-        .card-skills {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
-            padding: 2rem;
-        }
-
-        .skill-group h3 {
-            font-size: 1.1rem;
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .skill-group h3 i {
-            color: var(--accent);
-        }
-
-        .skill-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-        }
-
-        .skill-list li {
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .card-project {
-            justify-content: space-between;
-        }
-
-        .project-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1.5rem;
-        }
-
-        .project-icon {
-            width: 48px;
-            height: 48px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-primary);
-        }
-
-        .project-link-icon {
-            color: var(--text-secondary);
-            transition: var(--transition);
-        }
-
-        .bento-card:hover .project-link-icon {
-            color: var(--text-primary);
-            transform: translate(3px, -3px);
-        }
-
-        .project-tags {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .tag {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 0.3rem 0.8rem;
+        .dock-item span {
+            font-size: 0.7rem;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s;
+            position: absolute;
+            top: -25px;
+            background: #fff;
+            color: #000;
+            padding: 0.2rem 0.6rem;
             border-radius: 20px;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            border: 1px solid var(--border);
+            pointer-events: none;
         }
-
-        @media (max-width: 1024px) {
-            .bento-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .card-skills {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .col-span-3 { grid-column: span 2; }
-            .col-span-4 { grid-column: span 2; }
+        .dock-item:hover {
+            color: #fff;
+            transform: translateY(-8px) scale(1.2);
+        }
+        .dock-item:hover span {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         @media (max-width: 768px) {
-            .bento-grid {
-                grid-template-columns: 1fr;
-            }
-            .col-span-2, .col-span-3, .col-span-4 {
-                grid-column: span 1;
-            }
-            .row-span-2 {
-                grid-row: span 1;
-            }
-            .card-skills {
-                grid-template-columns: 1fr;
-            }
-            body {
-                padding: 1rem;
-            }
-            .bento-card {
-                padding: 1.5rem;
-            }
+            .project-card { padding: 2rem; }
+            .project-title { font-size: 1.8rem; }
+            .dock { gap: 1rem; padding: 0.8rem 1.5rem; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="bento-grid">
-            
-            <!-- Hero / About -->
-            <div class="bento-card card-about col-span-3 row-span-2">
-                <h1>Cześć, jestem Wiktor! 👋</h1>
-                <p style="font-size: 1.1rem; margin-bottom: 1rem;">
-                    Specjalizuję się w tworzeniu nowoczesnych aplikacji internetowych oraz kompleksowych rozwiązań backendowych. Programowanie to dla mnie nie tylko czysty kod, ale przede wszystkim rozwiązywanie realnych problemów i dostarczanie produktów, z których ludzie chcą korzystać.
-                </p>
-                <p style="font-size: 1.1rem;">
-                    Mam za sobą zarówno pracę w zespole (m.in. współtworzenie platformy społecznościowej Onthespotted.pl), jak i realizację komercyjnych wizytówek dla biznesu. Skupiam się na wydajności, bezpieczeństwie i świetnym designie.
-                </p>
-            </div>
+    <!-- Animated Orbs Background -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
 
-            <!-- Photo Placeholder -->
-            <div class="bento-card card-photo row-span-2">
-                <div class="photo-placeholder">
-                    <i data-lucide="image" style="width: 48px; height: 48px;"></i>
-                    <span>Zmień zdjęcie w kodzie HTML<br>(dodaj tag img i ścieżkę do zdjęcia)</span>
-                </div>
-            </div>
-
-            <!-- Skills -->
-            <div class="bento-card col-span-4">
-                <div class="card-skills">
-                    <div class="skill-group">
-                        <h3><i data-lucide="server"></i> Backend</h3>
-                        <ul class="skill-list">
-                            <li><i data-lucide="check" size="16"></i> Java</li>
-                            <li><i data-lucide="check" size="16"></i> Spring Boot</li>
-                            <li><i data-lucide="check" size="16"></i> PostgreSQL</li>
-                            <li><i data-lucide="check" size="16"></i> REST API</li>
-                        </ul>
-                    </div>
-                    <div class="skill-group">
-                        <h3><i data-lucide="monitor"></i> Frontend</h3>
-                        <ul class="skill-list">
-                            <li><i data-lucide="check" size="16"></i> React + Vite</li>
-                            <li><i data-lucide="check" size="16"></i> HTML5 / CSS3</li>
-                            <li><i data-lucide="check" size="16"></i> JavaScript (ES6+)</li>
-                            <li><i data-lucide="check" size="16"></i> Responsive Design</li>
-                        </ul>
-                    </div>
-                    <div class="skill-group">
-                        <h3><i data-lucide="terminal"></i> DevOps</h3>
-                        <ul class="skill-list">
-                            <li><i data-lucide="check" size="16"></i> Docker</li>
-                            <li><i data-lucide="check" size="16"></i> Git / GitHub</li>
-                            <li><i data-lucide="check" size="16"></i> Linux (VPS)</li>
-                            <li><i data-lucide="check" size="16"></i> Automatyzacja wdrożeń</li>
-                        </ul>
-                    </div>
-                    <div class="skill-group">
-                        <h3><i data-lucide="trending-up"></i> SEO & Analityka</h3>
-                        <ul class="skill-list">
-                            <li><i data-lucide="check" size="16"></i> Google Analytics</li>
-                            <li><i data-lucide="check" size="16"></i> Tagowanie (Schema, OG)</li>
-                            <li><i data-lucide="check" size="16"></i> On-Page SEO</li>
-                            <li><i data-lucide="check" size="16"></i> Optymalizacja wydajności</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Project 1 -->
-            <a href="https://onthespotted.pl" target="_blank" class="bento-card card-project">
-                <div class="project-header">
-                    <div class="project-icon">
-                        <i data-lucide="users"></i>
-                    </div>
-                    <i data-lucide="arrow-up-right" class="project-link-icon"></i>
-                </div>
-                <h3>Onthespotted.pl</h3>
-                <p>Platforma społecznościowa tworzona w zespole. Nowoczesne standardy i skalowalność.</p>
-                <div class="project-tags">
-                    <span class="tag">Web App</span>
-                    <span class="tag">Społeczność</span>
-                </div>
+    <!-- Floating Dock Navigation -->
+    <div class="dock-wrapper">
+        <nav class="dock">
+            <a href="#home" class="dock-item">
+                <i data-lucide="home"></i>
+                <span>Start</span>
             </a>
-
-            <!-- Project 2 -->
-            <a href="gra.html" class="bento-card card-project">
-                <div class="project-header">
-                    <div class="project-icon">
-                        <i data-lucide="gamepad-2"></i>
-                    </div>
-                    <i data-lucide="arrow-right" class="project-link-icon"></i>
-                </div>
-                <h3>Enigma Protocol</h3>
-                <p>Logiczna gra przeglądarkowa z systemem autoryzacji i globalnym rankingiem graczy.</p>
-                <div class="project-tags">
-                    <span class="tag">Java Spring</span>
-                    <span class="tag">Rozrywka</span>
-                </div>
+            <a href="#about" class="dock-item">
+                <i data-lucide="user"></i>
+                <span>O mnie</span>
             </a>
-
-            <!-- Project 3 -->
-            <a href="kostka/index.html" class="bento-card card-project">
-                <div class="project-header">
-                    <div class="project-icon">
-                        <i data-lucide="hard-hat"></i>
-                    </div>
-                    <i data-lucide="arrow-right" class="project-link-icon"></i>
-                </div>
-                <h3>ProfiBud - Brukarstwo</h3>
-                <p>Nowoczesna wizytówka lokalnego biznesu. Zoptymalizowana pod SEO i konwersję.</p>
-                <div class="project-tags">
-                    <span class="tag">Biznes</span>
-                    <span class="tag">SEO</span>
-                </div>
+            <a href="#skills" class="dock-item">
+                <i data-lucide="cpu"></i>
+                <span>Skille</span>
             </a>
-
-        </div>
+            <a href="#projects" class="dock-item">
+                <i data-lucide="layers"></i>
+                <span>Projekty</span>
+            </a>
+        </nav>
     </div>
 
-    <!-- Inicjalizacja ikon Lucide -->
+    <div class="container">
+        <!-- Hero Section -->
+        <section id="home" class="hero reveal">
+            <h1 class="hero-title">Wiktor<br>Szeląg.</h1>
+            <h2 class="hero-subtitle">Software Engineer / Creative Mind</h2>
+            <p class="hero-desc">Tworzę nowoczesne aplikacje internetowe i rozbudowane systemy backendowe z naciskiem na architekturę, SEO i ponadprzeciętny design.</p>
+        </section>
+
+        <!-- About Section -->
+        <section id="about">
+            <h2 class="section-title reveal">O mnie</h2>
+            <div style="font-size: 1.2rem; color: var(--text-muted); max-width: 800px;" class="reveal">
+                <p style="margin-bottom: 1.5rem;">Programowanie to dla mnie nie tylko czysty kod, ale sztuka rozwiązywania realnych problemów i projektowania produktów, które zachwycają.</p>
+                <p>Mam doświadczenie zarówno w złożonych projektach zespołowych (jak duża platforma społecznościowa Onthespotted.pl), jak i w kreowaniu od zera komercyjnych wizytówek biznesowych.</p>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills">
+            <h2 class="section-title reveal">Moje Narzędzia</h2>
+            <div class="skills-wrapper">
+                <div class="skill-pill reveal"><i data-lucide="coffee"></i> Java & Spring Boot</div>
+                <div class="skill-pill reveal"><i data-lucide="database"></i> PostgreSQL</div>
+                <div class="skill-pill reveal"><i data-lucide="layout"></i> React + Vite</div>
+                <div class="skill-pill reveal"><i data-lucide="box"></i> Docker & Linux</div>
+                <div class="skill-pill reveal"><i data-lucide="trending-up"></i> Google Analytics</div>
+                <div class="skill-pill reveal"><i data-lucide="search"></i> Advanced SEO</div>
+                <div class="skill-pill reveal"><i data-lucide="smartphone"></i> Responsive UI</div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects">
+            <h2 class="section-title reveal">Projekty</h2>
+            
+            <div class="projects-grid">
+                
+                <!-- Project 1 -->
+                <a href="https://onthespotted.pl" target="_blank" class="project-card reveal">
+                    <div class="project-card-content">
+                        <div class="project-title">
+                            Onthespotted.pl
+                            <div class="project-icon"><i data-lucide="arrow-up-right"></i></div>
+                        </div>
+                        <p class="project-desc">Platforma społecznościowa tworzona w zespole. Nowoczesne standardy i pełna skalowalność infrastruktury.</p>
+                        <div class="skills-wrapper">
+                            <span class="skill-pill" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Web App</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Project 2 -->
+                <a href="gra.html" class="project-card reveal">
+                    <div class="project-card-content">
+                        <div class="project-title">
+                            Enigma Protocol
+                            <div class="project-icon"><i data-lucide="arrow-right"></i></div>
+                        </div>
+                        <p class="project-desc">Zaawansowana gra logiczna w przeglądarce. Posiada globalny ranking graczy i autorski system weryfikacji.</p>
+                        <div class="skills-wrapper">
+                            <span class="skill-pill" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Java Spring</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Project 3 -->
+                <a href="kostka/index.html" class="project-card reveal">
+                    <div class="project-card-content">
+                        <div class="project-title">
+                            ProfiBud
+                            <div class="project-icon"><i data-lucide="arrow-right"></i></div>
+                        </div>
+                        <p class="project-desc">Biznesowa wizytówka dla lokalnego wykonawcy. Super zoptymalizowana pod wyszukiwarki (On-Page SEO) i świetnie konwertująca.</p>
+                        <div class="skills-wrapper">
+                            <span class="skill-pill" style="padding: 0.5rem 1rem; font-size: 0.9rem;">SEO & Biznes</span>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+        
+        <div style="height: 100px;"></div>
+    </div>
+
+    <!-- Scripts -->
     <script>
-      lucide.createIcons();
+        // Inicjalizacja ikon
+        lucide.createIcons();
+
+        // Intersection Observer do efektów Scroll Reveal
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.15
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // Znajdź wszystkie elementy z klasą .reveal i zacznij je obserwować
+        document.querySelectorAll('.reveal').forEach(element => {
+            observer.observe(element);
+        });
+
+        // Płynne przewijanie do sekcji po kliknięciu w menu
+        document.querySelectorAll('.dock a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
     </script>
 </body>
 </html>
