@@ -287,6 +287,60 @@
             transform: rotate(45deg);
         }
 
+        /* PROCESS TIMELINE */
+        .process-list {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .process-list::before {
+            content: ''; position: absolute;
+            top: 0; left: 15px;
+            height: 100%; width: 2px;
+            background: var(--border);
+        }
+        .process-item {
+            position: relative;
+            padding-left: 60px;
+            padding-bottom: 4rem;
+        }
+        .process-item:last-child { padding-bottom: 0; }
+        .process-dot {
+            position: absolute;
+            left: 0px; top: 0;
+            width: 32px; height: 32px;
+            background: var(--bg);
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem; font-weight: 700; color: var(--accent);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 2;
+        }
+        .process-item:hover .process-dot {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-color: transparent;
+            color: #ffffff;
+            transform: scale(1.15);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+        }
+        .process-content h3 {
+            font-size: 1.5rem;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+            transition: all 0.3s;
+        }
+        .process-item:hover .process-content h3 {
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .process-content p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
         /* SCROLL REVEAL API CLASSES */
         .reveal {
             opacity: 0;
@@ -299,6 +353,7 @@
         .delay-200 { transition-delay: 200ms; }
         .delay-300 { transition-delay: 300ms; }
         .delay-400 { transition-delay: 400ms; }
+        .delay-500 { transition-delay: 500ms; }
 
         /* MOBILE NAV */
         .mobile-nav {
@@ -343,6 +398,10 @@
             .project-item { flex-direction: column; align-items: flex-start; gap: 1rem; padding: 2rem 0; }
             .project-info h2 { font-size: 1.8rem; }
             .project-meta { width: 100%; justify-content: space-between; margin-top: 1rem; }
+            
+            .process-item { padding-bottom: 3rem; padding-left: 50px; }
+            .process-content h3 { font-size: 1.3rem; }
+            .process-content p { font-size: 1rem; }
         }
     </style>
 </head>
@@ -359,6 +418,7 @@
         <a href="#about"><i data-lucide="user" size="24"></i></a>
         <a href="#skills"><i data-lucide="cpu" size="24"></i></a>
         <a href="#projects"><i data-lucide="folder-open" size="24"></i></a>
+        <a href="#process"><i data-lucide="briefcase" size="24"></i></a>
         <a href="#contact"><i data-lucide="mail" size="24"></i></a>
     </nav>
 
@@ -370,6 +430,7 @@
                 <a href="#about">O mnie</a>
                 <a href="#skills">Narzędzia</a>
                 <a href="#projects">Projekty</a>
+                <a href="#process">Proces</a>
                 <a href="#contact">Kontakt</a>
             </nav>
         </header>
@@ -467,6 +528,48 @@
                         <div class="project-arrow"><i data-lucide="arrow-right"></i></div>
                     </div>
                 </a>
+            </div>
+        </section>
+
+        <!-- PROCESS -->
+        <section id="process">
+            <div class="section-title reveal">Proces Współpracy</div>
+            <div class="process-list">
+                <div class="process-item reveal delay-100">
+                    <div class="process-dot">1</div>
+                    <div class="process-content">
+                        <h3>Kontakt i Analiza</h3>
+                        <p>Omawiamy Twój pomysł, cele biznesowe i wymagania techniczne. Zrozumienie Twoich potrzeb to fundament sukcesu.</p>
+                    </div>
+                </div>
+                <div class="process-item reveal delay-200">
+                    <div class="process-dot">2</div>
+                    <div class="process-content">
+                        <h3>Strategia i Wycena</h3>
+                        <p>Ustalamy zakres prac, odpowiednie technologie, przejrzysty harmonogram oraz budżet dopasowany do projektu.</p>
+                    </div>
+                </div>
+                <div class="process-item reveal delay-300">
+                    <div class="process-dot">3</div>
+                    <div class="process-content">
+                        <h3>Wizualizacja i Prototyp</h3>
+                        <p>Przygotowuję wstępny szkic lub layout (mockup). Upewniamy się, że projekt idealnie oddaje Twoją wizję jeszcze przed kodowaniem.</p>
+                    </div>
+                </div>
+                <div class="process-item reveal delay-400">
+                    <div class="process-dot">4</div>
+                    <div class="process-content">
+                        <h3>Programowanie i Podgląd</h3>
+                        <p>Przekuwam koncepcję w nowoczesny, superszybki kod. Otrzymujesz dostęp do wersji testowej, by na bieżąco widzieć postępy prac.</p>
+                    </div>
+                </div>
+                <div class="process-item reveal delay-500">
+                    <div class="process-dot">5</div>
+                    <div class="process-content">
+                        <h3>Wdrożenie i SEO</h3>
+                        <p>Finalny produkt trafia do sieci. Wykonuję optymalizację pod Google (SEO) i podpinam analitykę. Twoja strona zaczyna dla Ciebie zarabiać!</p>
+                    </div>
+                </div>
             </div>
         </section>
 
