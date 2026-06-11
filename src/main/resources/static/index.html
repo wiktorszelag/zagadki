@@ -8,10 +8,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #121214;
+            --bg: #0d0e15;
             --text-main: #ffffff;
-            --text-muted: #888888;
-            --accent: #ffffff;
+            --text-muted: #94a3b8;
+            --accent: #8b5cf6;
             --border: rgba(255, 255, 255, 0.1);
         }
 
@@ -26,10 +26,34 @@
             line-height: 1.6;
         }
 
+        /* AURORA BACKGROUND */
+        .aurora {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .aurora-1 {
+            position: absolute; width: 60vw; height: 60vw; border-radius: 50%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 60%);
+            top: -20vh; left: -10vw; filter: blur(60px);
+            animation: move1 20s infinite alternate ease-in-out;
+        }
+        .aurora-2 {
+            position: absolute; width: 50vw; height: 50vw; border-radius: 50%;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 60%);
+            bottom: -10vh; right: -10vw; filter: blur(60px);
+            animation: move2 15s infinite alternate ease-in-out;
+        }
+        @keyframes move1 { 0% { transform: translate(0, 0); } 100% { transform: translate(10vw, 5vh); } }
+        @keyframes move2 { 0% { transform: translate(0, 0); } 100% { transform: translate(-10vw, -5vh); } }
+
         .container {
             max-width: 1000px;
             margin: 0 auto;
             padding: 0 2rem;
+            position: relative;
+            z-index: 1;
         }
 
         /* HEADER */
@@ -46,13 +70,11 @@
             height: 35px;
             filter: invert(1);
             opacity: 0.9;
+            transition: transform 0.3s;
         }
+        .logo:hover { transform: scale(1.05); }
 
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-        }
-
+        .nav-links { display: flex; gap: 2rem; }
         .nav-links a {
             color: var(--text-muted);
             text-decoration: none;
@@ -61,8 +83,7 @@
             letter-spacing: 1px;
             transition: color 0.3s;
         }
-
-        .nav-links a:hover { color: var(--text-main); }
+        .nav-links a:hover { color: var(--accent); }
 
         /* HERO TYPING EFFECT */
         .hero {
@@ -75,10 +96,11 @@
 
         .hero-static {
             font-size: 1.2rem;
-            color: var(--text-muted);
+            color: #3b82f6;
             margin-bottom: 1rem;
             text-transform: uppercase;
             letter-spacing: 2px;
+            font-weight: 600;
         }
 
         .hero h1 {
@@ -87,14 +109,24 @@
             line-height: 1.1;
             letter-spacing: -2px;
             margin-bottom: 2rem;
-            min-height: 3em; /* space for typing lines */
+            min-height: 3em; 
         }
 
-        /* The typing cursor */
+        .hero h1 span#typed-text {
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 4s linear infinite;
+        }
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
         .cursor {
             display: inline-block;
             width: 4px;
-            background-color: var(--text-main);
+            background-color: var(--accent);
             margin-left: 5px;
             animation: blink 1s infinite;
         }
@@ -138,7 +170,7 @@
 
         section { padding: 4rem 0 8rem 0; }
 
-        /* SKILLS GRID - MODERNIST */
+        /* SKILLS GRID */
         .skills-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -158,13 +190,17 @@
             color: var(--text-muted);
             font-size: 1rem;
             margin-bottom: 0.8rem;
-            transition: color 0.3s;
+            transition: color 0.3s, transform 0.3s;
             cursor: default;
+            display: inline-block;
         }
 
-        .skill-group li:hover { color: var(--text-main); }
+        .skill-group li:hover { 
+            color: #ec4899; 
+            transform: translateX(5px);
+        }
 
-        /* PROJECTS LIST - MODERNIST */
+        /* PROJECTS LIST */
         .projects-list {
             display: flex;
             flex-direction: column;
@@ -186,7 +222,8 @@
         .project-item:hover {
             padding-left: 2rem;
             padding-right: 2rem;
-            background: rgba(255,255,255,0.02);
+            background: rgba(139, 92, 246, 0.05);
+            border-bottom-color: rgba(139, 92, 246, 0.3);
         }
 
         .project-info h2 {
@@ -194,10 +231,15 @@
             font-weight: 600;
             letter-spacing: -1px;
             margin-bottom: 0.5rem;
-            transition: transform 0.3s;
+            transition: all 0.3s;
         }
 
-        .project-item:hover .project-info h2 { transform: translateX(10px); }
+        .project-item:hover .project-info h2 { 
+            transform: translateX(10px); 
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
         .project-info p {
             color: var(--text-muted);
@@ -218,6 +260,12 @@
             border: 1px solid var(--border);
             padding: 0.4rem 1rem;
             border-radius: 100px;
+            transition: all 0.3s;
+        }
+        
+        .project-item:hover .project-tag {
+            color: var(--accent);
+            border-color: var(--accent);
         }
 
         .project-arrow {
@@ -229,8 +277,9 @@
         }
 
         .project-item:hover .project-arrow {
-            background: var(--text-main);
-            color: var(--bg);
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-color: transparent;
+            color: #ffffff;
             transform: rotate(45deg);
         }
 
@@ -256,6 +305,12 @@
     </style>
 </head>
 <body>
+
+    <!-- AURORA ANIMATED BACKGROUND -->
+    <div class="aurora">
+        <div class="aurora-1"></div>
+        <div class="aurora-2"></div>
+    </div>
 
     <div class="container">
         <!-- HEADER WITH LOGO -->
@@ -374,7 +429,7 @@
         const texts = [
             "Cześć, jestem Wiktor.",
             "Piszę świetny kod.",
-            "Buduję nowoczesne aplikacje.",
+            "Buduję super aplikacje.",
             "Skupiam się na detalach."
         ];
         
