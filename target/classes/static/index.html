@@ -107,12 +107,12 @@
         }
 
         .hero h1 {
-            font-size: clamp(3rem, 6vw, 5.5rem);
-            font-weight: 700;
-            line-height: 1.1;
+            font-size: clamp(2.8rem, 5vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.2;
             letter-spacing: -2px;
             margin-bottom: 2rem;
-            min-height: 3em; 
+            min-height: 2.4em; /* Zablokowana wysokość zapobiegająca skakaniu */
         }
 
         .hero h1 span#typed-text {
@@ -595,45 +595,57 @@
     <script>
         lucide.createIcons();
 
-        /* TYPING EFFECT */
-        const texts = [
-            "Cześć, jestem Wiktor.",
-            "Tworzę nowoczesne oprogramowanie.",
-            "Dostarczam rozwiązania dla biznesu.",
-            "Skupiam się na wydajności i SEO."
-        ];
-        
-        let textIndex = 0;
+        /* TYPING EFFECT WITH SOUND */
+        const textToType = "Cześć, jestem Wiktor.|Tworzę nowoczesne oprogramowanie dla biznesu.";
         let charIndex = 0;
-        let isDeleting = false;
         const typingElement = document.getElementById("typed-text");
         
+        let audioCtx;
+        function playKeystroke() {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') return; // Przeglądarki blokują dźwięk bez kliknięcia przez użytkownika
+                
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(150 + Math.random() * 50, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.015, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.03);
+                
+                const osc2 = audioCtx.createOscillator();
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(2000 + Math.random() * 500, audioCtx.currentTime);
+                const gain2 = audioCtx.createGain();
+                gain2.gain.setValueAtTime(0.01, audioCtx.currentTime);
+                gain2.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.02);
+
+                osc.connect(gain);
+                osc2.connect(gain2);
+                gain.connect(audioCtx.destination);
+                gain2.connect(audioCtx.destination);
+                
+                osc.start(); osc.stop(audioCtx.currentTime + 0.03);
+                osc2.start(); osc2.stop(audioCtx.currentTime + 0.02);
+            } catch(e) {}
+        }
+
         function typeEffect() {
-            const currentText = texts[textIndex];
-            
-            if (isDeleting) {
-                typingElement.innerHTML = currentText.substring(0, charIndex - 1) + "<br>";
-                charIndex--;
-            } else {
-                typingElement.innerHTML = currentText.substring(0, charIndex + 1) + "<br>";
+            if (charIndex < textToType.length) {
+                let char = textToType.charAt(charIndex);
+                if (char === '|') {
+                    typingElement.innerHTML += "<br>";
+                } else {
+                    typingElement.innerHTML += char;
+                    playKeystroke();
+                }
                 charIndex++;
+                setTimeout(typeEffect, 40 + Math.random() * 40);
             }
-            
-            let typeSpeed = isDeleting ? 30 : 70;
-            
-            if (!isDeleting && charIndex === currentText.length) {
-                typeSpeed = 2000; // Pause at end of sentence
-                isDeleting = true;
-            } else if (isDeleting && charIndex === 0) {
-                isDeleting = false;
-                textIndex = (textIndex + 1) % texts.length;
-                typeSpeed = 500; // Pause before new sentence
-            }
-            
-            setTimeout(typeEffect, typeSpeed);
         }
         
-        setTimeout(typeEffect, 1000);
+        setTimeout(typeEffect, 800);
 
         /* SCROLL REVEAL API */
         const observerOptions = {
