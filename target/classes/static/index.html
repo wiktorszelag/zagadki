@@ -3,22 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wiktor Szeląg | Portfolio</title>
+    <title>Wiktor Szeląg | Modernist Portfolio</title>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #1e2024;
-            --surface: #272a30;
-            --surface-hover: #30333b;
-            --border: rgba(255, 255, 255, 0.08);
-            --border-hover: rgba(255, 255, 255, 0.15);
-            --glow: rgba(59, 130, 246, 0.15);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent: #60a5fa;
-            --radius: 28px;
-            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --bg: #121214;
+            --text-main: #ffffff;
+            --text-muted: #888888;
+            --accent: #ffffff;
+            --border: rgba(255, 255, 255, 0.1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -28,295 +22,413 @@
             color: var(--text-main);
             font-family: 'Inter', sans-serif;
             min-height: 100vh;
-            padding-bottom: 100px;
-        }
-
-        .ambient-light {
-            position: fixed; width: 50vw; height: 50vw; border-radius: 50%;
-            background: radial-gradient(circle, rgba(96,165,250,0.05) 0%, transparent 70%);
-            top: -20vh; right: -20vw; z-index: -1; pointer-events: none;
-        }
-        .ambient-light-2 {
-            position: fixed; width: 40vw; height: 40vw; border-radius: 50%;
-            background: radial-gradient(circle, rgba(167,139,250,0.05) 0%, transparent 70%);
-            bottom: -10vh; left: -10vw; z-index: -1; pointer-events: none;
+            overflow-x: hidden;
+            line-height: 1.6;
         }
 
         .container {
-            max-width: 1200px;
-            margin: 4rem auto;
-            padding: 0 1.5rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem;
         }
 
-        h1, h2, h3 { font-family: 'Outfit', sans-serif; }
-
-        /* PERFECT BENTO GRID */
-        .bento-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-auto-rows: minmax(220px, auto);
-            gap: 1.5rem;
+        /* HEADER */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 0;
+            margin-bottom: 4rem;
+            border-bottom: 1px solid var(--border);
         }
 
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 2.5rem;
-            position: relative;
-            overflow: hidden;
-            transition: var(--transition);
+        .logo {
+            height: 35px;
+            filter: invert(1);
+            opacity: 0.9;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover { color: var(--text-main); }
+
+        /* HERO TYPING EFFECT */
+        .hero {
+            padding: 6rem 0 10rem 0;
+            min-height: 60vh;
             display: flex;
             flex-direction: column;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            border-color: var(--border-hover);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.3), 0 0 40px var(--glow);
-            background: var(--surface-hover);
-        }
-
-        .col-span-1 { grid-column: span 1; }
-        .col-span-2 { grid-column: span 2; }
-        .col-span-4 { grid-column: span 4; }
-        .row-span-1 { grid-row: span 1; }
-        .row-span-2 { grid-row: span 2; }
-
-        /* ABOUT CARD */
-        .card-about {
             justify-content: center;
-            background: linear-gradient(135deg, rgba(39,42,48,0.8), rgba(30,32,36,0.8));
-        }
-        .card-about h1 {
-            font-size: 3.2rem;
-            margin-bottom: 1.5rem;
-            line-height: 1.1;
-            letter-spacing: -1px;
-        }
-        .card-about p {
-            color: var(--text-muted);
-            font-size: 1.15rem;
-            line-height: 1.6;
-            margin-bottom: 1rem;
         }
 
-        /* SKILL CARDS */
-        .card-skill {
-            padding: 2rem;
-        }
-        .card-skill h3 {
+        .hero-static {
             font-size: 1.2rem;
-            margin-bottom: 1.2rem;
-            color: var(--accent);
-            display: flex; align-items: center; gap: 0.5rem;
-        }
-        .card-skill ul {
-            list-style: none;
-            display: flex; flex-direction: column; gap: 0.8rem;
-        }
-        .card-skill li {
             color: var(--text-muted);
-            font-size: 0.95rem;
-            display: flex; align-items: center; gap: 0.5rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
-        /* PROJECT CARDS */
-        .card-project {
-            justify-content: space-between;
+        .hero h1 {
+            font-size: clamp(3rem, 6vw, 5.5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -2px;
+            margin-bottom: 2rem;
+            min-height: 3em; /* space for typing lines */
         }
-        .project-icon {
-            width: 48px; height: 48px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 14px;
-            display: flex; align-items: center; justify-content: center;
+
+        /* The typing cursor */
+        .cursor {
+            display: inline-block;
+            width: 4px;
+            background-color: var(--text-main);
+            margin-left: 5px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .hero p {
+            max-width: 600px;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            line-height: 1.8;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 1s 1s forwards;
+        }
+
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* SECTION STYLES */
+        .section-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .section-title::after {
+            content: '';
+            height: 1px;
+            flex-grow: 1;
+            background: var(--border);
+        }
+
+        section { padding: 4rem 0 8rem 0; }
+
+        /* SKILLS GRID - MODERNIST */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 3rem 2rem;
+        }
+
+        .skill-group h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
             margin-bottom: 1.5rem;
-            border: 1px solid var(--border);
-            transition: var(--transition);
+            color: var(--text-main);
         }
-        .card-project:hover .project-icon {
-            background: var(--text-main);
-            color: var(--bg);
-            transform: rotate(10deg) scale(1.1);
-        }
-        .card-project h3 {
-            font-size: 1.5rem;
-            margin-bottom: 0.8rem;
-        }
-        .card-project p {
+
+        .skill-group ul { list-style: none; }
+
+        .skill-group li {
             color: var(--text-muted);
             font-size: 1rem;
-            line-height: 1.5;
+            margin-bottom: 0.8rem;
+            transition: color 0.3s;
+            cursor: default;
         }
-        .tag-wrap {
-            margin-top: auto;
-            padding-top: 1.5rem;
+
+        .skill-group li:hover { color: var(--text-main); }
+
+        /* PROJECTS LIST - MODERNIST */
+        .projects-list {
+            display: flex;
+            flex-direction: column;
         }
-        .tag {
-            background: rgba(255,255,255,0.05);
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
+
+        .project-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 3rem 0;
+            border-bottom: 1px solid var(--border);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.4s ease;
+        }
+
+        .project-item:first-child { border-top: 1px solid var(--border); }
+
+        .project-item:hover {
+            padding-left: 2rem;
+            padding-right: 2rem;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .project-info h2 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            letter-spacing: -1px;
+            margin-bottom: 0.5rem;
+            transition: transform 0.3s;
+        }
+
+        .project-item:hover .project-info h2 { transform: translateX(10px); }
+
+        .project-info p {
             color: var(--text-muted);
-            font-weight: 500;
+            font-size: 1.1rem;
         }
 
-        /* GLASS NAV */
-        .glass-nav {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: rgba(39, 42, 48, 0.8);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 0.8rem 1.5rem; border-radius: 100px;
-            display: flex; gap: 2.5rem; z-index: 1000;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        .project-meta {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
         }
-        .nav-item {
-            color: var(--text-muted); text-decoration: none;
-            display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
-            transition: var(--transition); position: relative;
-        }
-        .nav-item:hover { color: var(--text-main); transform: translateY(-4px); }
-        .nav-item span {
-            font-size: 0.75rem; font-weight: 600; position: absolute; top: -30px;
-            background: var(--text-main); color: var(--bg);
-            padding: 0.3rem 0.8rem; border-radius: 12px;
-            opacity: 0; transform: translateY(5px); transition: var(--transition);
-            pointer-events: none; white-space: nowrap;
-        }
-        .nav-item:hover span { opacity: 1; transform: translateY(0); }
 
-        /* RESPONSIVE */
-        @media (max-width: 1024px) {
-            .bento-grid { grid-template-columns: repeat(2, 1fr); }
-            .col-span-2 { grid-column: span 2; }
-            .col-span-1 { grid-column: span 1; }
+        .project-tag {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            padding: 0.4rem 1rem;
+            border-radius: 100px;
         }
+
+        .project-arrow {
+            width: 40px; height: 40px;
+            display: flex; justify-content: center; align-items: center;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .project-item:hover .project-arrow {
+            background: var(--text-main);
+            color: var(--bg);
+            transform: rotate(45deg);
+        }
+
+        /* SCROLL REVEAL API CLASSES */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        .delay-100 { transition-delay: 100ms; }
+        .delay-200 { transition-delay: 200ms; }
+        .delay-300 { transition-delay: 300ms; }
+        .delay-400 { transition-delay: 400ms; }
 
         @media (max-width: 768px) {
-            .bento-grid { grid-template-columns: 1fr; }
-            .col-span-2 { grid-column: span 1; }
-            .col-span-1 { grid-column: span 1; }
-            .row-span-2 { grid-row: span 1; }
-            .card-about h1 { font-size: 2.5rem; }
-            .glass-nav { bottom: 20px; gap: 1.5rem; padding: 0.8rem 1.2rem; }
+            .skills-grid { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+            .project-item { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+            .project-meta { width: 100%; justify-content: space-between; }
+            .nav-links { display: none; }
         }
     </style>
 </head>
 <body>
 
-    <div class="ambient-light"></div>
-    <div class="ambient-light-2"></div>
-
-    <nav class="glass-nav">
-        <a href="#about" class="nav-item"><i data-lucide="user"></i><span>O mnie</span></a>
-        <a href="#skills" class="nav-item"><i data-lucide="cpu"></i><span>Narzędzia</span></a>
-        <a href="#projects" class="nav-item"><i data-lucide="folder-open"></i><span>Projekty</span></a>
-    </nav>
-
     <div class="container">
         <!-- HEADER WITH LOGO -->
-        <header style="margin-bottom: 3rem; display: flex; align-items: center;">
-            <img src="assets/logo.png" alt="WS Project" style="height: 50px; filter: invert(1); mix-blend-mode: screen; opacity: 0.9;">
+        <header>
+            <img src="assets/logo.png" alt="WS Project" class="logo">
+            <nav class="nav-links">
+                <a href="#about">O mnie</a>
+                <a href="#skills">Narzędzia</a>
+                <a href="#projects">Projekty</a>
+            </nav>
         </header>
 
-        <!-- THE BENTO GRID -->
-        <div class="bento-grid">
+        <!-- HERO -->
+        <section id="about" class="hero">
+            <div class="hero-static">Creative Developer</div>
+            <h1>
+                <span id="typed-text"></span><span class="cursor"></span>
+            </h1>
+            <p>Specjalizuję się w tworzeniu nowoczesnych aplikacji internetowych oraz kompleksowych rozwiązań backendowych. Programowanie to dla mnie nie tylko czysty kod, ale sztuka rozwiązywania realnych problemów ze świetnym designem i perfekcyjnym SEO.</p>
+        </section>
+
+        <!-- SKILLS -->
+        <section id="skills">
+            <div class="section-title reveal">Kompetencje i Narzędzia</div>
             
-            <!-- ROW 1 & 2 -->
-            <!-- ABOUT (2x2) -->
-            <div id="about" class="card card-about col-span-2 row-span-2">
-                <h1>Cześć, jestem Wiktor!</h1>
-                <p>
-                    Specjalizuję się w tworzeniu nowoczesnych aplikacji internetowych oraz kompleksowych rozwiązań backendowych. Programowanie to dla mnie nie tylko czysty kod, ale sztuka rozwiązywania realnych problemów.
-                </p>
-                <p>
-                    Mam za sobą zarówno pracę w zespole (Onthespotted.pl), jak i realizację wizytówek biznesowych. Skupiam się na wydajności, SEO i nienagannym designie.
-                </p>
-            </div>
-
-            <!-- SKILL 1 (1x1) -->
-            <div id="skills" class="card card-skill col-span-1 row-span-1">
-                <h3><i data-lucide="server"></i> Backend</h3>
-                <ul>
-                    <li><i data-lucide="check-circle-2" size="16"></i> Java</li>
-                    <li><i data-lucide="check-circle-2" size="16"></i> Spring Boot</li>
-                    <li><i data-lucide="check-circle-2" size="16"></i> PostgreSQL</li>
-                    <li><i data-lucide="check-circle-2" size="16"></i> REST API</li>
-                </ul>
-            </div>
-
-            <!-- SKILL 2 (1x1) -->
-            <div class="card card-skill col-span-1 row-span-1">
-                <h3><i data-lucide="monitor"></i> Frontend</h3>
-                <ul>
-                    <li><i data-lucide="check-circle-2" size="16"></i> React + Vite</li>
-                    <li><i data-lucide="check-circle-2" size="16"></i> HTML5 / CSS3</li>
-                    <li><i data-lucide="check-circle-2" size="16"></i> JavaScript</li>
-                    <li><i data-lucide="check-circle-2" size="16"></i> Tailwind CSS</li>
-                </ul>
-            </div>
-
-            <!-- SKILL 3 (1x1) -->
-            <div class="card card-skill col-span-1 row-span-1">
-                <h3><i data-lucide="terminal-square"></i> DevOps</h3>
-                <ul>
-                    <li><i data-lucide="check-circle-2" size="16"></i> Docker</li>
-                    <li><i data-lucide="check-circle-2" size="16"></i> Git / GitHub</li>
-                    <li><i data-lucide="check-circle-2" size="16"></i> Linux (VPS)</li>
-                    <li><i data-lucide="check-circle-2" size="16"></i> Automatyzacja</li>
-                </ul>
-            </div>
-
-            <!-- SKILL 4 (1x1) -->
-            <div class="card card-skill col-span-1 row-span-1">
-                <h3><i data-lucide="bar-chart-3"></i> SEO</h3>
-                <ul>
-                    <li><i data-lucide="check-circle-2" size="16"></i> G. Analytics</li>
-                    <li><i data-lucide="check-circle-2" size="16"></i> Tagowanie</li>
-                    <li><i data-lucide="check-circle-2" size="16"></i> On-Page SEO</li>
-                    <li><i data-lucide="check-circle-2" size="16"></i> Optymalizacja</li>
-                </ul>
-            </div>
-
-            <!-- ROW 3 -->
-            <!-- PROJECT 1 (2x1) -->
-            <a href="https://onthespotted.pl" target="_blank" id="projects" class="card card-project col-span-2 row-span-1">
-                <div>
-                    <div class="project-icon"><i data-lucide="users"></i></div>
-                    <h3>Onthespotted.pl</h3>
-                    <p>Platforma społecznościowa tworzona w zespole. Nowoczesne standardy i wysoka skalowalność infrastruktury.</p>
+            <div class="skills-grid">
+                <div class="skill-group reveal delay-100">
+                    <h3>Backend</h3>
+                    <ul>
+                        <li>Java</li>
+                        <li>Spring Boot</li>
+                        <li>PostgreSQL</li>
+                        <li>REST API</li>
+                    </ul>
                 </div>
-                <div class="tag-wrap"><span class="tag">Web App</span></div>
-            </a>
-
-            <!-- PROJECT 2 (1x1) -->
-            <a href="gra.html" class="card card-project col-span-1 row-span-1">
-                <div>
-                    <div class="project-icon"><i data-lucide="gamepad-2"></i></div>
-                    <h3>Enigma Protocol</h3>
-                    <p>Gra logiczna z weryfikacją graczy i rankingiem.</p>
+                <div class="skill-group reveal delay-200">
+                    <h3>Frontend</h3>
+                    <ul>
+                        <li>React + Vite</li>
+                        <li>HTML5 / CSS3</li>
+                        <li>JavaScript</li>
+                        <li>Tailwind CSS</li>
+                    </ul>
                 </div>
-                <div class="tag-wrap"><span class="tag">Java Spring</span></div>
-            </a>
-
-            <!-- PROJECT 3 (1x1) -->
-            <a href="kostka/index.html" class="card card-project col-span-1 row-span-1">
-                <div>
-                    <div class="project-icon"><i data-lucide="hard-hat"></i></div>
-                    <h3>ProfiBud</h3>
-                    <p>Wizytówka biznesowa ekstremalnie zoptymalizowana pod SEO.</p>
+                <div class="skill-group reveal delay-300">
+                    <h3>DevOps</h3>
+                    <ul>
+                        <li>Docker</li>
+                        <li>Git / GitHub</li>
+                        <li>Linux (VPS)</li>
+                        <li>Automatyzacja</li>
+                    </ul>
                 </div>
-                <div class="tag-wrap"><span class="tag">Business SEO</span></div>
-            </a>
+                <div class="skill-group reveal delay-400">
+                    <h3>Analityka & SEO</h3>
+                    <ul>
+                        <li>Google Analytics</li>
+                        <li>Tagowanie</li>
+                        <li>On-Page SEO</li>
+                        <li>Optymalizacja</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
 
-        </div>
+        <!-- PROJECTS -->
+        <section id="projects">
+            <div class="section-title reveal">Wybrane Projekty</div>
+
+            <div class="projects-list">
+                <!-- Project 1 -->
+                <a href="https://onthespotted.pl" target="_blank" class="project-item reveal delay-100">
+                    <div class="project-info">
+                        <h2>Onthespotted.pl</h2>
+                        <p>Platforma społecznościowa. Skalowalna infrastruktura.</p>
+                    </div>
+                    <div class="project-meta">
+                        <span class="project-tag">Web App</span>
+                        <div class="project-arrow"><i data-lucide="arrow-up-right"></i></div>
+                    </div>
+                </a>
+
+                <!-- Project 2 -->
+                <a href="gra.html" class="project-item reveal delay-200">
+                    <div class="project-info">
+                        <h2>Enigma Protocol</h2>
+                        <p>Zaawansowana gra logiczna w przeglądarce.</p>
+                    </div>
+                    <div class="project-meta">
+                        <span class="project-tag">Java Spring</span>
+                        <div class="project-arrow"><i data-lucide="arrow-right"></i></div>
+                    </div>
+                </a>
+
+                <!-- Project 3 -->
+                <a href="kostka/index.html" class="project-item reveal delay-300">
+                    <div class="project-info">
+                        <h2>ProfiBud</h2>
+                        <p>Wizytówka biznesowa zoptymalizowana pod wyszukiwarki.</p>
+                    </div>
+                    <div class="project-meta">
+                        <span class="project-tag">SEO Business</span>
+                        <div class="project-arrow"><i data-lucide="arrow-right"></i></div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
     </div>
 
+    <!-- SCRIPTS -->
     <script>
         lucide.createIcons();
+
+        /* TYPING EFFECT */
+        const texts = [
+            "Cześć, jestem Wiktor.",
+            "Piszę świetny kod.",
+            "Buduję nowoczesne aplikacje.",
+            "Skupiam się na detalach."
+        ];
+        
+        let textIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        const typingElement = document.getElementById("typed-text");
+        
+        function typeEffect() {
+            const currentText = texts[textIndex];
+            
+            if (isDeleting) {
+                typingElement.innerHTML = currentText.substring(0, charIndex - 1) + "<br>";
+                charIndex--;
+            } else {
+                typingElement.innerHTML = currentText.substring(0, charIndex + 1) + "<br>";
+                charIndex++;
+            }
+            
+            let typeSpeed = isDeleting ? 30 : 70;
+            
+            if (!isDeleting && charIndex === currentText.length) {
+                typeSpeed = 2000; // Pause at end of sentence
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                textIndex = (textIndex + 1) % texts.length;
+                typeSpeed = 500; // Pause before new sentence
+            }
+            
+            setTimeout(typeEffect, typeSpeed);
+        }
+        
+        setTimeout(typeEffect, 1000);
+
+        /* SCROLL REVEAL API */
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(element => {
+            observer.observe(element);
+        });
     </script>
 </body>
 </html>
